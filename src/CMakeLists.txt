@@ -3,6 +3,7 @@ ecbuild_generate_config_headers( DESTINATION ${INSTALL_INCLUDE_DIR}/vader )
 list( APPEND vader_src_files
 vader/vader.h
 vader/vader.cc
+vader/recipe.h
 )
 
 # if (VADER_BUILD_LANGUAGE_FORTRAN)

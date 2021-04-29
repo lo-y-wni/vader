@@ -5,33 +5,30 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef VADER_H_
-#define VADER_H_
+#ifndef RECIPE_H_
+#define RECIPE_H_
 
-#include <unordered_map>
+#include <vector>
+#include <functional>
 
 #include "atlas/field/FieldSet.h"
-#include "oops/base/Variables.h"
-
-#include "recipe.h"
 
 namespace vader {
 
 // -----------------------------------------------------------------------------
-/// Vader class
+/// Recipe class
 
-class Vader {
+class Recipe {
  public:
-  explicit Vader();
-  ~Vader();
+    explicit Recipe();
+    ~Recipe();
 
-  void changeVar(atlas::FieldSet * afieldset, const oops::Variables &) const;
+    const std::vector<std::string> ingredients;
+    const std::function<int(atlas::Field *, atlas::FieldSet *)> execute;
 
  private:
-    static const std::unordered_map<std::string, std::vector<vader::Recipe>> cookbook;
-
 };
 
 } // namespace vader
 
-#endif  // VADER_H_
+#endif  // RECIPE_H_
