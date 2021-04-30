@@ -25,12 +25,13 @@ Recipe::~Recipe() {}
 // -----------------------------------------------------------------------------
 
 // Implementation of vader "execute" functions for the instantiated recipes (Is this the right place for these?)
+
 int ps_to_delp(atlas::Field *delp, atlas::FieldSet *ingredients) {
     // TODO: Implement conversion logic
     return 0;
 }
 
-int t_to_pt(atlas::Field *delp, atlas::FieldSet *ingredients) {
+int t_to_pt(atlas::Field *pt, atlas::FieldSet *ingredients) {
     // TODO: Implement conversion logic
     return 0;
 }

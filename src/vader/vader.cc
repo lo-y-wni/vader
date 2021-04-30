@@ -10,8 +10,8 @@
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
-#include "vader.h"
 #include "oops/util/Logger.h"
+#include "vader.h"
 #include "cookbook.h"
 
 namespace vader {
@@ -23,6 +23,7 @@ Vader::~Vader() {}
 // -----------------------------------------------------------------------------
 
 // Create the static cookbook used to search for recipes
+// (Recipe vectors are defined in cookbook.h)
 const std::unordered_map<std::string, std::vector<vader::Recipe>> Vader::cookbook  {
 	{ "delp", delp_recipes},
 	{ "pt", pt_recipes}
