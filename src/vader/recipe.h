@@ -21,6 +21,7 @@ namespace vader {
 class Recipe {
  public:
     explicit Recipe();
+    Recipe(std::vector<std::string> ingredients, std::function<int(atlas::Field *, atlas::FieldSet *)> execute);
     ~Recipe();
 
     const std::vector<std::string> ingredients;
