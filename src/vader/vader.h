@@ -22,13 +22,15 @@ namespace vader {
 
 class Vader {
  public:
-  explicit Vader();
-  ~Vader();
+    explicit Vader();
+    ~Vader();
 
-  void changeVar(atlas::FieldSet * afieldset, const oops::Variables &) const;
+    void changeVar(atlas::FieldSet * afieldset, const oops::Variables &) const;
 
  private:
     static const std::unordered_map<std::string, std::vector<vader::Recipe>> cookbook;
+
+    int getVariable(atlas::FieldSet * afieldset, const std::string variableName) const;
 
 };
 
