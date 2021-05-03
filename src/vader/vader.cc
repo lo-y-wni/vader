@@ -69,7 +69,7 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 
 	oops::Log::trace() << "entering Vader::getVariable for variable: " << variableName << std::endl;
 
-	int rank = field1.rank();
+	auto rank = field1.rank();
 
 	if (rank == 1) {
 		auto field1_view = atlas::array::make_view <double , 1>( field1 );
@@ -77,39 +77,49 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 	}
 	else if (rank == 2) {
 		auto field1_view = atlas::array::make_view <double , 2>( field1 );
-		alreadyFilled = (field1_view(0,0) != 0.0); // Need a better way to test. What if filled data is 0.0?
+		alreadyFilled = (field1_view(0, 0) != 0.0); // Need a better way to test. What if filled data is 0.0?
 	}
+
 	if (alreadyFilled) {
 		oops::Log::debug() << "Field '" << variableName <<
 			"' is already populated in the fieldset. Vader doesn't need to work on it." << std::endl;
+		returnValue = 0;
 	}
-	else {
+	else { // Look in the cookbook for a recipe
 		oops::Log::debug() << "Field '" << variableName <<
 			"' is not the input fieldset. Recipe required." << std::endl;
+		auto recipeList = cookbook.find(variableName);
+		if ((recipeList != cookbook.end()) && !recipeList->second.empty()) {
+			oops::Log::debug() << "Vader cookbook contains at least one recipe for '" << variableName << std::endl;
+			for (auto recipe : recipeList->second) {
+				bool haveAllIngredients = true;
+				for (auto ingredient : recipe.ingredients) {
+					oops::Log::debug() << "Checking if we have ingredient: " << ingredient << std::endl;
+					auto fieldSetFieldNames = afieldset->field_names();
+					haveAllIngredients = haveAllIngredients &&
+						std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient) != fieldSetFieldNames.end();
+					if (!haveAllIngredients) break;
+				}
+				if (haveAllIngredients) {
+					oops::Log::debug() << "All ingredients for a recipe are in the fieldset. Executing the recipe." << std::endl;
+					returnValue = recipe.execute(afieldset);
+					break;
+				}
+				else {
+					oops::Log::debug() << "Do not have all ingredients for recipe in the input fieldset." << std::endl;
+				}
+			}
+			if (returnValue == 0) {
+				oops::Log::debug() << "Vader successfully executed recipe for " << variableName << std::endl;
+			}
+			else {
+				oops::Log::debug() << "Vader was unable to calculate " << variableName << std::endl;
+			}
+		}
+		else {
+			oops::Log::debug() << "Vader cookbook does not contain a recipe for '" << variableName << "'" << std::endl;
+		}
 	}
-	//  // See if the Vader cookbook contains a recipe for the requested field.
-	// oops::Log::debug() << "Output field '" << requestedField <<
-	// 	"' is not the input fieldset. Recipe required." << std::endl;
-	// auto recipe = cookbook.find(requestedField);
-	// if (recipe != cookbook.end()) {
-	// 	oops::Log::debug() << "Vader cookbook contains a recipe for '" << requestedField <<
-	// 		"'. Ingredients are:" << std::endl;
-	// 	bool haveAllIngredients = true;
-	// 	for (auto ingredient : recipe->second) {
-	// 		oops::Log::debug() << ingredient << std::endl;
-	// 		haveAllIngredients = haveAllIngredients &&
-	// 			std::find(fieldNamesIn.begin(), fieldNamesIn.end(), ingredient) != fieldNamesIn.end();
-	// 	}
-	// 	if (haveAllIngredients) {
-	// 		oops::Log::debug() << "All ingredients for recipe are in the input fieldset." << std::endl;
-	// 	}
-	// 	else {
-	// 		oops::Log::debug() << "Do not have all ingredients for recipe in the input fieldset." << std::endl;
-	// 	}
-	// }
-	// else {
-	// 	oops::Log::debug() << "Vader cookbook does not contain a recipe for '" << requestedField << "'" << std::endl;
-	// }
 
 	oops::Log::trace() << "leaving Vader::getVariable for variable: " << variableName << std::endl;
 

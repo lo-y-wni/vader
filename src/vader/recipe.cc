@@ -18,7 +18,7 @@ namespace vader {
 // -----------------------------------------------------------------------------
 Recipe::Recipe() {}
 // -----------------------------------------------------------------------------
-Recipe::Recipe(std::vector<std::string> ingredients, std::function<int(atlas::Field *, atlas::FieldSet *)> execute)
+Recipe::Recipe(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute)
           : ingredients{ingredients}, execute(execute) { }
 // -----------------------------------------------------------------------------
 Recipe::~Recipe() {}
@@ -26,14 +26,23 @@ Recipe::~Recipe() {}
 
 // Implementation of vader "execute" functions for the instantiated recipes (Is this the right place for these?)
 
-int ps_to_delp(atlas::Field *delp, atlas::FieldSet *ingredients) {
+int ps_to_delp(atlas::FieldSet *afieldset) {
+    int returnValue = 1;
+
+	oops::Log::trace() << "entering ps_to_delp function" << std::endl;
     // TODO: Implement conversion logic
-    return 0;
+	oops::Log::trace() << "leaving ps_to_delp function" << std::endl;
+    return returnValue;
 }
 
-int t_to_pt(atlas::Field *pt, atlas::FieldSet *ingredients) {
+int t_to_pt(atlas::FieldSet *afieldset) {
+    int returnValue = 1;
+
+	oops::Log::trace() << "entering t_to_pt function" << std::endl;
     // TODO: Implement conversion logic
-    return 0;
+	oops::Log::trace() << "leaving t_to_pt function" << std::endl;
+
+    return returnValue;
 }
 
 }  // namespace vader

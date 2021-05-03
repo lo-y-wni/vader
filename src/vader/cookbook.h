@@ -21,8 +21,8 @@ namespace vader {
 // List of implemented recipe "execute" methods (forward declarations)
 // (Currently the implementation of these receipe 'execute' functions is in recipe.cc. 
 //  Not sure if this is the right way to split these source files.)
-int ps_to_delp(atlas::Field *delp, atlas::FieldSet *ingredients);
-int t_to_pt(atlas::Field *delp, atlas::FieldSet *ingredients);
+int ps_to_delp(atlas::FieldSet *ingredients);
+int t_to_pt(atlas::FieldSet *ingredients);
 
 // -----------------------------------------------------------------------------
 /// Create inidividual recipe objects
