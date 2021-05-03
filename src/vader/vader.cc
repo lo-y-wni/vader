@@ -34,18 +34,6 @@ void Vader::changeVar(atlas::FieldSet * afieldset, const oops::Variables & vars)
 
 	oops::Log::trace() << "entering Vader::changeVar " << std::endl;
 
-	// Actual changeVar functionality not implemented yet
-	// Demonstrate that VADER has received the model fields via the Atlas fieldset
-	std::string firstFieldName = afieldset->field_names().front();
-	oops::Log::debug() << "First field name in fieldset: " << firstFieldName << std::endl;
-	atlas::Field field1 = afieldset->field(firstFieldName);
-	oops::Log::debug() << "Size: " << field1.size() << std::endl;
-	oops::Log::debug() << "Rank: " << field1.rank() << std::endl;
-	if (field1.rank() == 2 && field1.size() > 0) {
-		auto field1_view = atlas::array::make_view <double , 2>( field1 );
-		oops::Log::debug() << "First data element: " << field1_view(0, 0) << std::endl;
-	}
-
 	auto fieldSetFieldNames = afieldset->field_names();
 	// Loop through all the requested fields in the output fieldset
 	for (auto neededField : vars.variables()) {
@@ -106,7 +94,7 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 					break;
 				}
 				else {
-					oops::Log::debug() << "Do not have all ingredients for recipe in the input fieldset." << std::endl;
+					oops::Log::debug() << "Do not have all the ingredients for a recipe available in the fieldset." << std::endl;
 				}
 			}
 			if (returnValue == 0) {

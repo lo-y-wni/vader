@@ -39,7 +39,19 @@ int t_to_pt(atlas::FieldSet *afieldset) {
     int returnValue = 1;
 
 	oops::Log::trace() << "entering t_to_pt function" << std::endl;
-    // TODO: Implement conversion logic
+
+	atlas::Field temperature = afieldset->field("t");
+	atlas::Field pressure = afieldset->field("ps");
+	oops::Log::debug() << "Temperature Size: " << temperature.size() << std::endl;
+	oops::Log::debug() << "Temperature Rank: " << temperature.rank() << std::endl;
+	oops::Log::debug() << "Temperature Levels: " << temperature.levels() << std::endl;
+	oops::Log::debug() << "Temperature shape: " << temperature.shape()[1] << "," << temperature.shape()[2] << std::endl;
+
+	oops::Log::debug() << "Pressure Size: " << pressure.size() << std::endl;
+	oops::Log::debug() << "Pressure Rank: " << pressure.rank() << std::endl;
+	oops::Log::debug() << "Pressure Levels: " << pressure.levels() << std::endl;
+	oops::Log::debug() << "Pressure shape: " << pressure.shape()[1] << "," << pressure.shape()[2] << std::endl;
+
 	oops::Log::trace() << "leaving t_to_pt function" << std::endl;
 
     return returnValue;

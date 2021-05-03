@@ -28,7 +28,7 @@ int t_to_pt(atlas::FieldSet *ingredients);
 /// Create inidividual recipe objects
 Recipe delp_recipe1{{"ps"}, ps_to_delp};
 
-Recipe pt_recipe1{{"t"}, t_to_pt};
+Recipe pt_recipe1{{"t", "ps"}, t_to_pt};
 
 // Put inidividual recipes into vectors based on the variable produced.
 // Often only one recipe per vector, but could be multiple.
