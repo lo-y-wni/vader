@@ -14,6 +14,7 @@
 #include "atlas/field/FieldSet.h"
 
 #include "recipe.h"
+#include "vader.h"
 
 namespace vader {
 
@@ -32,11 +33,14 @@ Recipe pt_recipe1{{"t", "ps"}, t_to_pt};
 
 // Put inidividual recipes into vectors based on the variable produced.
 // Often only one recipe per vector, but could be multiple.
-// These vectors are used in vader.cc to create the Vader class static
-// unordered_map that is the "cookbook".
 std::vector<vader::Recipe> delp_recipes = {delp_recipe1};
 std::vector<vader::Recipe> pt_recipes   = {pt_recipe1};
 
+// Create the static cookbook used to search for recipes
+const std::unordered_map<std::string, std::vector<vader::Recipe>> Vader::cookbook  {
+	{ "delp", delp_recipes},
+	{ "pt", pt_recipes}
+};
 
 } // namespace vader
 

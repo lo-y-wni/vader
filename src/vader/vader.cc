@@ -22,14 +22,6 @@ Vader::Vader() {}
 Vader::~Vader() {}
 // -----------------------------------------------------------------------------
 
-// Create the static cookbook used to search for recipes
-// (Recipe vectors are defined in cookbook.h)
-const std::unordered_map<std::string, std::vector<vader::Recipe>> Vader::cookbook  {
-	{ "delp", delp_recipes},
-	{ "pt", pt_recipes}
-};
-
-
 void Vader::changeVar(atlas::FieldSet * afieldset, const oops::Variables & vars) const {
 
 	oops::Log::trace() << "entering Vader::changeVar " << std::endl;
