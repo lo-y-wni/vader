@@ -38,8 +38,8 @@ std::vector<vader::Recipe> pt_recipes   = {pt_recipe1};
 
 // Create the static cookbook used to search for recipes
 const std::unordered_map<std::string, std::vector<vader::Recipe>> Vader::cookbook  {
-	{ "delp", delp_recipes},
-	{ "pt", pt_recipes}
+      { "delp", delp_recipes }
+    , { "pt", pt_recipes }
 };
 
 } // namespace vader
