@@ -23,7 +23,7 @@ class TempToPTempRecipe : public Recipe {
    const static std::string Name;
    const static std::vector<std::string> Ingredients;
 
-   explicit TempToPTempRecipe();
+   explicit TempToPTempRecipe() { }
    // TempToPTempRecipe(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute);
    // ~TempToPTempRecipe();
 

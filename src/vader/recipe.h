@@ -21,7 +21,7 @@ class Recipe {
  public:
     // explicit Recipe();
     // Recipe(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute);
-    // ~Recipe();
+    virtual ~Recipe() { };
 
     virtual std::string name() = 0; //Derived classes should have a static class name property that is also returned by this function
     virtual std::vector<std::string> ingredients() = 0;

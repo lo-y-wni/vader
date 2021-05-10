@@ -13,6 +13,7 @@
 #include "oops/util/Logger.h"
 #include "vader.h"
 #include "cookbook.h"
+#include "TempToPTemp.h"
 
 namespace vader {
 
@@ -22,6 +23,16 @@ Vader::Vader() {}
 Vader::~Vader() {}
 // -----------------------------------------------------------------------------
 
+std::unique_ptr<vader::Recipe> Vader::recipeFactory(std::string recipeName) {
+	std::unique_ptr<vader::Recipe> returnPointer;
+	if (recipeName.compare(vader::TempToPTempRecipe::Name) == 0) {
+		returnPointer.reset(new TempToPTempRecipe());
+	}
+	else {
+		oops::Log::error() << "Vader has not implemented recipe: " << recipeName << std::endl;
+	}
+	return returnPointer;
+}
 void Vader::changeVar(atlas::FieldSet * afieldset, const oops::Variables & vars) const {
 
 	oops::Log::trace() << "entering Vader::changeVar " << std::endl;
