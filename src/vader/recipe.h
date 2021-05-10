@@ -9,23 +9,25 @@
 #define RECIPE_H_
 
 #include <vector>
-#include <functional>
 
 #include "atlas/field/FieldSet.h"
 
 namespace vader {
 
 // -----------------------------------------------------------------------------
-/// Recipe class
+/// Recipe base class
 
 class Recipe {
  public:
-    explicit Recipe();
-    Recipe(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute);
-    ~Recipe();
+    // explicit Recipe();
+    // Recipe(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute);
+    // ~Recipe();
 
-    const std::vector<std::string> ingredients;
-    const std::function<int(atlas::FieldSet *)> execute;
+    virtual std::string name() = 0; //Derived classes should have a static class name property that is also returned by this function
+    virtual std::vector<std::string> ingredients() = 0;
+    virtual bool requiresSetup() { return false; }
+    virtual int setup(atlas::FieldSet *) { return 0; }
+    virtual int execute(atlas::FieldSet *) = 0;
 
  private:
 };

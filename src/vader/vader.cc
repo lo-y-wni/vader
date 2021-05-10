@@ -68,37 +68,37 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 	else { // Look in the cookbook for a recipe
 		oops::Log::debug() << "Field '" << variableName <<
 			"' is not the input fieldset. Recipe required." << std::endl;
-		auto recipeList = cookbook.find(variableName);
-		if ((recipeList != cookbook.end()) && !recipeList->second.empty()) {
-			oops::Log::debug() << "Vader cookbook contains at least one recipe for '" << variableName << std::endl;
-			for (auto recipe : recipeList->second) {
-				bool haveAllIngredients = true;
-				for (auto ingredient : recipe.ingredients) {
-					oops::Log::debug() << "Checking if we have ingredient: " << ingredient << std::endl;
-					auto fieldSetFieldNames = afieldset->field_names();
-					haveAllIngredients = haveAllIngredients &&
-						std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient) != fieldSetFieldNames.end();
-					if (!haveAllIngredients) break;
-				}
-				if (haveAllIngredients) {
-					oops::Log::debug() << "All ingredients for a recipe are in the fieldset. Executing the recipe." << std::endl;
-					returnValue = recipe.execute(afieldset);
-					break;
-				}
-				else {
-					oops::Log::debug() << "Do not have all the ingredients for a recipe available in the fieldset." << std::endl;
-				}
-			}
-			if (returnValue == 0) {
-				oops::Log::debug() << "Vader successfully executed recipe for " << variableName << std::endl;
-			}
-			else {
-				oops::Log::debug() << "Vader was unable to calculate " << variableName << std::endl;
-			}
-		}
-		else {
-			oops::Log::debug() << "Vader cookbook does not contain a recipe for '" << variableName << "'" << std::endl;
-		}
+		// auto recipeList = cookbook.find(variableName);
+		// if ((recipeList != cookbook.end()) && !recipeList->second.empty()) {
+		// 	oops::Log::debug() << "Vader cookbook contains at least one recipe for '" << variableName << std::endl;
+		// 	for (auto recipe : recipeList->second) {
+		// 		bool haveAllIngredients = true;
+		// 		for (auto ingredient : recipe.ingredients) {
+		// 			oops::Log::debug() << "Checking if we have ingredient: " << ingredient << std::endl;
+		// 			auto fieldSetFieldNames = afieldset->field_names();
+		// 			haveAllIngredients = haveAllIngredients &&
+		// 				std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient) != fieldSetFieldNames.end();
+		// 			if (!haveAllIngredients) break;
+		// 		}
+		// 		if (haveAllIngredients) {
+		// 			oops::Log::debug() << "All ingredients for a recipe are in the fieldset. Executing the recipe." << std::endl;
+		// 			returnValue = recipe.execute(afieldset);
+		// 			break;
+		// 		}
+		// 		else {
+		// 			oops::Log::debug() << "Do not have all the ingredients for a recipe available in the fieldset." << std::endl;
+		// 		}
+		// 	}
+		// 	if (returnValue == 0) {
+		// 		oops::Log::debug() << "Vader successfully executed recipe for " << variableName << std::endl;
+		// 	}
+		// 	else {
+		// 		oops::Log::debug() << "Vader was unable to calculate " << variableName << std::endl;
+		// 	}
+		// }
+		// else {
+		// 	oops::Log::debug() << "Vader cookbook does not contain a recipe for '" << variableName << "'" << std::endl;
+		// }
 	}
 
 	oops::Log::trace() << "leaving Vader::getVariable for variable: " << variableName << std::endl;

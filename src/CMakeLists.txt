@@ -5,7 +5,9 @@ vader/vader.h
 vader/recipe.h
 vader/cookbook.h
 vader/vader.cc
-vader/recipe.cc
+# vader/recipe.cc
+vader/TempToPTemp.h
+vader/TempToPTemp.cc
 )
 
 # if (VADER_BUILD_LANGUAGE_FORTRAN)
