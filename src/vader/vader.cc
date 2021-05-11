@@ -22,10 +22,6 @@ namespace vader {
 Vader::~Vader() {}
 // -----------------------------------------------------------------------------
 
-// std::unordered_map<std::string, std::vector<std::string>> defaultCookbookDefinition = {
-// 	  {"pt", {TempToPTempRecipe::Name}}
-// 	, {"delp", {PressureToDelP::Name}}
-// };
 std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
 	return {
 		// This defines default Vader Cookbook
@@ -39,7 +35,6 @@ void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::stri
 	for (auto defEntry : definition ) {
 		recipes.clear();
 		for (auto recipeName : defEntry.second) {
-			Recipe * recipePointerToAdd = recipeFactory(recipeName);
 			recipes.push_back(recipeFactory(recipeName));
 		}
 		cookbook_[defEntry.first] = recipes;
