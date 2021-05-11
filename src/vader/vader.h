@@ -23,12 +23,17 @@ namespace vader {
 class Vader {
  public:
     explicit Vader();
+    Vader(const eckit::Configuration & config);
     ~Vader();
 
     void changeVar(atlas::FieldSet * afieldset, const oops::Variables &) const;
-    static std::unique_ptr<Recipe> recipeFactory(std::string recipeName);
+    static Recipe * recipeFactory(std::string recipeName);
+    static const std::unordered_map<std::string, std::vector<std::string>> defaultCookbookDefinition;
  private:
-    static const std::unordered_map<std::string, std::vector<vader::Recipe>> cookbook_;
+    std::unordered_map<std::string, std::vector<Recipe *>> cookbook_;
+
+    std::unordered_map<std::string, std::vector<std::string>> getDefaultCookbookDef();
+    void createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition);
 
     int getVariable(atlas::FieldSet * afieldset, const std::string variableName) const;
 

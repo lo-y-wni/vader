@@ -14,19 +14,55 @@
 #include "vader.h"
 #include "cookbook.h"
 #include "TempToPTemp.h"
+#include "PressureToDelP.h"
 
 namespace vader {
 
 // -----------------------------------------------------------------------------
-Vader::Vader() {}
-// -----------------------------------------------------------------------------
 Vader::~Vader() {}
 // -----------------------------------------------------------------------------
 
-std::unique_ptr<vader::Recipe> Vader::recipeFactory(std::string recipeName) {
-	std::unique_ptr<vader::Recipe> returnPointer;
-	if (recipeName.compare(vader::TempToPTempRecipe::Name) == 0) {
-		returnPointer.reset(new TempToPTempRecipe());
+// std::unordered_map<std::string, std::vector<std::string>> defaultCookbookDefinition = {
+// 	  {"pt", {TempToPTempRecipe::Name}}
+// 	, {"delp", {PressureToDelP::Name}}
+// };
+std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
+	return {
+		// This defines default Vader Cookbook
+		  {"pt", {TempToPTempRecipe::Name}}
+		, {"delp", {PressureToDelP::Name}}
+	};
+}
+// -----------------------------------------------------------------------------
+void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition) {
+	std::vector<Recipe *> recipes;
+	for (auto defEntry : definition ) {
+		recipes.clear();
+		for (auto recipeName : defEntry.second) {
+			Recipe * recipePointerToAdd = recipeFactory(recipeName);
+			recipes.push_back(recipeFactory(recipeName));
+		}
+		cookbook_[defEntry.first] = recipes;
+	}
+}
+// -----------------------------------------------------------------------------
+Vader::Vader() {
+	createCookbook(getDefaultCookbookDef());
+}
+// -----------------------------------------------------------------------------
+Vader::Vader(const eckit::Configuration & config) {
+	std::unordered_map<std::string, std::vector<std::string>> definition = getDefaultCookbookDef();
+	// Configuration can alter the default cookbook here
+	createCookbook(definition);
+}
+// -----------------------------------------------------------------------------
+Recipe * Vader::recipeFactory(std::string recipeName) {
+	Recipe * returnPointer;
+	if (recipeName == TempToPTempRecipe::Name) {
+		returnPointer = new TempToPTempRecipe();
+	}
+	else if (recipeName == PressureToDelP::Name) {
+		returnPointer = new PressureToDelP();
 	}
 	else {
 		oops::Log::error() << "Vader has not implemented recipe: " << recipeName << std::endl;
@@ -79,37 +115,40 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 	else { // Look in the cookbook for a recipe
 		oops::Log::debug() << "Field '" << variableName <<
 			"' is not the input fieldset. Recipe required." << std::endl;
-		// auto recipeList = cookbook.find(variableName);
-		// if ((recipeList != cookbook.end()) && !recipeList->second.empty()) {
-		// 	oops::Log::debug() << "Vader cookbook contains at least one recipe for '" << variableName << std::endl;
-		// 	for (auto recipe : recipeList->second) {
-		// 		bool haveAllIngredients = true;
-		// 		for (auto ingredient : recipe.ingredients) {
-		// 			oops::Log::debug() << "Checking if we have ingredient: " << ingredient << std::endl;
-		// 			auto fieldSetFieldNames = afieldset->field_names();
-		// 			haveAllIngredients = haveAllIngredients &&
-		// 				std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient) != fieldSetFieldNames.end();
-		// 			if (!haveAllIngredients) break;
-		// 		}
-		// 		if (haveAllIngredients) {
-		// 			oops::Log::debug() << "All ingredients for a recipe are in the fieldset. Executing the recipe." << std::endl;
-		// 			returnValue = recipe.execute(afieldset);
-		// 			break;
-		// 		}
-		// 		else {
-		// 			oops::Log::debug() << "Do not have all the ingredients for a recipe available in the fieldset." << std::endl;
-		// 		}
-		// 	}
-		// 	if (returnValue == 0) {
-		// 		oops::Log::debug() << "Vader successfully executed recipe for " << variableName << std::endl;
-		// 	}
-		// 	else {
-		// 		oops::Log::debug() << "Vader was unable to calculate " << variableName << std::endl;
-		// 	}
-		// }
-		// else {
-		// 	oops::Log::debug() << "Vader cookbook does not contain a recipe for '" << variableName << "'" << std::endl;
-		// }
+		auto recipeList = cookbook_.find(variableName);
+		if ((recipeList != cookbook_.end()) && !recipeList->second.empty()) {
+			oops::Log::debug() << "Vader cookbook contains at least one recipe for '" << variableName << std::endl;
+			for (auto recipe : recipeList->second) {
+				bool haveAllIngredients = true;
+				for (auto ingredient : recipe->ingredients()) {
+					oops::Log::debug() << "Checking if we have ingredient: " << ingredient << std::endl;
+					auto fieldSetFieldNames = afieldset->field_names();
+					haveAllIngredients = haveAllIngredients &&
+						std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient) != fieldSetFieldNames.end();
+					if (!haveAllIngredients) break;
+				}
+				if (haveAllIngredients) {
+					oops::Log::debug() << "All ingredients for a recipe are in the fieldset. Executing the recipe." << std::endl;
+					if (recipe->requiresSetup()) {
+						recipe->setup(afieldset);
+					}
+					returnValue = recipe->execute(afieldset);
+					break;
+				}
+				else {
+					oops::Log::debug() << "Do not have all the ingredients for a recipe available in the fieldset." << std::endl;
+				}
+			}
+			if (returnValue == 0) {
+				oops::Log::debug() << "Vader successfully executed recipe for " << variableName << std::endl;
+			}
+			else {
+				oops::Log::debug() << "Vader was unable to calculate " << variableName << std::endl;
+			}
+		}
+		else {
+			oops::Log::debug() << "Vader cookbook does not contain a recipe for '" << variableName << "'" << std::endl;
+		}
 	}
 
 	oops::Log::trace() << "leaving Vader::getVariable for variable: " << variableName << std::endl;

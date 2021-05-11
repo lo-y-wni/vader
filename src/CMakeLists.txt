@@ -8,6 +8,8 @@ vader/vader.cc
 # vader/recipe.cc
 vader/TempToPTemp.h
 vader/TempToPTemp.cc
+vader/PressureToDelP.h
+vader/PressureToDelP.cc
 )
 
 # if (VADER_BUILD_LANGUAGE_FORTRAN)

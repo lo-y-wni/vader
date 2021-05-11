@@ -33,7 +33,7 @@ int TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
     const double kappa = 0.286;
     const double p_nought = 1000.0;
 
-    oops::Log::trace() << "entering t_to_pt function" << std::endl;
+    oops::Log::trace() << "entering t_to_pt execute function" << std::endl;
 
     atlas::Field temperature = afieldset->field("t");
     atlas::Field pressure = afieldset->field("ps");
@@ -66,7 +66,7 @@ int TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
     oops::Log::debug() << "Temperature 1st element: " << temperature_view(1,0) << std::endl;
     oops::Log::debug() << "Pressure 1st element: " << pressure_view(1,0) << std::endl;
 
-    oops::Log::trace() << "leaving t_to_pt function" << std::endl;
+    oops::Log::trace() << "leaving t_to_pt execute function" << std::endl;
 
     return returnValue;
 }
