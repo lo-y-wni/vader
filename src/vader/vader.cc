@@ -9,29 +9,19 @@
 #include <vector>
 #include <memory>
 #include <utility>
+#include <unordered_map>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
 #include "vader.h"
 #include "cookbook.h"
-#include "TempToPTemp.h"
-#include "PressureToDelP.h"
 
 namespace vader {
 
 // -----------------------------------------------------------------------------
 Vader::~Vader() {
-	oops::Log::trace() << "Inside Vader destructor." << std::endl;
-}
-// -----------------------------------------------------------------------------
-
-std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
-	return {
-		// This defines default Vader Cookbook
-		  {"pt", {TempToPTempRecipe::Name}}
-		, {"delp", {PressureToDelP::Name}}
-	};
+	oops::Log::trace() << "Vader::~Vader done" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition) {
@@ -58,14 +48,6 @@ Vader::Vader(const eckit::Configuration & config) {
 	createCookbook(definition);
 }
 // -----------------------------------------------------------------------------
-std::unique_ptr<Recipe> Vader::recipeFactory(std::string recipeName) {
-	oops::Log::trace() << "entering Vader::recipeFactory for recipeName: " << recipeName << std::endl;
-
-	if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe());
-	if (recipeName == PressureToDelP::Name) return std::unique_ptr<Recipe>(new PressureToDelP());
-	oops::Log::error() << "Vader::recipeFactory recieved unimplemented recipe name: " << recipeName << std::endl;
-	return nullptr;
-}
 void Vader::changeVar(atlas::FieldSet * afieldset, const oops::Variables & vars) const {
 
 	oops::Log::trace() << "entering Vader::changeVar " << std::endl;
@@ -84,7 +66,7 @@ void Vader::changeVar(atlas::FieldSet * afieldset, const oops::Variables & vars)
 
 	oops::Log::trace() << "leaving Vader::changeVar: " << std::endl;
 }
-
+// -----------------------------------------------------------------------------
 int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableName) const {
 
 	atlas::Field field1 = afieldset->field(variableName);
@@ -127,6 +109,7 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 				}
 				if (haveAllIngredients) {
 					oops::Log::debug() << "All ingredients for a recipe are in the fieldset. Executing the recipe." << std::endl;
+					// Potentially a recipe might require set-up that should only be performed the first time
 					if (recipeList->second[i]->requiresSetup()) {
 						recipeList->second[i]->setup(afieldset);
 					}
@@ -141,7 +124,7 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 				oops::Log::debug() << "Vader successfully executed recipe for " << variableName << std::endl;
 			}
 			else {
-				oops::Log::debug() << "Vader was unable to calculate " << variableName << std::endl;
+				oops::Log::debug() << "Vader tried but failed to successfully execute recipe for " << variableName << std::endl;
 			}
 		}
 		else {

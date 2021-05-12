@@ -9,38 +9,42 @@
 #define COOKBOOK_H_
 
 #include <vector>
-#include <functional>
+#include <memory>
+#include <unordered_map>
 
-#include "atlas/field/FieldSet.h"
-
+#include "oops/util/Logger.h"
 #include "recipe.h"
 #include "vader.h"
 
+// Recipe headers
+#include "TempToPTemp.h"
+#include "PressureToDelP.h"
+
 namespace vader {
 
-// // -----------------------------------------------------------------------------
-// // List of implemented recipe "execute" methods (forward declarations)
-// // (Currently the implementation of these receipe 'execute' functions is in recipe.cc. 
-// //  Not sure if this is the right way to split these source files.)
-// int ps_to_delp(atlas::FieldSet *ingredients);
-// int t_to_pt(atlas::FieldSet *ingredients);
+// -----------------------------------------------------------------------------
+// All implemented recipes need a corresponding line in this method
+std::unique_ptr<Recipe> Vader::recipeFactory(std::string recipeName) {
+	oops::Log::trace() << "entering Vader::recipeFactory for recipeName: " << recipeName << std::endl;
 
-// // -----------------------------------------------------------------------------
-// /// Create inidividual recipe objects
-// Recipe delp_recipe1{{"ps"}, ps_to_delp};
+	if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe());
+	if (recipeName == PressureToDelP::Name) return std::unique_ptr<Recipe>(new PressureToDelP());
+	oops::Log::error() << "Vader::recipeFactory recieved unimplemented recipe name: " << recipeName << std::endl;
+	return nullptr;
+}
 
-// Recipe pt_recipe1{{"t", "ps"}, t_to_pt};
-
-// // Put inidividual recipes into vectors based on the variable produced.
-// // Often only one recipe per vector, but could be multiple.
-// std::vector<vader::Recipe> delp_recipes = {delp_recipe1};
-// std::vector<vader::Recipe> pt_recipes   = {pt_recipe1};
-
-// Create the static cookbook used to search for recipes
-// const std::unordered_map<std::string, std::vector<vader::Recipe>> Vader::cookbook  {
-//       { "delp", delp_recipes }
-//     , { "pt", pt_recipes }
-// };
+// -----------------------------------------------------------------------------
+// This defines the recipes used (and their priority) by default in Vader
+// (Recipes can be added, removed, or rearranged in cookbook by specifying in yaml.)
+std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
+	return {
+		// This defines default Vader Cookbook
+        // The Key is the name of the variable produced by all the recipes in the Value
+        // The Value is a vector of recipe names that will be searched, in order, by Vader for viability
+		  {"pt", {TempToPTempRecipe::Name}}
+		, {"delp", {PressureToDelP::Name}}
+	};
+}
 
 } // namespace vader
 
