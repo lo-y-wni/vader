@@ -21,21 +21,20 @@ const std::string PressureToDelPRecipe::Name = "ps_to_delp";
 const std::vector<std::string> PressureToDelPRecipe::Ingredients = {"ps"};
 
 std::string PressureToDelPRecipe::name() {
-    return PressureToDelPRecipe::Name;
+   return PressureToDelPRecipe::Name;
 }
 
 std::vector<std::string> PressureToDelPRecipe::ingredients() {
-    return PressureToDelPRecipe::Ingredients;
+   return PressureToDelPRecipe::Ingredients;
 }
 
 int PressureToDelPRecipe::execute(atlas::FieldSet *afieldset) {
-    int returnValue = 1;
+   int returnValue = 1;
 
-	oops::Log::trace() << "entering ps_to_delp execute function" << std::endl;
-    // TODO: Implement conversion logic
-	oops::Log::trace() << "leaving ps_to_delp execute function" << std::endl;
-    return returnValue;
-
+   oops::Log::trace() << "entering ps_to_delp execute function" << std::endl;
+   // TODO: Implement conversion logic
+   oops::Log::trace() << "leaving ps_to_delp execute function" << std::endl;
+   return returnValue;
 }
 
 }

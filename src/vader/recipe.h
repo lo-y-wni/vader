@@ -18,18 +18,18 @@ namespace vader {
 /// Recipe base class
 
 class Recipe {
- public:
-    // explicit Recipe();
-    // Recipe(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute);
-    virtual ~Recipe() { };
+   public:
+      // explicit Recipe();
+      // Recipe(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute);
+      virtual ~Recipe() { };
 
-    virtual std::string name() = 0; //Derived classes should have a static class name property that is also returned by this function
-    virtual std::vector<std::string> ingredients() = 0;
-    virtual bool requiresSetup() { return false; }
-    virtual int setup(atlas::FieldSet *) { return 0; }
-    virtual int execute(atlas::FieldSet *) = 0;
+      virtual std::string name() = 0; //Derived classes should have a static class name property that is also returned by this function
+      virtual std::vector<std::string> ingredients() = 0;
+      virtual bool requiresSetup() { return false; }
+      virtual int setup(atlas::FieldSet *) { return 0; }
+      virtual int execute(atlas::FieldSet *) = 0;
 
- private:
+   private:
 };
 
 } // namespace vader

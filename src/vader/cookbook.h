@@ -25,27 +25,27 @@ namespace vader {
 // -----------------------------------------------------------------------------
 // All implemented recipes need a corresponding line in this method
 std::unique_ptr<Recipe> Vader::recipeFactory(std::string recipeName) {
-	oops::Log::trace() << "entering Vader::recipeFactory for recipeName: " << recipeName << std::endl;
+   oops::Log::trace() << "entering Vader::recipeFactory for recipeName: " << recipeName << std::endl;
 
-	if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe());
-	if (recipeName == PressureToDelPRecipe::Name) return std::unique_ptr<Recipe>(new PressureToDelPRecipe());
+   if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe());
+   if (recipeName == PressureToDelPRecipe::Name) return std::unique_ptr<Recipe>(new PressureToDelPRecipe());
 
-    // If we get here, we didn't find a matching recipe name.
-	oops::Log::error() << "Vader::recipeFactory recieved unimplemented recipe name: " << recipeName << std::endl;
-	return nullptr;
+   // If we get here, we didn't find a matching recipe name.
+   oops::Log::error() << "Vader::recipeFactory recieved unimplemented recipe name: " << recipeName << std::endl;
+   return nullptr;
 }
 
 // -----------------------------------------------------------------------------
 // This defines the recipes used (and their priority) by default in Vader
 // (Recipes can be added, removed, or rearranged in cookbook by specifying in yaml.)
 std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
-	return {
-		// This defines default Vader Cookbook
-        // The Key is the name of the variable produced by all the recipes in the Value
-        // The Value is a vector of recipe names that will be searched, in order, by Vader for viability
-		  {"pt", {TempToPTempRecipe::Name}}
-		, {"delp", {PressureToDelPRecipe::Name}}
-	};
+   return {
+      // This defines the default Vader Cookbook
+      // The Key is the name of the variable produced by all the recipes in the Value
+      // The Value is a vector of recipe names that will be searched, in order, by Vader for viability
+         {"pt", {TempToPTempRecipe::Name}}
+      , {"delp", {PressureToDelPRecipe::Name}}
+   };
 }
 
 } // namespace vader

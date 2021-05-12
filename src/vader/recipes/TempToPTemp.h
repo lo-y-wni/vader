@@ -19,17 +19,17 @@ namespace vader {
 /// Recipe base class
 
 class TempToPTempRecipe : public Recipe {
- public:
-   const static std::string Name;
-   const static std::vector<std::string> Ingredients;
+   public:
+      const static std::string Name;
+      const static std::vector<std::string> Ingredients;
 
-   explicit TempToPTempRecipe() { }
+      explicit TempToPTempRecipe() { }
 
-   std::string name() override;
-   std::vector<std::string> ingredients() override;
-   int execute(atlas::FieldSet *) override;
+      std::string name() override;
+      std::vector<std::string> ingredients() override;
+      int execute(atlas::FieldSet *) override;
 
- private:
+   private:
 };
 
 } // namespace vader
