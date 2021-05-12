@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <utility>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
@@ -20,7 +21,9 @@
 namespace vader {
 
 // -----------------------------------------------------------------------------
-Vader::~Vader() {}
+Vader::~Vader() {
+	oops::Log::trace() << "Inside Vader destructor." << std::endl;
+}
 // -----------------------------------------------------------------------------
 
 std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
@@ -34,13 +37,14 @@ std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookb
 void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition) {
 	std::vector<std::unique_ptr<Recipe>> recipes;
 	for (auto defEntry : definition ) {
-		// recipes.clear();
-		cookbook_[defEntry.first] = new std::vector<std::unique_ptr<Recipe>>();
-
+		recipes.clear();
 		for (auto recipeName : defEntry.second) {
-			cookbook_[defEntry.first]->push_back(recipeFactory(recipeName));
+			recipes.push_back(recipeFactory(recipeName));
+			if (recipes.back() == nullptr) {
+				recipes.pop_back();
+			}
 		}
-		//cookbook_[defEntry.first] = recipes;
+		cookbook_[defEntry.first] = std::move(recipes);
 	}
 }
 // -----------------------------------------------------------------------------
@@ -55,21 +59,12 @@ Vader::Vader(const eckit::Configuration & config) {
 }
 // -----------------------------------------------------------------------------
 std::unique_ptr<Recipe> Vader::recipeFactory(std::string recipeName) {
-	// if (recipeName == TempToPTempRecipe::Name) return std::make_unique<TempToPTempRecipe>();
-	// if (recipeName == PressureToDelP::Name) return std::make_unique<PressureToDelP>();
+	oops::Log::trace() << "entering Vader::recipeFactory for recipeName: " << recipeName << std::endl;
+
 	if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe());
 	if (recipeName == PressureToDelP::Name) return std::unique_ptr<Recipe>(new PressureToDelP());
+	oops::Log::error() << "Vader::recipeFactory recieved unimplemented recipe name: " << recipeName << std::endl;
 	return nullptr;
-	// {
-	// 	returnPointer = new TempToPTempRecipe();
-	// }
-	// else if (recipeName == PressureToDelP::Name) {
-	// 	returnPointer = new PressureToDelP();
-	// }
-	// else {
-	// 	oops::Log::error() << "Vader has not implemented recipe: " << recipeName << std::endl;
-	// }
-	// return returnPointer;
 }
 void Vader::changeVar(atlas::FieldSet * afieldset, const oops::Variables & vars) const {
 
@@ -118,12 +113,12 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 		oops::Log::debug() << "Field '" << variableName <<
 			"' is not the input fieldset. Recipe required." << std::endl;
 		auto recipeList = cookbook_.find(variableName);
-		if ((recipeList != cookbook_.end()) && !recipeList->second->empty()) {
+
+		if ((recipeList != cookbook_.end()) && !recipeList->second.empty()) {
 			oops::Log::debug() << "Vader cookbook contains at least one recipe for '" << variableName << std::endl;
-			std::vector<std::unique_ptr<Recipe>>* recipes = recipeList->second;
-			for (int i=0; i < recipes->size(); ++i) {
+			for (int i=0; i < recipeList->second.size(); ++i) {
 				bool haveAllIngredients = true;
-				for (auto ingredient : (*recipes)[i]->ingredients()) {
+				for (auto ingredient : recipeList->second[i]->ingredients()) {
 					oops::Log::debug() << "Checking if we have ingredient: " << ingredient << std::endl;
 					auto fieldSetFieldNames = afieldset->field_names();
 					haveAllIngredients = haveAllIngredients &&
@@ -132,10 +127,10 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 				}
 				if (haveAllIngredients) {
 					oops::Log::debug() << "All ingredients for a recipe are in the fieldset. Executing the recipe." << std::endl;
-					if ((*recipes)[i]->requiresSetup()) {
-						(*recipes)[i]->setup(afieldset);
+					if (recipeList->second[i]->requiresSetup()) {
+						recipeList->second[i]->setup(afieldset);
 					}
-					returnValue = (*recipes)[i]->execute(afieldset);
+					returnValue = recipeList->second[i]->execute(afieldset);
 					break;
 				}
 				else {

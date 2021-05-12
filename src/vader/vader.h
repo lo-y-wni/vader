@@ -31,7 +31,7 @@ class Vader {
     static std::unique_ptr<Recipe> recipeFactory(std::string recipeName);
     static const std::unordered_map<std::string, std::vector<std::string>> defaultCookbookDefinition;
  private:
-    std::unordered_map<std::string, std::vector<std::unique_ptr<Recipe>>*> cookbook_;
+    std::unordered_map<std::string, std::vector<std::unique_ptr<Recipe>>> cookbook_;
 
     std::unordered_map<std::string, std::vector<std::string>> getDefaultCookbookDef();
     void createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition);
