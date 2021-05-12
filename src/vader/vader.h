@@ -29,13 +29,12 @@ class Vader {
 
     void changeVar(atlas::FieldSet * afieldset, const oops::Variables &) const;
     static std::unique_ptr<Recipe> recipeFactory(std::string recipeName);
-    static const std::unordered_map<std::string, std::vector<std::string>> defaultCookbookDefinition;
+
  private:
     std::unordered_map<std::string, std::vector<std::unique_ptr<Recipe>>> cookbook_;
-
     std::unordered_map<std::string, std::vector<std::string>> getDefaultCookbookDef();
-    void createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition);
 
+    void createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition);
     int getVariable(atlas::FieldSet * afieldset, const std::string variableName) const;
 
 };
