@@ -11,21 +11,19 @@
 #include <vector>
 
 #include "atlas/field/FieldSet.h"
-#include "recipe.h"
+#include "vader/recipe.h"
 
 namespace vader {
 
 // -----------------------------------------------------------------------------
 /// Recipe base class
 
-class PressureToDelP : public Recipe {
+class PressureToDelPRecipe : public Recipe {
  public:
    const static std::string Name;
    const static std::vector<std::string> Ingredients;
 
-   explicit PressureToDelP() { }
-   // PressureToDelP(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute);
-   // ~PressureToDelP();
+   explicit PressureToDelPRecipe() { }
 
    std::string name() override;
    std::vector<std::string> ingredients() override;

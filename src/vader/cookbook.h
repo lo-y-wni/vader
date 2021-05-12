@@ -17,8 +17,8 @@
 #include "vader.h"
 
 // Recipe headers
-#include "TempToPTemp.h"
-#include "PressureToDelP.h"
+#include "recipes/TempToPTemp.h"
+#include "recipes/PressureToDelP.h"
 
 namespace vader {
 
@@ -28,7 +28,9 @@ std::unique_ptr<Recipe> Vader::recipeFactory(std::string recipeName) {
 	oops::Log::trace() << "entering Vader::recipeFactory for recipeName: " << recipeName << std::endl;
 
 	if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe());
-	if (recipeName == PressureToDelP::Name) return std::unique_ptr<Recipe>(new PressureToDelP());
+	if (recipeName == PressureToDelPRecipe::Name) return std::unique_ptr<Recipe>(new PressureToDelPRecipe());
+
+    // If we get here, we didn't find a matching recipe name.
 	oops::Log::error() << "Vader::recipeFactory recieved unimplemented recipe name: " << recipeName << std::endl;
 	return nullptr;
 }
@@ -42,7 +44,7 @@ std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookb
         // The Key is the name of the variable produced by all the recipes in the Value
         // The Value is a vector of recipe names that will be searched, in order, by Vader for viability
 		  {"pt", {TempToPTempRecipe::Name}}
-		, {"delp", {PressureToDelP::Name}}
+		, {"delp", {PressureToDelPRecipe::Name}}
 	};
 }
 

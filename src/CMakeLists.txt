@@ -5,11 +5,10 @@ vader/vader.h
 vader/recipe.h
 vader/cookbook.h
 vader/vader.cc
-# vader/recipe.cc
-vader/TempToPTemp.h
-vader/TempToPTemp.cc
-vader/PressureToDelP.h
-vader/PressureToDelP.cc
+vader/recipes/TempToPTemp.h
+vader/recipes/TempToPTemp.cc
+vader/recipes/PressureToDelP.h
+vader/recipes/PressureToDelP.cc
 )
 
 # if (VADER_BUILD_LANGUAGE_FORTRAN)

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "atlas/field/FieldSet.h"
-#include "recipe.h"
+#include "vader/recipe.h"
 
 namespace vader {
 
@@ -24,8 +24,6 @@ class TempToPTempRecipe : public Recipe {
    const static std::vector<std::string> Ingredients;
 
    explicit TempToPTempRecipe() { }
-   // TempToPTempRecipe(std::vector<std::string> ingredients, std::function<int(atlas::FieldSet *)> execute);
-   // ~TempToPTempRecipe();
 
    std::string name() override;
    std::vector<std::string> ingredients() override;

@@ -17,18 +17,18 @@
 namespace vader {
 
 // Static attribute initialization
-const std::string PressureToDelP::Name = "ps_to_delp";
-const std::vector<std::string> PressureToDelP::Ingredients = {"ps"};
+const std::string PressureToDelPRecipe::Name = "ps_to_delp";
+const std::vector<std::string> PressureToDelPRecipe::Ingredients = {"ps"};
 
-std::string PressureToDelP::name() {
-    return PressureToDelP::Name;
+std::string PressureToDelPRecipe::name() {
+    return PressureToDelPRecipe::Name;
 }
 
-std::vector<std::string> PressureToDelP::ingredients() {
-    return PressureToDelP::Ingredients;
+std::vector<std::string> PressureToDelPRecipe::ingredients() {
+    return PressureToDelPRecipe::Ingredients;
 }
 
-int PressureToDelP::execute(atlas::FieldSet *afieldset) {
+int PressureToDelPRecipe::execute(atlas::FieldSet *afieldset) {
     int returnValue = 1;
 
 	oops::Log::trace() << "entering ps_to_delp execute function" << std::endl;
