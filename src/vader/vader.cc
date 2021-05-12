@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
@@ -31,13 +32,15 @@ std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookb
 }
 // -----------------------------------------------------------------------------
 void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition) {
-	std::vector<Recipe *> recipes;
+	std::vector<std::unique_ptr<Recipe>> recipes;
 	for (auto defEntry : definition ) {
-		recipes.clear();
+		// recipes.clear();
+		cookbook_[defEntry.first] = new std::vector<std::unique_ptr<Recipe>>();
+
 		for (auto recipeName : defEntry.second) {
-			recipes.push_back(recipeFactory(recipeName));
+			cookbook_[defEntry.first]->push_back(recipeFactory(recipeName));
 		}
-		cookbook_[defEntry.first] = recipes;
+		//cookbook_[defEntry.first] = recipes;
 	}
 }
 // -----------------------------------------------------------------------------
@@ -51,18 +54,22 @@ Vader::Vader(const eckit::Configuration & config) {
 	createCookbook(definition);
 }
 // -----------------------------------------------------------------------------
-Recipe * Vader::recipeFactory(std::string recipeName) {
-	Recipe * returnPointer;
-	if (recipeName == TempToPTempRecipe::Name) {
-		returnPointer = new TempToPTempRecipe();
-	}
-	else if (recipeName == PressureToDelP::Name) {
-		returnPointer = new PressureToDelP();
-	}
-	else {
-		oops::Log::error() << "Vader has not implemented recipe: " << recipeName << std::endl;
-	}
-	return returnPointer;
+std::unique_ptr<Recipe> Vader::recipeFactory(std::string recipeName) {
+	// if (recipeName == TempToPTempRecipe::Name) return std::make_unique<TempToPTempRecipe>();
+	// if (recipeName == PressureToDelP::Name) return std::make_unique<PressureToDelP>();
+	if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe());
+	if (recipeName == PressureToDelP::Name) return std::unique_ptr<Recipe>(new PressureToDelP());
+	return nullptr;
+	// {
+	// 	returnPointer = new TempToPTempRecipe();
+	// }
+	// else if (recipeName == PressureToDelP::Name) {
+	// 	returnPointer = new PressureToDelP();
+	// }
+	// else {
+	// 	oops::Log::error() << "Vader has not implemented recipe: " << recipeName << std::endl;
+	// }
+	// return returnPointer;
 }
 void Vader::changeVar(atlas::FieldSet * afieldset, const oops::Variables & vars) const {
 
@@ -111,11 +118,12 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 		oops::Log::debug() << "Field '" << variableName <<
 			"' is not the input fieldset. Recipe required." << std::endl;
 		auto recipeList = cookbook_.find(variableName);
-		if ((recipeList != cookbook_.end()) && !recipeList->second.empty()) {
+		if ((recipeList != cookbook_.end()) && !recipeList->second->empty()) {
 			oops::Log::debug() << "Vader cookbook contains at least one recipe for '" << variableName << std::endl;
-			for (auto recipe : recipeList->second) {
+			std::vector<std::unique_ptr<Recipe>>* recipes = recipeList->second;
+			for (int i=0; i < recipes->size(); ++i) {
 				bool haveAllIngredients = true;
-				for (auto ingredient : recipe->ingredients()) {
+				for (auto ingredient : (*recipes)[i]->ingredients()) {
 					oops::Log::debug() << "Checking if we have ingredient: " << ingredient << std::endl;
 					auto fieldSetFieldNames = afieldset->field_names();
 					haveAllIngredients = haveAllIngredients &&
@@ -124,10 +132,10 @@ int Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableNa
 				}
 				if (haveAllIngredients) {
 					oops::Log::debug() << "All ingredients for a recipe are in the fieldset. Executing the recipe." << std::endl;
-					if (recipe->requiresSetup()) {
-						recipe->setup(afieldset);
+					if ((*recipes)[i]->requiresSetup()) {
+						(*recipes)[i]->setup(afieldset);
 					}
-					returnValue = recipe->execute(afieldset);
+					returnValue = (*recipes)[i]->execute(afieldset);
 					break;
 				}
 				else {
