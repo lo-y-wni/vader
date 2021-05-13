@@ -24,11 +24,11 @@ namespace vader {
 
 // -----------------------------------------------------------------------------
 // All implemented recipes need a corresponding line in this method
-std::unique_ptr<Recipe> Vader::recipeFactory(std::string recipeName) {
+std::unique_ptr<Recipe> Vader::recipeFactory(std::string recipeName, const eckit::Configuration & config) {
    oops::Log::trace() << "entering Vader::recipeFactory for recipeName: " << recipeName << std::endl;
 
-   if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe());
-   if (recipeName == PressureToDelPRecipe::Name) return std::unique_ptr<Recipe>(new PressureToDelPRecipe());
+   if (recipeName == TempToPTempRecipe::Name) return std::unique_ptr<Recipe>(new TempToPTempRecipe(config));
+   if (recipeName == PressureToDelPRecipe::Name) return std::unique_ptr<Recipe>(new PressureToDelPRecipe(config));
 
    // If we get here, we didn't find a matching recipe name.
    oops::Log::error() << "Vader::recipeFactory recieved unimplemented recipe name: " << recipeName << std::endl;

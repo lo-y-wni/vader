@@ -24,12 +24,13 @@ Vader::~Vader() {
    oops::Log::trace() << "Vader::~Vader done" << std::endl;
 }
 // -----------------------------------------------------------------------------
-void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition) {
+void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition, 
+      const eckit::Configuration & config) {
    std::vector<std::unique_ptr<Recipe>> recipes;
    for (auto defEntry : definition ) {
       recipes.clear();
       for (auto recipeName : defEntry.second) {
-         recipes.push_back(recipeFactory(recipeName));
+         recipes.push_back(recipeFactory(recipeName, config));
          if (recipes.back() == nullptr) {
             recipes.pop_back();
          }
@@ -38,14 +39,13 @@ void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::stri
    }
 }
 // -----------------------------------------------------------------------------
-Vader::Vader() {
-   createCookbook(getDefaultCookbookDef());
-}
-// -----------------------------------------------------------------------------
 Vader::Vader(const eckit::Configuration & config) {
    std::unordered_map<std::string, std::vector<std::string>> definition = getDefaultCookbookDef();
+   oops::Log::trace() << "entering Vader::Vader(config) " << std::endl;
+   oops::Log::debug() << "Vader::Vader config = " << config << std::endl;
+
    // Configuration can alter the default cookbook here
-   createCookbook(definition);
+   createCookbook(definition, config);
 }
 // -----------------------------------------------------------------------------
 void Vader::changeVar(atlas::FieldSet * afieldset, const oops::Variables & vars) const {

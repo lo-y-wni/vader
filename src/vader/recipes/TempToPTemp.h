@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "eckit/config/Configuration.h"
 #include "atlas/field/FieldSet.h"
 #include "vader/recipe.h"
 
@@ -23,13 +24,19 @@ class TempToPTempRecipe : public Recipe {
       const static std::string Name;
       const static std::vector<std::string> Ingredients;
 
-      explicit TempToPTempRecipe() { }
+      explicit TempToPTempRecipe(const eckit::Configuration &);
 
-      std::string name() override;
-      std::vector<std::string> ingredients() override;
+      double p0() const { return p0_; } 
+      double kappa() const { return kappa_; }
+
+      // Recipe base class overrides
+      std::string name() const override;
+      std::vector<std::string> ingredients() const override;
       int execute(atlas::FieldSet *) override;
 
    private:
+      double p0_;
+      double kappa_;
 };
 
 } // namespace vader

@@ -23,10 +23,10 @@ class PressureToDelPRecipe : public Recipe {
       const static std::string Name;
       const static std::vector<std::string> Ingredients;
 
-      explicit PressureToDelPRecipe() { }
+      explicit PressureToDelPRecipe(const eckit::Configuration &);
 
-      std::string name() override;
-      std::vector<std::string> ingredients() override;
+      std::string name() const override;
+      std::vector<std::string> ingredients() const override;
       int execute(atlas::FieldSet *) override;
 
    private:

@@ -20,11 +20,14 @@ namespace vader {
 const std::string PressureToDelPRecipe::Name = "ps_to_delp";
 const std::vector<std::string> PressureToDelPRecipe::Ingredients = {"ps"};
 
-std::string PressureToDelPRecipe::name() {
+PressureToDelPRecipe::PressureToDelPRecipe(const eckit::Configuration & config) {
+}
+
+std::string PressureToDelPRecipe::name() const {
    return PressureToDelPRecipe::Name;
 }
 
-std::vector<std::string> PressureToDelPRecipe::ingredients() {
+std::vector<std::string> PressureToDelPRecipe::ingredients() const {
    return PressureToDelPRecipe::Ingredients;
 }
 

@@ -19,21 +19,36 @@ namespace vader {
 // Static attribute initialization
 const std::string TempToPTempRecipe::Name = "t_to_pt";
 const std::vector<std::string> TempToPTempRecipe::Ingredients = {"t", "ps"};
+const double default_p0 = 1000.0;
+const double default_kappa = 0.286;
 
-std::string TempToPTempRecipe::name() {
+TempToPTempRecipe::TempToPTempRecipe(const eckit::Configuration & config) {
+   oops::Log::trace() << 
+      "entering TempToPTempRecipe::TempToPTempRecipe(config) constructor" << std::endl;
+   if (config.has(TempToPTempRecipe::Name)) {
+      p0_ = config.getDouble("t_to_pt.p0", default_p0);
+      kappa_ = config.getDouble("t_to_pt.kappa", default_kappa);
+   }
+   else {
+      p0_ = default_p0;
+      kappa_ = default_kappa;
+   }
+   oops::Log::debug() << "t_to_pt.p0: " << p0_ << std::endl;
+   oops::Log::debug() << "t_to_pt.kappa: " << kappa_ << std::endl;
+}
+
+std::string TempToPTempRecipe::name() const {
    return TempToPTempRecipe::Name;
 }
 
-std::vector<std::string> TempToPTempRecipe::ingredients() {
+std::vector<std::string> TempToPTempRecipe::ingredients() const {
    return TempToPTempRecipe::Ingredients;
 }
 
 int TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
    int returnValue = 1;
-   const double kappa = 0.286;
-   const double p_nought = 1000.0;
 
-   oops::Log::trace() << "entering t_to_pt execute function" << std::endl;
+   oops::Log::trace() << "entering TempToPTempRecipe::execute function" << std::endl;
 
    atlas::Field temperature = afieldset->field("t");
    atlas::Field pressure = afieldset->field("ps");
@@ -59,7 +74,7 @@ int TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
 
    int nlevels = temperature.levels();
    for (int level = 0; level < nlevels; ++level) {
-      potential_temperature_view(level, 0) = temperature_view(level, 0) * pow(p_nought / pressure_view(1, 0), kappa);
+      potential_temperature_view(level, 0) = temperature_view(level, 0) * pow(p0_ / pressure_view(1, 0), kappa_);
    }
    returnValue = 0;
    oops::Log::debug() << "Pot. Temperature 1st element: " << potential_temperature_view(1,0) << std::endl;
