@@ -20,21 +20,17 @@ namespace vader {
 const std::string TempToPTempRecipe::Name = "t_to_pt";
 const std::vector<std::string> TempToPTempRecipe::Ingredients = {"t", "ps"};
 const double default_p0 = 1000.0;
-const double default_kappa = 0.286;
+const double default_kappa = 0.2857;
 
-TempToPTempRecipe::TempToPTempRecipe(const eckit::Configuration & config) {
+TempToPTempRecipe::TempToPTempRecipe(const eckit::Configuration & config) :
+   p0_{config.getDouble("t_to_pt.p0", default_p0)},
+   kappa_{config.getDouble("t_to_pt.kappa", default_kappa)} {
+
    oops::Log::trace() << 
-      "entering TempToPTempRecipe::TempToPTempRecipe(config) constructor" << std::endl;
-   if (config.has(TempToPTempRecipe::Name)) {
-      p0_ = config.getDouble("t_to_pt.p0", default_p0);
-      kappa_ = config.getDouble("t_to_pt.kappa", default_kappa);
-   }
-   else {
-      p0_ = default_p0;
-      kappa_ = default_kappa;
-   }
-   oops::Log::debug() << "t_to_pt.p0: " << p0_ << std::endl;
-   oops::Log::debug() << "t_to_pt.kappa: " << kappa_ << std::endl;
+      "TempToPTempRecipe::TempToPTempRecipe(config) constructor" << std::endl;
+
+   oops::Log::debug() << "TempToPTempRecipe.p0_: " << p0_ << std::endl;
+   oops::Log::debug() << "TempToPTempRecipe.kappa_: " << kappa_ << std::endl;
 }
 
 std::string TempToPTempRecipe::name() const {

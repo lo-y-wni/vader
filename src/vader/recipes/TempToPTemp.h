@@ -35,8 +35,8 @@ class TempToPTempRecipe : public Recipe {
       int execute(atlas::FieldSet *) override;
 
    private:
-      double p0_;
-      double kappa_;
+      const double p0_;
+      const double kappa_;
 };
 
 } // namespace vader
