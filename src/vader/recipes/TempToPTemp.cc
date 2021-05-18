@@ -11,6 +11,7 @@
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
+#include "atlas/util/Metadata.h"
 #include "oops/util/Logger.h"
 #include "TempToPTemp.h"
 
@@ -41,14 +42,17 @@ std::vector<std::string> TempToPTempRecipe::ingredients() const {
    return TempToPTempRecipe::Ingredients;
 }
 
-int TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
-   int returnValue = 1;
+bool TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
+   bool potential_temperature_filled = false;
 
    oops::Log::trace() << "entering TempToPTempRecipe::execute function" << std::endl;
 
    atlas::Field temperature = afieldset->field("t");
    atlas::Field pressure = afieldset->field("ps");
    atlas::Field potential_temperature = afieldset->field("pt");
+   std::string t_units, ps_units;
+   temperature.metadata().get("units", t_units);
+   pressure.metadata().get("units", ps_units);
    auto temperature_view = atlas::array::make_view <double , 2>( temperature );
    auto pressure_view = atlas::array::make_view <double , 2>( pressure );
    auto potential_temperature_view = atlas::array::make_view <double , 2>( potential_temperature );
@@ -56,11 +60,13 @@ int TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
    oops::Log::debug() << "Temperature Size: " << temperature.size() << std::endl;
    oops::Log::debug() << "Temperature Rank: " << temperature.rank() << std::endl;
    oops::Log::debug() << "Temperature Levels: " << temperature.levels() << std::endl;
+   oops::Log::debug() << "Temperature Units: " << t_units << std::endl;
    oops::Log::debug() << "Temperature shape: " << temperature.shape()[1] << "," << temperature.shape()[2] << std::endl;
 
    oops::Log::debug() << "Pot. Temperature Size: " << potential_temperature.size() << std::endl;
    oops::Log::debug() << "Pot. Temperature Rank: " << potential_temperature.rank() << std::endl;
    oops::Log::debug() << "Pot. Temperature Levels: " << potential_temperature.levels() << std::endl;
+   oops::Log::debug() << "Pot. Temperature Units: " << ps_units << std::endl;
    oops::Log::debug() << "Pot. Temperature shape: " << potential_temperature.shape()[1] << "," << potential_temperature.shape()[2] << std::endl;
 
    oops::Log::debug() << "Pressure Size: " << pressure.size() << std::endl;
@@ -72,14 +78,14 @@ int TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
    for (int level = 0; level < nlevels; ++level) {
       potential_temperature_view(level, 0) = temperature_view(level, 0) * pow(p0_ / pressure_view(1, 0), kappa_);
    }
-   returnValue = 0;
+   potential_temperature_filled = true;
    oops::Log::debug() << "Pot. Temperature 1st element: " << potential_temperature_view(1,0) << std::endl;
    oops::Log::debug() << "Temperature 1st element: " << temperature_view(1,0) << std::endl;
    oops::Log::debug() << "Pressure 1st element: " << pressure_view(1,0) << std::endl;
 
    oops::Log::trace() << "leaving t_to_pt execute function" << std::endl;
 
-   return returnValue;
+   return potential_temperature_filled;
 }
 
 }

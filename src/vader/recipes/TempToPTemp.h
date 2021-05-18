@@ -32,7 +32,7 @@ class TempToPTempRecipe : public Recipe {
       // Recipe base class overrides
       std::string name() const override;
       std::vector<std::string> ingredients() const override;
-      int execute(atlas::FieldSet *) override;
+      bool execute(atlas::FieldSet *) override;
 
    private:
       const double p0_;

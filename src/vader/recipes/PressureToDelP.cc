@@ -31,13 +31,13 @@ std::vector<std::string> PressureToDelPRecipe::ingredients() const {
    return PressureToDelPRecipe::Ingredients;
 }
 
-int PressureToDelPRecipe::execute(atlas::FieldSet *afieldset) {
-   int returnValue = 1;
+bool PressureToDelPRecipe::execute(atlas::FieldSet *afieldset) {
+   bool delp_filled = false;
 
    oops::Log::trace() << "entering ps_to_delp execute function" << std::endl;
    // TODO: Implement conversion logic
    oops::Log::trace() << "leaving ps_to_delp execute function" << std::endl;
-   return returnValue;
+   return delp_filled;
 }
 
 }

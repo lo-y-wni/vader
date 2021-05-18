@@ -27,7 +27,7 @@ class PressureToDelPRecipe : public Recipe {
 
       std::string name() const override;
       std::vector<std::string> ingredients() const override;
-      int execute(atlas::FieldSet *) override;
+      bool execute(atlas::FieldSet *) override;
 
    private:
 };

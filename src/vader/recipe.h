@@ -24,8 +24,8 @@ class Recipe {
       virtual std::string name() const = 0; //Derived classes should have a static class name property that is also returned by this function
       virtual std::vector<std::string> ingredients() const = 0;
       virtual bool requiresSetup() { return false; }
-      virtual int setup(atlas::FieldSet *) { return 0; }
-      virtual int execute(atlas::FieldSet *) = 0;
+      virtual bool setup(atlas::FieldSet *) { return true; }
+      virtual bool execute(atlas::FieldSet *) = 0;
 
    private:
 };
