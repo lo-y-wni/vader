@@ -25,7 +25,7 @@ class Recipe {
       virtual std::vector<std::string> ingredients() const = 0;
       virtual bool requiresSetup() { return false; }
       virtual bool setup(atlas::FieldSet *) { return true; }
-      virtual bool execute(atlas::FieldSet *) = 0;
+      virtual bool execute(atlas::FieldSet *) = 0; // Must return true on success, false on failure
 
    private:
 };

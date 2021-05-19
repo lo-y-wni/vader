@@ -53,27 +53,24 @@ void Vader::changeVar(atlas::FieldSet * afieldset, oops::Variables & neededVars)
    oops::Log::trace() << "entering Vader::changeVar " << std::endl;
    oops::Log::debug() << "neededVars passed to Vader::changeVar: " << neededVars << std::endl;
 
-   oops::Variables foundVariables;
+   oops::Variables ingredients{};
 
    auto fieldSetFieldNames = afieldset->field_names();
    // Loop through all the requested fields in the output fieldset
-   for (auto neededField : neededVars.variables()) {
-      if (std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), neededField) == fieldSetFieldNames.end()) {
-         oops::Log::error() << "Field '" << neededField <<
+   for (auto targetVariable : neededVars.variables()) {
+      if (std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), targetVariable) == fieldSetFieldNames.end()) {
+         oops::Log::error() << "Field '" << targetVariable <<
             "' is not allocated the fieldset. Calling function needs to do this. Vader can't." << std::endl;
       }
       else {
-         if (getVariable(afieldset, neededField)) {
-            foundVariables.push_back(neededField);
-         }
+         getVariable(afieldset, neededVars, targetVariable);
       }
    }
-   neededVars -= foundVariables;
    oops::Log::debug() << "neededVars remaining after Vader::changeVar: " << neededVars << std::endl;
-    oops::Log::trace() << "leaving Vader::changeVar: " << std::endl;
+   oops::Log::trace() << "leaving Vader::changeVar: " << std::endl;
 }
 // -----------------------------------------------------------------------------
-bool Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableName) const {
+bool Vader::getVariable(atlas::FieldSet * afieldset, oops::Variables & neededVars, const std::string variableName) const {
 
    atlas::Field field1 = afieldset->field(variableName);
    bool variableFilled = false;
@@ -83,15 +80,23 @@ bool Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableN
    // Look in the cookbook for a recipe
    auto recipeList = cookbook_.find(variableName);
 
+   // recipeList->second is the cookbook vector of unique_ptr's to Recipe objects that produce 'variableName'
+   // (Because of the compiler restrictions on unique_ptr's I don't know if we can conveniently rename this for clarity.)
    if ((recipeList != cookbook_.end()) && !recipeList->second.empty()) {
       oops::Log::debug() << "Vader cookbook contains at least one recipe for '" << variableName << std::endl;
+      auto fieldSetFieldNames = afieldset->field_names();
       for (int i=0; i < recipeList->second.size(); ++i) {
             bool haveAllIngredients = true;
             for (auto ingredient : recipeList->second[i]->ingredients()) {
                oops::Log::debug() << "Checking if we have ingredient: " << ingredient << std::endl;
-               auto fieldSetFieldNames = afieldset->field_names();
-               haveAllIngredients = haveAllIngredients &&
-                  std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient) != fieldSetFieldNames.end();
+               bool haveThisIngredient = 
+                  (std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient) != fieldSetFieldNames.end()) &&
+                  (!neededVars.has(ingredient));
+               if (!haveThisIngredient) {
+                  // If we don't have an ingredient, see if we can make it from a recipe by calling this method recursively
+                  haveThisIngredient = getVariable(afieldset, neededVars, ingredient);
+               }
+               haveAllIngredients = haveAllIngredients && haveThisIngredient;
                if (!haveAllIngredients) break;
             }
             if (haveAllIngredients) {
@@ -109,6 +114,7 @@ bool Vader::getVariable(atlas::FieldSet * afieldset, const std::string variableN
       }
       if (variableFilled) {
             oops::Log::debug() << "Vader successfully executed recipe for " << variableName << std::endl;
+            neededVars -= variableName;
       }
       else {
             oops::Log::debug() << "Vader tried but failed to successfully execute recipe for " << variableName << std::endl;
