@@ -34,7 +34,7 @@ class Vader {
       std::unordered_map<std::string, std::vector<std::string>> getDefaultCookbookDef();
 
       void createCookbook(std::unordered_map<std::string, std::vector<std::string>>, const eckit::Configuration &);
-      bool getVariable(atlas::FieldSet * afieldset, oops::Variables & neededVars, const std::string variableName) const;
+      bool getVariable(atlas::FieldSet * afieldset, oops::Variables & neededVars, const std::string targetVariable) const;
 };
 
 } // namespace vader
