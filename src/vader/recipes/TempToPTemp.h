@@ -26,17 +26,13 @@ class TempToPTempRecipe : public Recipe {
 
       explicit TempToPTempRecipe(const eckit::Configuration &);
 
-      double p0() const { return p0_; } 
-      double kappa() const { return kappa_; }
-
       // Recipe base class overrides
       std::string name() const override;
       std::vector<std::string> ingredients() const override;
       bool execute(atlas::FieldSet *) override;
 
    private:
-      const double p0_;
-      const double kappa_;
+      const eckit::LocalConfiguration config_;
 };
 
 } // namespace vader

@@ -20,18 +20,15 @@ namespace vader {
 // Static attribute initialization
 const std::string TempToPTempRecipe::Name = "t_to_pt";
 const std::vector<std::string> TempToPTempRecipe::Ingredients = {"t", "ps"};
-const double default_p0 = 1000.0;
 const double default_kappa = 0.2857;
 
 TempToPTempRecipe::TempToPTempRecipe(const eckit::Configuration & config) :
-   p0_{config.getDouble("t_to_pt.p0", default_p0)},
-   kappa_{config.getDouble("t_to_pt.kappa", default_kappa)} {
+   config_{config.getSubConfiguration("t_to_pt")} {
 
    oops::Log::trace() << 
       "TempToPTempRecipe::TempToPTempRecipe(config) constructor" << std::endl;
 
-   oops::Log::debug() << "TempToPTempRecipe.p0_: " << p0_ << std::endl;
-   oops::Log::debug() << "TempToPTempRecipe.kappa_: " << kappa_ << std::endl;
+   oops::Log::debug() << "TempToPTempRecipe.config_: " << config_ << std::endl;
 }
 
 std::string TempToPTempRecipe::name() const {
@@ -51,8 +48,28 @@ bool TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
    atlas::Field pressure = afieldset->field("ps");
    atlas::Field potential_temperature = afieldset->field("pt");
    std::string t_units, ps_units;
+   double p0, kappa;
+
    temperature.metadata().get("units", t_units);
    pressure.metadata().get("units", ps_units);
+   if (config_.has("p0")) {
+      p0 = config_.getDouble("p0");
+   }
+   else if (ps_units == "Pa") {
+      p0 = 100000.0;
+   }
+   else if (ps_units == "hPa") {
+      p0 = 1000.0;
+   }
+   else {
+      oops::Log::error() << "TempToPTempRecipe::execute failed because p0 could not be determined." << std::endl;
+      return false;
+   }
+   kappa = config_.getDouble("kappa", default_kappa);
+
+   oops::Log::debug() << "TempToPTempRecipe::execute: p0 value: " << p0 << std::endl;
+   oops::Log::debug() << "TempToPTempRecipe::execute: kappa value: " << kappa << std::endl;
+
    auto temperature_view = atlas::array::make_view <double , 2>( temperature );
    auto pressure_view = atlas::array::make_view <double , 2>( pressure );
    auto potential_temperature_view = atlas::array::make_view <double , 2>( potential_temperature );
@@ -66,17 +83,17 @@ bool TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
    oops::Log::debug() << "Pot. Temperature Size: " << potential_temperature.size() << std::endl;
    oops::Log::debug() << "Pot. Temperature Rank: " << potential_temperature.rank() << std::endl;
    oops::Log::debug() << "Pot. Temperature Levels: " << potential_temperature.levels() << std::endl;
-   oops::Log::debug() << "Pot. Temperature Units: " << ps_units << std::endl;
    oops::Log::debug() << "Pot. Temperature shape: " << potential_temperature.shape()[1] << "," << potential_temperature.shape()[2] << std::endl;
 
    oops::Log::debug() << "Pressure Size: " << pressure.size() << std::endl;
    oops::Log::debug() << "Pressure Rank: " << pressure.rank() << std::endl;
    oops::Log::debug() << "Pressure Levels: " << pressure.levels() << std::endl;
+   oops::Log::debug() << "Pressure Units: " << ps_units << std::endl;
    oops::Log::debug() << "Pressure shape: " << pressure.shape()[1] << "," << pressure.shape()[2] << std::endl;
 
    int nlevels = temperature.levels();
    for (int level = 0; level < nlevels; ++level) {
-      potential_temperature_view(level, 0) = temperature_view(level, 0) * pow(p0_ / pressure_view(1, 0), kappa_);
+      potential_temperature_view(level, 0) = temperature_view(level, 0) * pow(p0 / pressure_view(1, 0), kappa);
    }
    potential_temperature_filled = true;
    oops::Log::debug() << "Pot. Temperature 1st element: " << potential_temperature_view(1,0) << std::endl;
