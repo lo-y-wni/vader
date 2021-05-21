@@ -15,6 +15,7 @@
 #include "oops/util/Logger.h"
 #include "recipe.h"
 #include "vader.h"
+#include "vadervariables.h"
 
 // Recipe headers
 #include "recipes/TempToPTemp.h"
@@ -43,8 +44,8 @@ std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookb
       // This defines the default Vader Cookbook
       // The Key is the name of the variable produced by all the recipes in the Value
       // The Value is a vector of recipe names that will be searched, in order, by Vader for viability
-        {"pt", {TempToPTempRecipe::Name}}
-      , {"delp", {PressureToDelPRecipe::Name}}
+        {VV_PT, {TempToPTempRecipe::Name}}
+      , {VV_DELP, {PressureToDelPRecipe::Name}}
    };
 }
 

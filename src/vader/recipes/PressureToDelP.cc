@@ -12,13 +12,14 @@
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
+#include "vader/vadervariables.h"
 #include "PressureToDelP.h"
 
 namespace vader {
 
 // Static attribute initialization
 const std::string PressureToDelPRecipe::Name = "ps_to_delp";
-const std::vector<std::string> PressureToDelPRecipe::Ingredients = {"ps"};
+const std::vector<std::string> PressureToDelPRecipe::Ingredients = {VV_PS};
 
 PressureToDelPRecipe::PressureToDelPRecipe(const eckit::Configuration & config) {
 }

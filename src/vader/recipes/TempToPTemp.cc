@@ -13,14 +13,17 @@
 #include "atlas/field/Field.h"
 #include "atlas/util/Metadata.h"
 #include "oops/util/Logger.h"
+#include "vader/vadervariables.h"
 #include "TempToPTemp.h"
 
 namespace vader {
 
 // Static attribute initialization
 const std::string TempToPTempRecipe::Name = "t_to_pt";
-const std::vector<std::string> TempToPTempRecipe::Ingredients = {"t", "ps"};
+const std::vector<std::string> TempToPTempRecipe::Ingredients = {VV_T, VV_PS};
 const double default_kappa = 0.2857;
+const double default_Pa_p0 = 100000.0;
+const double default_hPa_p0 = 1000.0;
 
 TempToPTempRecipe::TempToPTempRecipe(const eckit::Configuration & config) :
    config_{config.getSubConfiguration("t_to_pt")} {
@@ -44,9 +47,9 @@ bool TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
 
    oops::Log::trace() << "entering TempToPTempRecipe::execute function" << std::endl;
 
-   atlas::Field temperature = afieldset->field("t");
-   atlas::Field pressure = afieldset->field("ps");
-   atlas::Field potential_temperature = afieldset->field("pt");
+   atlas::Field temperature = afieldset->field(VV_T);
+   atlas::Field pressure = afieldset->field(VV_PS);
+   atlas::Field potential_temperature = afieldset->field(VV_PT);
    std::string t_units, ps_units;
    double p0, kappa;
 
@@ -56,10 +59,10 @@ bool TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
       p0 = config_.getDouble("p0");
    }
    else if (ps_units == "Pa") {
-      p0 = 100000.0;
+      p0 = default_Pa_p0;
    }
    else if (ps_units == "hPa") {
-      p0 = 1000.0;
+      p0 = default_hPa_p0;
    }
    else {
       oops::Log::error() << "TempToPTempRecipe::execute failed because p0 could not be determined." << std::endl;
