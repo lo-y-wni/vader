@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 #include <unordered_map>
+#include <algorithm>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
