@@ -12,7 +12,7 @@
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
-#include "vader/vadervariables.h"
+#include "vader/vader/vadervariables.h"
 #include "PressureToDelP.h"
 
 namespace vader {

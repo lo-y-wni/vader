@@ -13,7 +13,7 @@
 #include "atlas/field/Field.h"
 #include "atlas/util/Metadata.h"
 #include "oops/util/Logger.h"
-#include "vader/vadervariables.h"
+#include "vader/vader/vadervariables.h"
 #include "TempToPTemp.h"
 
 namespace vader {
