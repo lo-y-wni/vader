@@ -17,35 +17,36 @@
 #include "TempToPTemp.h"
 
 namespace vader {
+// -----------------------------------------------------------------------------
+static RecipeMaker<TempToPTemp> makerTempToPTemp_("TempToPTemp");
 
 // Static attribute initialization
-const std::string TempToPTempRecipe::Name = "t_to_pt";
-const std::vector<std::string> TempToPTempRecipe::Ingredients = {VV_T, VV_PS};
+const std::string TempToPTemp::Name = "t_to_pt";
+const std::vector<std::string> TempToPTemp::Ingredients = {VV_T, VV_PS};
 const double default_kappa = 0.2857;
 const double default_Pa_p0 = 100000.0;
 const double default_hPa_p0 = 1000.0;
 
-TempToPTempRecipe::TempToPTempRecipe(const eckit::Configuration & config) :
+TempToPTemp::TempToPTemp(const eckit::Configuration & config) :
    config_{config.getSubConfiguration("t_to_pt")} {
 
-   oops::Log::trace() << 
-      "TempToPTempRecipe::TempToPTempRecipe(config) constructor" << std::endl;
+   oops::Log::trace() << "TempToPTemp created" << std::endl;
 
-   oops::Log::debug() << "TempToPTempRecipe.config_: " << config_ << std::endl;
+   oops::Log::debug() << "TempToPTemp.config_: " << config_ << std::endl;
 }
 
-std::string TempToPTempRecipe::name() const {
-   return TempToPTempRecipe::Name;
+std::string TempToPTemp::name() const {
+   return TempToPTemp::Name;
 }
 
-std::vector<std::string> TempToPTempRecipe::ingredients() const {
-   return TempToPTempRecipe::Ingredients;
+std::vector<std::string> TempToPTemp::ingredients() const {
+   return TempToPTemp::Ingredients;
 }
 
-bool TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
+bool TempToPTemp::execute(atlas::FieldSet *afieldset) {
    bool potential_temperature_filled = false;
 
-   oops::Log::trace() << "entering TempToPTempRecipe::execute function" << std::endl;
+   oops::Log::trace() << "entering TempToPTemp::execute function" << std::endl;
 
    atlas::Field temperature = afieldset->field(VV_T);
    atlas::Field pressure = afieldset->field(VV_PS);
@@ -65,13 +66,13 @@ bool TempToPTempRecipe::execute(atlas::FieldSet *afieldset) {
       p0 = default_hPa_p0;
    }
    else {
-      oops::Log::error() << "TempToPTempRecipe::execute failed because p0 could not be determined." << std::endl;
+      oops::Log::error() << "TempToPTemp::execute failed because p0 could not be determined." << std::endl;
       return false;
    }
    kappa = config_.getDouble("kappa", default_kappa);
 
-   oops::Log::debug() << "TempToPTempRecipe::execute: p0 value: " << p0 << std::endl;
-   oops::Log::debug() << "TempToPTempRecipe::execute: kappa value: " << kappa << std::endl;
+   oops::Log::debug() << "TempToPTemp::execute: p0 value: " << p0 << std::endl;
+   oops::Log::debug() << "TempToPTemp::execute: kappa value: " << kappa << std::endl;
 
    auto temperature_view = atlas::array::make_view <double , 2>( temperature );
    auto pressure_view = atlas::array::make_view <double , 2>( pressure );

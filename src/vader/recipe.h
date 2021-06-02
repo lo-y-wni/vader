@@ -8,26 +8,34 @@
 #ifndef RECIPE_H_
 #define RECIPE_H_
 
+#include <memory>
 #include <vector>
 
+#include <boost/noncopyable.hpp>
+
+#include "oops/util/Printable.h"
 #include "atlas/field/FieldSet.h"
+#include "vader/vader/RecipeBase.h"
 
 namespace vader {
 
 // -----------------------------------------------------------------------------
 /// Recipe base class
 
-class Recipe {
+class Recipe  : public util::Printable,
+                private boost::noncopyable {
    public:
-      virtual ~Recipe() { };
+      Recipe(const eckit::Configuration &);
 
-      virtual std::string name() const = 0; //Derived classes should have a static class name property that is also returned by this function
-      virtual std::vector<std::string> ingredients() const = 0;
-      virtual bool requiresSetup() { return false; }
-      virtual bool setup(atlas::FieldSet *) { return true; }
-      virtual bool execute(atlas::FieldSet *) = 0; // Must return true on success, false on failure
+      std::string name() const;
+      std::vector<std::string> ingredients() const;
+      bool requiresSetup() const;
+      bool setup(atlas::FieldSet *);
+      bool execute(atlas::FieldSet *);
 
    private:
+  void print(std::ostream &) const;
+  std::unique_ptr<RecipeBase> recipe_;
 };
 
 } // namespace vader
