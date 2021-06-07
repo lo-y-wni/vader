@@ -8,14 +8,13 @@
 #include <iostream>
 #include <vector>
 
-#include "atlas/field/Field.h"
 #include "recipe.h"
 
 namespace vader {
 
 // -----------------------------------------------------------------------------
-Recipe::Recipe(const eckit::Configuration & conf)
-            : recipe_{RecipeFactory::create(conf)} { }
+Recipe::Recipe(const std::string name, const eckit::Configuration & conf)
+            : recipe_{RecipeFactory::create(name, conf)} { }
 // -----------------------------------------------------------------------------
 std::string Recipe::name() const {
    return recipe_->name();

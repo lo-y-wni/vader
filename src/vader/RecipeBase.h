@@ -15,8 +15,8 @@
 #include <boost/noncopyable.hpp>
 
 #include "eckit/config/Configuration.h"
+#include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
-// #include "oops/util/abor1_cpp.h"
 #include "oops/util/Printable.h"
 
 namespace vader {
@@ -27,7 +27,7 @@ namespace vader {
 class RecipeBase : public util::Printable,
                    private boost::noncopyable {
  public:
-  RecipeBase(const eckit::Configuration &) {}
+  RecipeBase(const eckit::Configuration & config) {}
   virtual ~RecipeBase() {}
 
 /// Name of the recipe
@@ -44,7 +44,7 @@ class RecipeBase : public util::Printable,
   virtual bool execute(atlas::FieldSet *) = 0; // Must return true on success, false on failure
 
  private:
-  virtual void print(std::ostream &) const = 0;
+  virtual void print(std::ostream &) const;
 };
 
 // -----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ class RecipeBase : public util::Printable,
 /// Recipe Factory
 class RecipeFactory {
  public:
-  static RecipeBase * create(const eckit::Configuration &);
+  static RecipeBase * create(const std::string name, const eckit::Configuration &);
   virtual ~RecipeFactory() = default;
  protected:
   explicit RecipeFactory(const std::string &);

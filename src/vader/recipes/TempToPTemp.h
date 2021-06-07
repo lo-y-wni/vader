@@ -33,7 +33,7 @@ class TempToPTemp : public RecipeBase {
       bool execute(atlas::FieldSet *) override;
 
    private:
-      void print(std::ostream &) const override;
+      const eckit::Configuration & config_;
 };
 
 } // namespace vader

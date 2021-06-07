@@ -14,7 +14,7 @@
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
 
-#include "recipe.h"
+#include "RecipeBase.h"
 
 namespace vader {
 
@@ -27,10 +27,10 @@ class Vader {
       ~Vader();
 
       void changeVar(atlas::FieldSet * afieldset, oops::Variables &) const;
-      static std::unique_ptr<Recipe> recipeFactory(std::string recipeName, const eckit::Configuration & config);
+//      static std::unique_ptr<Recipe> recipeFactory(std::string recipeName, const eckit::Configuration & config);
 
    private:
-      std::unordered_map<std::string, std::vector<std::unique_ptr<Recipe>>> cookbook_;
+      std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;
       std::unordered_map<std::string, std::vector<std::string>> getDefaultCookbookDef();
 
       void createCookbook(std::unordered_map<std::string, std::vector<std::string>>, const eckit::Configuration &);

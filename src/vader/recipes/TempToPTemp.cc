@@ -28,10 +28,10 @@ const double default_Pa_p0 = 100000.0;
 const double default_hPa_p0 = 1000.0;
 
 TempToPTemp::TempToPTemp(const eckit::Configuration & config) :
-   config_{config.getSubConfiguration("t_to_pt")} {
+   RecipeBase{config}, config_{config.getSubConfiguration(TempToPTemp::Name)} {
 
    oops::Log::trace() << "TempToPTemp created" << std::endl;
-
+   //config_ = config.getSubConfiguration(TempToPTemp::Name);
    oops::Log::debug() << "TempToPTemp.config_: " << config_ << std::endl;
 }
 

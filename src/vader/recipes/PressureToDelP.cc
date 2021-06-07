@@ -18,21 +18,22 @@
 namespace vader {
 
 // Static attribute initialization
-const std::string PressureToDelPRecipe::Name = "ps_to_delp";
-const std::vector<std::string> PressureToDelPRecipe::Ingredients = {VV_PS};
+const std::string PressureToDelP::Name = "ps_to_delp";
+const std::vector<std::string> PressureToDelP::Ingredients = {VV_PS};
 
-PressureToDelPRecipe::PressureToDelPRecipe(const eckit::Configuration & config) {
+PressureToDelP::PressureToDelP(const eckit::Configuration & config) :
+   RecipeBase{config} {
 }
 
-std::string PressureToDelPRecipe::name() const {
-   return PressureToDelPRecipe::Name;
+std::string PressureToDelP::name() const {
+   return PressureToDelP::Name;
 }
 
-std::vector<std::string> PressureToDelPRecipe::ingredients() const {
-   return PressureToDelPRecipe::Ingredients;
+std::vector<std::string> PressureToDelP::ingredients() const {
+   return PressureToDelP::Ingredients;
 }
 
-bool PressureToDelPRecipe::execute(atlas::FieldSet *afieldset) {
+bool PressureToDelP::execute(atlas::FieldSet *afieldset) {
    bool delp_filled = false;
 
    oops::Log::trace() << "entering ps_to_delp execute function" << std::endl;

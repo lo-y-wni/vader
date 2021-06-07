@@ -27,14 +27,11 @@ Vader::~Vader() {
 // -----------------------------------------------------------------------------
 void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition, 
       const eckit::Configuration & config) {
-   std::vector<std::unique_ptr<Recipe>> recipes;
+   std::vector<std::unique_ptr<RecipeBase>> recipes;
    for (auto defEntry : definition ) {
       recipes.clear();
       for (auto recipeName : defEntry.second) {
-         recipes.push_back(recipeFactory(recipeName, config));
-         if (recipes.back() == nullptr) {
-            recipes.pop_back();
-         }
+         recipes.push_back(std::unique_ptr<RecipeBase>(RecipeFactory::create(recipeName, config)));
       }
       cookbook_[defEntry.first] = std::move(recipes);
    }

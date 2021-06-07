@@ -8,6 +8,7 @@
 #include "vader/vader/RecipeBase.h"
 
 #include <vector>
+#include <unordered_map>
 
 #include "eckit/config/Configuration.h"
 #include "oops/util/abor1_cpp.h"
@@ -29,14 +30,18 @@ RecipeFactory::RecipeFactory(const std::string & name) {
 
 RecipeBase * RecipeFactory::create(const std::string name, const eckit::Configuration & conf) {
   oops::Log::trace() << "RecipeBase::create starting" << std::endl;
-  typename std::map<std::string, RecipeFactory*>::iterator jloc = getMakers().find(name);
+  typename std::unordered_map<std::string, RecipeFactory*>::iterator jloc = getMakers().find(name);
   if (jloc == getMakers().end()) {
-    oops::Log::error() << id << " does not exist in vader::RecipeFactory." << std::endl;
+    oops::Log::error() << name << " does not exist in vader::RecipeFactory." << std::endl;
     ABORT("Element does not exist in vader::RecipeFactory.");
   }
-  RecipeBase * ptr = jloc->second->make(conf);
+  RecipeBase * ptr = jloc->second->make(name, conf);
   oops::Log::trace() << "RecipeBase::create done" << std::endl;
   return ptr;
+}
+
+void RecipeBase::print(std::ostream & os) const {
+  os << name();
 }
 
 // -----------------------------------------------------------------------------

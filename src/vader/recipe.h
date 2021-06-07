@@ -25,7 +25,7 @@ namespace vader {
 class Recipe  : public util::Printable,
                 private boost::noncopyable {
    public:
-      Recipe(const eckit::Configuration &);
+      Recipe(const std::string, const eckit::Configuration &);
 
       std::string name() const;
       std::vector<std::string> ingredients() const;

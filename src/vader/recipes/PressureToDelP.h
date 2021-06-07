@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef PRESSURE_TO_DELP_RECIPE_H_
-#define PRESSURE_TO_DELP_RECIPE_H_
+#ifndef PRESSURE_TO_DELP_H_
+#define PRESSURE_TO_DELP_H_
 
 #include <vector>
 
@@ -18,12 +18,12 @@ namespace vader {
 // -----------------------------------------------------------------------------
 /// Recipe base class
 
-class PressureToDelPRecipe : public Recipe {
+class PressureToDelP : public RecipeBase {
    public:
       const static std::string Name;
       const static std::vector<std::string> Ingredients;
 
-      explicit PressureToDelPRecipe(const eckit::Configuration &);
+      explicit PressureToDelP(const eckit::Configuration &);
 
       std::string name() const override;
       std::vector<std::string> ingredients() const override;
@@ -34,4 +34,4 @@ class PressureToDelPRecipe : public Recipe {
 
 } // namespace vader
 
-#endif  // PRESSURE_TO_DELP_RECIPE_H_
+#endif  // PRESSURE_TO_DELP_H_
