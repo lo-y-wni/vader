@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "atlas/field/FieldSet.h"
-#include "vader/vader/recipe.h"
+#include "vader/vader/RecipeBase.h"
 
 namespace vader {
 

@@ -18,20 +18,21 @@
 
 namespace vader {
 // -----------------------------------------------------------------------------
-static RecipeMaker<TempToPTemp> makerTempToPTemp_("TempToPTemp");
 
 // Static attribute initialization
-const std::string TempToPTemp::Name = "t_to_pt";
+const std::string TempToPTemp::Name = "TempToPTemp";
 const std::vector<std::string> TempToPTemp::Ingredients = {VV_T, VV_PS};
 const double default_kappa = 0.2857;
 const double default_Pa_p0 = 100000.0;
 const double default_hPa_p0 = 1000.0;
 
+// Register the maker
+static RecipeMaker<TempToPTemp> makerTempToPTemp_(TempToPTemp::Name);
+
 TempToPTemp::TempToPTemp(const eckit::Configuration & config) :
    RecipeBase{config}, config_{config.getSubConfiguration(TempToPTemp::Name)} {
 
    oops::Log::trace() << "TempToPTemp created" << std::endl;
-   //config_ = config.getSubConfiguration(TempToPTemp::Name);
    oops::Log::debug() << "TempToPTemp.config_: " << config_ << std::endl;
 }
 
@@ -104,7 +105,7 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset) {
    oops::Log::debug() << "Temperature 1st element: " << temperature_view(1,0) << std::endl;
    oops::Log::debug() << "Pressure 1st element: " << pressure_view(1,0) << std::endl;
 
-   oops::Log::trace() << "leaving t_to_pt execute function" << std::endl;
+   oops::Log::trace() << "leaving TempToPTemp execute function" << std::endl;
 
    return potential_temperature_filled;
 }
