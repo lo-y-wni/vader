@@ -27,7 +27,6 @@ class Vader {
       ~Vader();
 
       void changeVar(atlas::FieldSet * afieldset, oops::Variables &) const;
-//      static std::unique_ptr<Recipe> recipeFactory(std::string recipeName, const eckit::Configuration & config);
 
    private:
       std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;

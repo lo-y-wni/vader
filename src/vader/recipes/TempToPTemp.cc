@@ -21,7 +21,7 @@ namespace vader {
 
 // Static attribute initialization
 const std::string TempToPTemp::Name = "TempToPTemp";
-const std::vector<std::string> TempToPTemp::Ingredients = {VV_T, VV_PS};
+const std::vector<std::string> TempToPTemp::Ingredients = {VV_TS, VV_PS};
 const double default_kappa = 0.2857;
 const double default_Pa_p0 = 100000.0;
 const double default_hPa_p0 = 1000.0;
@@ -49,7 +49,7 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset) {
 
    oops::Log::trace() << "entering TempToPTemp::execute function" << std::endl;
 
-   atlas::Field temperature = afieldset->field(VV_T);
+   atlas::Field temperature = afieldset->field(VV_TS);
    atlas::Field pressure = afieldset->field(VV_PS);
    atlas::Field potential_temperature = afieldset->field(VV_PT);
    std::string t_units, ps_units;

@@ -7,7 +7,7 @@ namespace vader {
 
 const std::string VV_TV   = "virtual_temperature";
 const std::string VV_TS   = "air_temperature";
-const std::string VV_PT   = "air_potential_temperature";
+const std::string VV_PT   = "potential_temperature";
 const std::string VV_T    = "temperature";
 const std::string VV_MIXR = "humidity_mixing_ratio"; // g/kg
 const std::string VV_Q    = "specific_humidity";     // kg/kg
