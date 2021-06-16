@@ -25,15 +25,17 @@ class TempToPTemp : public RecipeBase {
       const static std::string Name;
       const static std::vector<std::string> Ingredients;
 
-      TempToPTemp(const eckit::Configuration &);
+      explicit TempToPTemp(const eckit::Configuration &);
 
       // Recipe base class overrides
       std::string name() const override;
       std::vector<std::string> ingredients() const override;
       bool execute(atlas::FieldSet *) override;
 
-   private:
-      const eckit::Configuration & config_;
+  private:
+   double p0_;
+   const double kappa_;
+
 };
 
 } // namespace vader

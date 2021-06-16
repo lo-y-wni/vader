@@ -23,6 +23,7 @@ namespace vader {
 const std::string TempToPTemp::Name = "TempToPTemp";
 const std::vector<std::string> TempToPTemp::Ingredients = {VV_TS, VV_PS};
 const double default_kappa = 0.2857;
+const double p0_not_in_config = -1.0;
 const double default_Pa_p0 = 100000.0;
 const double default_hPa_p0 = 1000.0;
 
@@ -30,10 +31,10 @@ const double default_hPa_p0 = 1000.0;
 static RecipeMaker<TempToPTemp> makerTempToPTemp_(TempToPTemp::Name);
 
 TempToPTemp::TempToPTemp(const eckit::Configuration & config) :
-   RecipeBase{config}, config_{config.getSubConfiguration(TempToPTemp::Name)} {
+   p0_{config.getDouble(TempToPTemp::Name + ".p0", p0_not_in_config)},
+   kappa_{config.getDouble(TempToPTemp::Name + ".kappa", default_kappa)} {
 
-   oops::Log::trace() << "TempToPTemp created" << std::endl;
-   oops::Log::debug() << "TempToPTemp.config_: " << config_ << std::endl;
+   oops::Log::trace() << "TempToPTemp::TempToPTemp" << std::endl;
 }
 
 std::string TempToPTemp::name() const {
@@ -53,59 +54,37 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset) {
    atlas::Field pressure = afieldset->field(VV_PS);
    atlas::Field potential_temperature = afieldset->field(VV_PT);
    std::string t_units, ps_units;
-   double p0, kappa;
 
    temperature.metadata().get("units", t_units);
    pressure.metadata().get("units", ps_units);
-   if (config_.has("p0")) {
-      p0 = config_.getDouble("p0");
+   if (p0_ == p0_not_in_config) {
+      // If p0 not specified in config, determine it from pressure units
+      if (ps_units == "Pa") {
+         p0_ = default_Pa_p0;
+      }
+      else if (ps_units == "hPa") {
+         p0_ = default_hPa_p0;
+      }
+      else {
+         oops::Log::error() << "TempToPTemp::execute failed because p0 could not be determined." << std::endl;
+         return false;
+      }
    }
-   else if (ps_units == "Pa") {
-      p0 = default_Pa_p0;
-   }
-   else if (ps_units == "hPa") {
-      p0 = default_hPa_p0;
-   }
-   else {
-      oops::Log::error() << "TempToPTemp::execute failed because p0 could not be determined." << std::endl;
-      return false;
-   }
-   kappa = config_.getDouble("kappa", default_kappa);
 
-   oops::Log::debug() << "TempToPTemp::execute: p0 value: " << p0 << std::endl;
-   oops::Log::debug() << "TempToPTemp::execute: kappa value: " << kappa << std::endl;
+   oops::Log::debug() << "TempToPTemp::execute: p0 value: " << p0_ << std::endl;
+   oops::Log::debug() << "TempToPTemp::execute: kappa value: " << kappa_ << std::endl;
 
    auto temperature_view = atlas::array::make_view <double , 2>( temperature );
    auto pressure_view = atlas::array::make_view <double , 2>( pressure );
    auto potential_temperature_view = atlas::array::make_view <double , 2>( potential_temperature );
 
-   oops::Log::debug() << "Temperature Size: " << temperature.size() << std::endl;
-   oops::Log::debug() << "Temperature Rank: " << temperature.rank() << std::endl;
-   oops::Log::debug() << "Temperature Levels: " << temperature.levels() << std::endl;
-   oops::Log::debug() << "Temperature Units: " << t_units << std::endl;
-   oops::Log::debug() << "Temperature shape: " << temperature.shape()[1] << "," << temperature.shape()[2] << std::endl;
-
-   oops::Log::debug() << "Pot. Temperature Size: " << potential_temperature.size() << std::endl;
-   oops::Log::debug() << "Pot. Temperature Rank: " << potential_temperature.rank() << std::endl;
-   oops::Log::debug() << "Pot. Temperature Levels: " << potential_temperature.levels() << std::endl;
-   oops::Log::debug() << "Pot. Temperature shape: " << potential_temperature.shape()[1] << "," << potential_temperature.shape()[2] << std::endl;
-
-   oops::Log::debug() << "Pressure Size: " << pressure.size() << std::endl;
-   oops::Log::debug() << "Pressure Rank: " << pressure.rank() << std::endl;
-   oops::Log::debug() << "Pressure Levels: " << pressure.levels() << std::endl;
-   oops::Log::debug() << "Pressure Units: " << ps_units << std::endl;
-   oops::Log::debug() << "Pressure shape: " << pressure.shape()[1] << "," << pressure.shape()[2] << std::endl;
-
    int nlevels = temperature.levels();
    for (int level = 0; level < nlevels; ++level) {
-      potential_temperature_view(level, 0) = temperature_view(level, 0) * pow(p0 / pressure_view(1, 0), kappa);
+      potential_temperature_view(level, 0) = temperature_view(level, 0) * pow(p0_ / pressure_view(1, 0), kappa_);
    }
    potential_temperature_filled = true;
-   oops::Log::debug() << "Pot. Temperature 1st element: " << potential_temperature_view(1,0) << std::endl;
-   oops::Log::debug() << "Temperature 1st element: " << temperature_view(1,0) << std::endl;
-   oops::Log::debug() << "Pressure 1st element: " << pressure_view(1,0) << std::endl;
 
-   oops::Log::trace() << "leaving TempToPTemp execute function" << std::endl;
+   oops::Log::trace() << "leaving TempToPTemp::execute function" << std::endl;
 
    return potential_temperature_filled;
 }

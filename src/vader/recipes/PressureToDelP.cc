@@ -24,8 +24,7 @@ const std::vector<std::string> PressureToDelP::Ingredients = {VV_PS};
 // Register the maker
 static RecipeMaker<PressureToDelP> makerPressureToDelP_(PressureToDelP::Name);
 
-PressureToDelP::PressureToDelP(const eckit::Configuration & config) :
-   RecipeBase{config} {
+PressureToDelP::PressureToDelP(const eckit::Configuration & config) {
 }
 
 std::string PressureToDelP::name() const {

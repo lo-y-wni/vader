@@ -27,6 +27,7 @@ Vader::~Vader() {
 // -----------------------------------------------------------------------------
 void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::string>> definition, 
       const eckit::Configuration & config) {
+   oops::Log::trace() << "entering Vader::createCookbook" << std::endl;
    std::vector<std::unique_ptr<RecipeBase>> recipes;
    for (auto defEntry : definition ) {
       recipes.clear();
@@ -35,6 +36,7 @@ void Vader::createCookbook(std::unordered_map<std::string, std::vector<std::stri
       }
       cookbook_[defEntry.first] = std::move(recipes);
    }
+   oops::Log::trace() << "leaving Vader::createCookbook" << std::endl;
 }
 // -----------------------------------------------------------------------------
 Vader::Vader(const eckit::Configuration & config) {

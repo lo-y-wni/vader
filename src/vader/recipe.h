@@ -20,7 +20,7 @@
 namespace vader {
 
 // -----------------------------------------------------------------------------
-/// Recipe base class
+/// Recipe class
 
 class Recipe  : public util::Printable,
                 private boost::noncopyable {

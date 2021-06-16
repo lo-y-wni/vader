@@ -27,7 +27,7 @@ namespace vader {
 class RecipeBase : public util::Printable,
                    private boost::noncopyable {
  public:
-  RecipeBase(const eckit::Configuration & config) {}
+  RecipeBase() {};
   virtual ~RecipeBase() {}
 
 /// Name of the recipe
