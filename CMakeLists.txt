@@ -41,7 +41,7 @@ find_package( oops 1.0.0 REQUIRED )
 ## Sources
 add_subdirectory( src )
 # add_subdirectory( test )
-# add_subdirectory( tools )
+add_subdirectory( tools )
 
 if( ENABLE_VADER_DOC )
     add_subdirectory( docs )
