@@ -31,17 +31,18 @@ class RecipeBase : public util::Printable,
   virtual ~RecipeBase() {}
 
 /// Name of the recipe
-  virtual std::string name() const = 0; //Derived classes should have a static class name property that is also returned by this function
+  virtual std::string name() const = 0;
 
-/// Ingredients (list of variables required in order to setup and execute recipe)
+/// Ingredients (list of variables required to setup and execute recipe)
   virtual std::vector<std::string> ingredients() const = 0;
 
 /// Flag indicating whether the recipe requires setup.
   virtual bool requiresSetup() { return false; }
   virtual bool setup(atlas::FieldSet *) { return true; }
 
-/// Execute method performs the variable change and populates the new variable in the FieldSet
-  virtual bool execute(atlas::FieldSet *) = 0; // Must return true on success, false on failure
+/// Execute method performs the variable change
+// It must return true on success, false on failure
+  virtual bool execute(atlas::FieldSet *) = 0;
 
  private:
   virtual void print(std::ostream &) const;
@@ -52,7 +53,8 @@ class RecipeBase : public util::Printable,
 /// Recipe Factory
 class RecipeFactory {
  public:
-  static RecipeBase * create(const std::string name, const eckit::Configuration &);
+  static RecipeBase * create(const std::string name,
+                             const eckit::Configuration &);
   virtual ~RecipeFactory() = default;
  protected:
   explicit RecipeFactory(const std::string &);
@@ -68,7 +70,8 @@ class RecipeFactory {
 
 template<class T>
 class RecipeMaker : public RecipeFactory {
-  virtual RecipeBase * make(const std::string name, const eckit::Configuration & conf)
+  virtual RecipeBase * make(const std::string name,
+                            const eckit::Configuration & conf)
     { return new T(conf); }
  public:
   explicit RecipeMaker(const std::string & name) : RecipeFactory(name) {}

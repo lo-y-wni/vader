@@ -66,21 +66,26 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset) {
          p0_ = default_hPa_p0;
       }
       else {
-         oops::Log::error() << "TempToPTemp::execute failed because p0 could not be determined." << std::endl;
+         oops::Log::error() << 
+            "TempToPTemp::execute failed because p0 could not be determined."
+            << std::endl;
          return false;
       }
    }
 
    oops::Log::debug() << "TempToPTemp::execute: p0 value: " << p0_ << std::endl;
-   oops::Log::debug() << "TempToPTemp::execute: kappa value: " << kappa_ << std::endl;
+   oops::Log::debug() << "TempToPTemp::execute: kappa value: " << kappa_
+      << std::endl;
 
    auto temperature_view = atlas::array::make_view <double , 2>( temperature );
    auto pressure_view = atlas::array::make_view <double , 2>( pressure );
-   auto potential_temperature_view = atlas::array::make_view <double , 2>( potential_temperature );
+   auto potential_temperature_view =
+      atlas::array::make_view <double , 2>( potential_temperature );
 
    int nlevels = temperature.levels();
    for (int level = 0; level < nlevels; ++level) {
-      potential_temperature_view(level, 0) = temperature_view(level, 0) * pow(p0_ / pressure_view(1, 0), kappa_);
+      potential_temperature_view(level, 0) =
+         temperature_view(level, 0) * pow(p0_ / pressure_view(1, 0), kappa_);
    }
    potential_temperature_filled = true;
 
