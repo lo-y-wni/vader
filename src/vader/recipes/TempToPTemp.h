@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef TEMP_TO_PTEMP_H_
-#define TEMP_TO_PTEMP_H_
+#ifndef SRC_VADER_RECIPES_TEMPTOPTEMP_H_
+#define SRC_VADER_RECIPES_TEMPTOPTEMP_H_
 
 #include <vector>
 #include <string>
@@ -21,23 +21,22 @@ namespace vader {
 /// Recipe base class
 
 class TempToPTemp : public RecipeBase {
-   public:
-      const static std::string Name;
-      const static std::vector<std::string> Ingredients;
+    public:
+        static const char[] Name;
+        static const std::vector<std::string> Ingredients;
 
-      explicit TempToPTemp(const eckit::Configuration &);
+        explicit TempToPTemp(const eckit::Configuration &);
 
-      // Recipe base class overrides
-      std::string name() const override;
-      std::vector<std::string> ingredients() const override;
-      bool execute(atlas::FieldSet *) override;
+        // Recipe base class overrides
+        std::string name() const override;
+        std::vector<std::string> ingredients() const override;
+        bool execute(atlas::FieldSet *) override;
 
-  private:
-   double p0_;
-   const double kappa_;
-
+    private:
+        double p0_;
+        const double kappa_;
 };
 
 } // namespace vader
 
-#endif  // TEMP_TO_PTEMP_H_
+#endif  // SRC_VADER_RECIPES_TEMPTOPTEMP_H_
