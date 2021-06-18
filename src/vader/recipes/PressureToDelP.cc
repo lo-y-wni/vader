@@ -5,6 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include "src/vader/recipies/PressureToDelP.h"
 #include <math.h>
 #include <iostream>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
 #include "vader/vader/vadervariables.h"
-#include "vader/recipies/PressureToDelP.h"
 
 namespace vader
 {

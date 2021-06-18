@@ -24,24 +24,24 @@ namespace vader {
 /// Vader class
 
 class Vader {
-    public:
-      explicit Vader(const eckit::Configuration & config);
-      ~Vader();
+ public:
+    explicit Vader(const eckit::Configuration & config);
+    ~Vader();
 
-      void changeVar(atlas::FieldSet * afieldset, oops::Variables &) const;
+    void changeVar(atlas::FieldSet * afieldset, oops::Variables &) const;
 
-    private:
-      std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>>
-         cookbook_;
-      std::unordered_map<std::string, std::vector<std::string>>
-         getDefaultCookbookDef();
+ private:
+    std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>>
+        cookbook_;
+    std::unordered_map<std::string, std::vector<std::string>>
+        getDefaultCookbookDef();
 
-      void createCookbook(std::unordered_map<std::string,
-                          std::vector<std::string>>,
-                          const eckit::Configuration &);
-      bool getVariable(atlas::FieldSet * afieldset,
-                       oops::Variables & neededVars,
-                       const std::string targetVariable) const;
+    void createCookbook(std::unordered_map<std::string,
+                        std::vector<std::string>>,
+                        const eckit::Configuration &);
+    bool getVariable(atlas::FieldSet * afieldset,
+                     oops::Variables & neededVars,
+                     const std::string targetVariable) const;
 };
 
 }  // namespace vader

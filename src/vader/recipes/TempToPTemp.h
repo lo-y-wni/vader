@@ -21,22 +21,22 @@ namespace vader {
 /// Recipe base class
 
 class TempToPTemp : public RecipeBase {
-    public:
-        static const char[] Name;
-        static const std::vector<std::string> Ingredients;
+ public:
+    static const char[] Name;
+    static const std::vector<std::string> Ingredients;
 
-        explicit TempToPTemp(const eckit::Configuration &);
+    explicit TempToPTemp(const eckit::Configuration &);
 
-        // Recipe base class overrides
-        std::string name() const override;
-        std::vector<std::string> ingredients() const override;
-        bool execute(atlas::FieldSet *) override;
+    // Recipe base class overrides
+    std::string name() const override;
+    std::vector<std::string> ingredients() const override;
+    bool execute(atlas::FieldSet *) override;
 
-    private:
-        double p0_;
-        const double kappa_;
+ private:
+    double p0_;
+    const double kappa_;
 };
 
-} // namespace vader
+}  // namespace vader
 
 #endif  // SRC_VADER_RECIPES_TEMPTOPTEMP_H_
