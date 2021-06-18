@@ -5,33 +5,35 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef PRESSURE_TO_DELP_H_
-#define PRESSURE_TO_DELP_H_
+#ifndef SRC_VADER_RECIPES_PRESSURETODELP_H_
+#define SRC_VADER_RECIPES_PRESSURETODELP_H_
 
 #include <vector>
+#include <string>
 
 #include "atlas/field/FieldSet.h"
 #include "vader/vader/RecipeBase.h"
 
-namespace vader {
+namespace vader
+{
 
 // -----------------------------------------------------------------------------
 /// Recipe base class
 
-class PressureToDelP : public RecipeBase {
-   public:
-      const static std::string Name;
-      const static std::vector<std::string> Ingredients;
+class PressureToDelP : public RecipeBase
+{
+ public:
+    static const char[] Name;
+    static const std::vector<std::string> Ingredients;
 
-      explicit PressureToDelP(const eckit::Configuration &);
+    explicit PressureToDelP(const eckit::Configuration &);
 
-      std::string name() const override;
-      std::vector<std::string> ingredients() const override;
-      bool execute(atlas::FieldSet *) override;
+    std::string name() const override;
+    std::vector<std::string> ingredients() const override;
+    bool execute(atlas::FieldSet *) override;
 
-   private:
+ private:
 };
+}  // namespace vader
 
-} // namespace vader
-
-#endif  // PRESSURE_TO_DELP_H_
+#endif  // SRC_VADER_RECIPES_PRESSURETODELP_H_
