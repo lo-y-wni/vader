@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef RECIPE_H_
-#define RECIPE_H_
+#ifndef SRC_VADER_RECIPE_H_
+#define SRC_VADER_RECIPE_H_
 
 #include <memory>
 #include <vector>
@@ -24,7 +24,7 @@ namespace vader {
 
 class Recipe  : public util::Printable,
                 private boost::noncopyable {
-   public:
+    public:
       Recipe(const std::string, const eckit::Configuration &);
 
       std::string name() const;
@@ -33,11 +33,11 @@ class Recipe  : public util::Printable,
       bool setup(atlas::FieldSet *);
       bool execute(atlas::FieldSet *);
 
-   private:
-  void print(std::ostream &) const;
-  std::unique_ptr<RecipeBase> recipe_;
+    private:
+      void print(std::ostream &) const;
+      std::unique_ptr<RecipeBase> recipe_;
 };
 
-} // namespace vader
+}  // namespace vader
 
-#endif  // RECIPE_H_
+#endif  // SRC_VADER_RECIPE_H_
