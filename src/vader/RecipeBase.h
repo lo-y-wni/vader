@@ -5,12 +5,13 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef VADERRECIPEBASE_H_
-#define VADERRECIPEBASE_H_
+#ifndef SRC_VADER_RECIPEBASE_H_
+#define SRC_VADER_RECIPEBASE_H_
 
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <boost/noncopyable.hpp>
 
@@ -27,7 +28,7 @@ namespace vader {
 class RecipeBase : public util::Printable,
                    private boost::noncopyable {
  public:
-  RecipeBase() {};
+  RecipeBase() {}
   virtual ~RecipeBase() {}
 
 /// Name of the recipe
@@ -59,7 +60,7 @@ class RecipeFactory {
  protected:
   explicit RecipeFactory(const std::string &);
  private:
-  virtual RecipeBase * make(const std::string, const eckit::Configuration &) = 0;
+  virtual RecipeBase* make(const std::string, const eckit::Configuration &) = 0;
   static std::unordered_map < std::string, RecipeFactory * > & getMakers() {
     static std::unordered_map < std::string, RecipeFactory * > makers_;
     return makers_;
@@ -81,4 +82,4 @@ class RecipeMaker : public RecipeFactory {
 
 }  // namespace vader
 
-#endif  // VADERRECIPEBASE_H_
+#endif  // SRC_VADER_RECIPEBASE_H_
