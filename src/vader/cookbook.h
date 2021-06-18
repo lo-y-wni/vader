@@ -13,8 +13,8 @@
 #include <string>
 
 #include "oops/util/Logger.h"
-#include "vader/vader.h"
-#include "vader/vadervariables.h"
+#include "vader/vader/vader.h"
+#include "vader/vader/vadervariables.h"
 
 // Recipe headers
 #include "recipes/TempToPTemp.h"

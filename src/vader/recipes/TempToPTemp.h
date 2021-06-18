@@ -22,7 +22,7 @@ namespace vader {
 
 class TempToPTemp : public RecipeBase {
  public:
-    static const char[] Name;
+    static const std::string Name;
     static const std::vector<std::string> Ingredients;
 
     explicit TempToPTemp(const eckit::Configuration &);

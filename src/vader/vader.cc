@@ -15,8 +15,8 @@
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
-#include "vader/vader.h"
-#include "vader/cookbook.h"
+#include "vader/vader/vader.h"
+#include "vader/vader/cookbook.h"
 
 namespace vader {
 

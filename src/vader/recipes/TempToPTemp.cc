@@ -14,14 +14,14 @@
 #include "atlas/util/Metadata.h"
 #include "oops/util/Logger.h"
 #include "vader/vader/vadervariables.h"
-#include "vader/recipes/TempToPTemp.h"
+#include "vader/vader/recipes/TempToPTemp.h"
 
 namespace vader
 {
 // -----------------------------------------------------------------------------
 
 // Static attribute initialization
-const char TempToPTemp::Name[] = "TempToPTemp";
+const std::string TempToPTemp::Name = "TempToPTemp";
 const std::vector<std::string> TempToPTemp::Ingredients = {VV_TS, VV_PS};
 const double default_kappa = 0.2857;
 const double p0_not_in_config = -1.0;

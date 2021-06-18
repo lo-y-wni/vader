@@ -5,7 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "src/vader/RecipeBase.h"
+#include "vader/vader/RecipeBase.h"
 
 #include <vector>
 #include <unordered_map>

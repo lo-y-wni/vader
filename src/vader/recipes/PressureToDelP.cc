@@ -5,7 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "src/vader/recipies/PressureToDelP.h"
+#include "PressureToDelP.h"
 #include <math.h>
 #include <iostream>
 #include <vector>
@@ -19,7 +19,7 @@ namespace vader
 {
 
 // Static attribute initialization
-const char PressureToDelP::Name[] = "PressureToDelP";
+const std::string PressureToDelP::Name = "PressureToDelP";
 const std::vector<std::string> PressureToDelP::Ingredients = {VV_PS};
 
 // Register the maker
