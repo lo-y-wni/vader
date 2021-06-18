@@ -8,37 +8,43 @@
 #include <iostream>
 #include <vector>
 
-#include "recipe.h"
+#include "vader/recipe.h"
 
-namespace vader {
+namespace vader
+{
 
 // -----------------------------------------------------------------------------
-Recipe::Recipe(const std::string name, const eckit::Configuration & conf)
-            : recipe_{RecipeFactory::create(name, conf)} { }
+Recipe::Recipe(const std::string name, const eckit::Configuration &conf)
+    : recipe_{RecipeFactory::create(name, conf)} {}
 // -----------------------------------------------------------------------------
-std::string Recipe::name() const {
-   return recipe_->name();
+std::string Recipe::name() const
+{
+    return recipe_->name();
 }
 // -----------------------------------------------------------------------------
-std::vector<std::string> Recipe::ingredients() const {
-   return recipe_->ingredients();
+std::vector<std::string> Recipe::ingredients() const
+{
+    return recipe_->ingredients();
 }
 // -----------------------------------------------------------------------------
-bool Recipe::requiresSetup() const {
-   return recipe_->requiresSetup();
+bool Recipe::requiresSetup() const
+{
+    return recipe_->requiresSetup();
 }
 // -----------------------------------------------------------------------------
-bool Recipe::setup(atlas::FieldSet *afieldset) {
-   return recipe_->setup(afieldset);
+bool Recipe::setup(atlas::FieldSet *afieldset)
+{
+    return recipe_->setup(afieldset);
 }
 // -----------------------------------------------------------------------------
-bool Recipe::execute(atlas::FieldSet *afieldset) {
-   return recipe_->execute(afieldset);
+bool Recipe::execute(atlas::FieldSet *afieldset)
+{
+    return recipe_->execute(afieldset);
 }
 // -----------------------------------------------------------------------------
-void Recipe::print(std::ostream & os) const {
-  os << *recipe_;
+void Recipe::print(std::ostream &os) const
+{
+    os << *recipe_;
 }
 
 }  // namespace vader
-

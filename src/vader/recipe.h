@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 #include <boost/noncopyable.hpp>
 
@@ -24,18 +25,18 @@ namespace vader {
 
 class Recipe  : public util::Printable,
                 private boost::noncopyable {
-    public:
-      Recipe(const std::string, const eckit::Configuration &);
+ public:
+    Recipe(const std::string, const eckit::Configuration &);
 
-      std::string name() const;
-      std::vector<std::string> ingredients() const;
-      bool requiresSetup() const;
-      bool setup(atlas::FieldSet *);
-      bool execute(atlas::FieldSet *);
+    std::string name() const;
+    std::vector<std::string> ingredients() const;
+    bool requiresSetup() const;
+    bool setup(atlas::FieldSet *);
+    bool execute(atlas::FieldSet *);
 
-    private:
-      void print(std::ostream &) const;
-      std::unique_ptr<RecipeBase> recipe_;
+ private:
+    void print(std::ostream &) const;
+    std::unique_ptr<RecipeBase> recipe_;
 };
 
 }  // namespace vader
