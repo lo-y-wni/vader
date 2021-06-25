@@ -21,13 +21,28 @@
 namespace vader {
 
 // -----------------------------------------------------------------------------
-/// Vader class
+/*! \brief Vader class to handle variable transformations
+ *
+ *  \details This class provides generic variable transformations via the
+ *           changeVar method using atlas fieldsets.
+ *
+ *           Throughout Vader, the code variables are named using a metaphor
+ *           involving ingredients, recipies, and a cookbook.
+ *
+ *           A recipe is is an object that can produce an output variable using
+ *           a list of required input variables. The input variables are the
+ *           ingredients to the recipe. The cookbook is the collection
+ *           (unordered_map) that contains the recipes to be checked when a
+ *           specified output variable is desired. The cookbook can contain
+ *           multiple recipes that produce the same output variable.
+ */
 
 class Vader {
  public:
     explicit Vader(const eckit::Configuration & config);
     ~Vader();
 
+    /// Calculates as many variables in the list as possible
     void changeVar(atlas::FieldSet * afieldset, oops::Variables &) const;
 
  private:

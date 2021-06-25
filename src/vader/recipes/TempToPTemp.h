@@ -18,8 +18,14 @@
 namespace vader {
 
 // -----------------------------------------------------------------------------
-/// Recipe base class
-
+/*! \brief TempToPTemp class defines a recipe for potential temperature
+ *
+ *  \details This instantiation of RecipeBase produces potential temperature
+ *           using temperature and surface pressure as inputs. The parameters
+ *           p0 and kappa can be specified via the constructor configuration.
+ *           If they are not, the code will attempt to provide default values.
+ *           (See https://glossary.ametsoc.org/wiki/Potential_temperature)
+ */
 class TempToPTemp : public RecipeBase {
  public:
     static const std::string Name;

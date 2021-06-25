@@ -23,7 +23,13 @@
 namespace vader {
 
 // -----------------------------------------------------------------------------
-/// Base class for recipes
+/*! \brief RecipeBase class defines interface for individual variable
+           transformations.
+ *
+ *  \details This pure virtual class provides the template for all concrete
+ *           classes that calculate a variable using other variables
+ *           (ingredients) as input.
+ */
 
 class RecipeBase : public util::Printable,
                    private boost::noncopyable {
