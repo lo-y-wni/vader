@@ -24,17 +24,18 @@ namespace vader {
 /*! \brief Vader class to handle variable transformations
  *
  *  \details This class provides generic variable transformations via the
- *           changeVar method using atlas fieldsets.
+ *           changeVar method which is passed an atlas fieldset.
  *
- *           Throughout Vader, the code variables are named using a metaphor
- *           involving ingredients, recipies, and a cookbook.
+ *           Throughout the Vader code, the primary variables are named using a
+ *           metaphor involving ingredients, recipies, and a cookbook.
  *
- *           A recipe is is an object that can produce an output variable using
- *           a list of required input variables. The input variables are the
- *           ingredients to the recipe. The cookbook is the collection
- *           (unordered_map) that contains the recipes to be checked when a
- *           specified output variable is desired. The cookbook can contain
- *           multiple recipes that produce the same output variable.
+ *           A 'recipe' is is an object that can produce a single output
+ *           variable when provided with a list of required input variables.
+ *           The input variables are referred to as the 'ingredients' to the
+ *           recipe. The 'cookbook' is the container (an unordered_map) that
+ *           contains the recipes to be attempted when specified output variable
+ *           is desired. The cookbook can contain multiple recipes that produce
+ *           the same output variable.
  */
 
 class Vader {

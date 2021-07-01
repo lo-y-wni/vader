@@ -52,6 +52,25 @@ Vader::Vader(const eckit::Configuration & config) {
     createCookbook(definition, config);
 }
 // -----------------------------------------------------------------------------
+/*! \brief Change Variable
+*
+* \details **changeVar** is the only method of Vader that will be called
+* externally. The caller passes an Atlas FieldSet that contains two kinds
+* of fields:
+* * Fields that have already been populated with values
+* * Fields that have been allocated but need to be calculated and populated
+* The already-populated fields serve as the ingredients for recipes which then
+* populate fields. The names of the variables that still need to be
+* populated are passed via the neededVars parameter. After this method is
+* complete, Vader will have popluated all the variables it can based on
+* the ingredients it was given and the recipes in its cookbook. The names of the
+* variables it was able to populate will have been removed from the neededVars
+* list. Any variable names remaining in neededVars remain unpopulated.
+*
+* \param[in,out] afieldset This is the FieldSet described above
+* \param[in,out] neededVars Names of unpopulated Fields in afieldset
+*
+*/
 void Vader::changeVar(atlas::FieldSet * afieldset,
                       oops::Variables & neededVars) const {
     oops::Log::trace() << "entering Vader::changeVar " << std::endl;
@@ -77,6 +96,22 @@ void Vader::changeVar(atlas::FieldSet * afieldset,
     oops::Log::trace() << "leaving Vader::changeVar: " << std::endl;
 }
 // -----------------------------------------------------------------------------
+/*! \brief Get Variable
+*
+* \details **getVariable** contains Vader's primary algorithm for attempting to
+* populate an unpopulated field. It:
+* * Checks the cookbook for recipes for the desired field (the targetVariable)
+* * Checks each recipe to see if its required ingredients have been provided
+* * If an ingredient is missing, recursively calls itself to attempt to get it
+* * Executes the recipe if all ingredients are provided (or created)
+* * If successful, removes the targetVariable from neededVars and returns 'true'
+*
+* \param[in,out] afieldset A fieldset containg both populated and unpopulated fields
+* \param[in,out] neededVars Names of unpopulated Fields in afieldset
+* \param[in] targetVariable variable name this instance is trying to populate
+* \return boolean 'true' if it successfully populates targetVariable, else false
+*
+*/
 bool Vader::getVariable(atlas::FieldSet * afieldset,
                         oops::Variables & neededVars,
                         const std::string targetVariable) const {
@@ -121,6 +156,15 @@ bool Vader::getVariable(atlas::FieldSet * afieldset,
                 recipeList->second[i]->name() << std::endl;
             bool haveIngredient = false;
             for (auto ingredient : recipeList->second[i]->ingredients()) {
+                if (ingredient == targetVariable) {
+                    oops::Log::error() << "Error: Ingredient list for " <<
+                        recipeList->second[i]->name() << " contains the target."
+                        << std::endl;
+                    // This could cause infinite recursion if we didn't check.
+                    // TODO: infinite recursion probably still possible with
+                    //       badly-constructed cookbook.
+                    break;
+                }
                 haveIngredient =
                     (std::find(fieldSetFieldNames.begin(),
                                fieldSetFieldNames.end(),
