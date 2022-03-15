@@ -40,6 +40,7 @@ namespace vader {
 
 class Vader {
  public:
+    static const std::string classname() {return "Vader";}
     explicit Vader(const eckit::Configuration & config);
     ~Vader();
 

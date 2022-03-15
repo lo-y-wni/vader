@@ -1,6 +1,6 @@
 /*
  * (C) Copyright 2021  UCAR.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
@@ -15,6 +15,7 @@
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
+#include "oops/util/Timer.h"
 #include "vader/vader/vader.h"
 #include "vader/vader/cookbook.h"
 
@@ -43,6 +44,7 @@ void Vader::createCookbook(std::unordered_map<std::string,
 }
 // -----------------------------------------------------------------------------
 Vader::Vader(const eckit::Configuration & config) {
+    util::Timer timer(classname(), "Vader");
     std::unordered_map<std::string, std::vector<std::string>> definition =
         getDefaultCookbookDef();
     oops::Log::trace() << "entering Vader::Vader(config) " << std::endl;
@@ -73,6 +75,7 @@ Vader::Vader(const eckit::Configuration & config) {
 */
 void Vader::changeVar(atlas::FieldSet * afieldset,
                       oops::Variables & neededVars) const {
+    util::Timer timer(classname(), "changeVar");
     oops::Log::trace() << "entering Vader::changeVar " << std::endl;
     oops::Log::debug() << "neededVars passed to Vader::changeVar: "
         << neededVars << std::endl;
@@ -218,4 +221,3 @@ bool Vader::getVariable(atlas::FieldSet * afieldset,
 }
 
 }  // namespace vader
-
