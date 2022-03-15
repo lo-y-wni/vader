@@ -8,7 +8,6 @@
 #include <math.h>
 #include <iostream>
 #include <vector>
-#include <typeinfo>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
@@ -51,7 +50,6 @@ std::vector<std::string> TempToPTemp::ingredients() const
 
 bool TempToPTemp::execute(atlas::FieldSet *afieldset)
 {
-
     bool potential_temperature_filled = false;
 
     oops::Log::trace() << "entering TempToPTemp::execute function" << std::endl;
