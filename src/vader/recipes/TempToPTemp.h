@@ -28,6 +28,7 @@ namespace vader {
  */
 class TempToPTemp : public RecipeBase {
  public:
+    static const std::string classname() {return "vader::TempToPTemp";}
     static const std::string Name;
     static const std::vector<std::string> Ingredients;
 

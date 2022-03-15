@@ -50,6 +50,7 @@ std::vector<std::string> TempToPTemp::ingredients() const
 
 bool TempToPTemp::execute(atlas::FieldSet *afieldset)
 {
+    
     bool potential_temperature_filled = false;
 
     oops::Log::trace() << "entering TempToPTemp::execute function" << std::endl;
