@@ -8,6 +8,7 @@
 #include <math.h>
 #include <iostream>
 #include <vector>
+#include <typeinfo>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
@@ -50,21 +51,21 @@ std::vector<std::string> TempToPTemp::ingredients() const
 
 bool TempToPTemp::execute(atlas::FieldSet *afieldset)
 {
-    
+
     bool potential_temperature_filled = false;
 
     oops::Log::trace() << "entering TempToPTemp::execute function" << std::endl;
 
     atlas::Field temperature = afieldset->field(VV_TS);
-    atlas::Field pressure = afieldset->field(VV_PS);
+    atlas::Field surface_pressure = afieldset->field(VV_PS);
     atlas::Field potential_temperature = afieldset->field(VV_PT);
     std::string t_units, ps_units;
 
     temperature.metadata().get("units", t_units);
-    pressure.metadata().get("units", ps_units);
+    surface_pressure.metadata().get("units", ps_units);
     if (p0_ == p0_not_in_config)
     {
-        // If p0 not specified in config, determine it from pressure units
+        // If p0 not specified in config, determine it from surface_pressure units
         if (ps_units == "Pa")
         {
             p0_ = default_Pa_p0;
@@ -84,16 +85,20 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
     std::endl;
 
     auto temperature_view = atlas::array::make_view<double, 2>(temperature);
-    auto pressure_view = atlas::array::make_view<double, 2>(pressure);
+    auto surface_pressure_view = atlas::array::make_view<double, 1>(surface_pressure);
     auto potential_temperature_view =
         atlas::array::make_view<double, 2>(potential_temperature);
 
+    size_t grid_size = surface_pressure.size();
+
     int nlevels = temperature.levels();
-    for (int level = 0; level < nlevels; ++level)
-    {
-        potential_temperature_view(level, 0) =
-            temperature_view(level, 0) * pow(p0_ / pressure_view(1, 0), kappa_);
+    for (int level = 0; level < nlevels; ++level) {
+      for ( size_t jnode = 0; jnode < grid_size ; ++ jnode ) {
+        potential_temperature_view(jnode, level) = temperature_view(jnode, level) *
+                                                   pow(p0_ / surface_pressure_view(jnode), kappa_);
+      }
     }
+
     potential_temperature_filled = true;
 
     oops::Log::trace() << "leaving TempToPTemp::execute function" << std::endl;
