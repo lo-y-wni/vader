@@ -8,6 +8,7 @@ vader/RecipeBase.h
 vader/RecipeBase.cc
 vader/cookbook.h
 vader/vader.cc
+vader/VaderParameters.h
 vader/recipes/TempToPTemp.h
 vader/recipes/TempToPTemp.cc
 vader/recipes/PressureToDelP.h

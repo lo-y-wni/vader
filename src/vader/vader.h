@@ -15,6 +15,7 @@
 
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
+#include "VaderParameters.h"
 
 #include "RecipeBase.h"
 
@@ -41,7 +42,7 @@ namespace vader {
 class Vader {
  public:
     static const std::string classname() {return "Vader";}
-    explicit Vader(const eckit::Configuration & config);
+    explicit Vader(const VaderParameters & parameters);
     ~Vader();
 
     /// Calculates as many variables in the list as possible

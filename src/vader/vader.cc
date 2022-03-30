@@ -43,14 +43,16 @@ void Vader::createCookbook(std::unordered_map<std::string,
     oops::Log::trace() << "leaving Vader::createCookbook" << std::endl;
 }
 // -----------------------------------------------------------------------------
-Vader::Vader(const eckit::Configuration & config) {
+Vader::Vader(const VaderParameters & parameters) {
     util::Timer timer(classname(), "Vader");
     std::unordered_map<std::string, std::vector<std::string>> definition =
         getDefaultCookbookDef();
-    oops::Log::trace() << "entering Vader::Vader(config) " << std::endl;
-    oops::Log::debug() << "Vader::Vader config = " << config << std::endl;
+    oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
+    oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
 
     // TODO::Configuration can alter the default cookbook here
+    // TODO:: convert createCookbook to use Parameters
+    eckit::LocalConfiguration config = parameters.toConfiguration();
     createCookbook(definition, config);
 }
 // -----------------------------------------------------------------------------
