@@ -31,11 +31,18 @@ const double default_hPa_p0 = 1000.0;
 // Register the maker
 static RecipeMaker<TempToPTemp> makerTempToPTemp_(TempToPTemp::Name);
 
-TempToPTemp::TempToPTemp(const eckit::Configuration &config) :
-    p0_{config.getDouble(TempToPTemp::Name + ".p0", p0_not_in_config)},
-    kappa_{config.getDouble(TempToPTemp::Name + ".kappa", default_kappa)}
+TempToPTemp::TempToPTemp() :
+    p0_{p0_not_in_config},
+    kappa_{default_kappa}
 {
-    oops::Log::trace() << "TempToPTemp::TempToPTemp" << std::endl;
+    oops::Log::trace() << "TempToPTemp::TempToPTemp()" << std::endl;
+}
+
+TempToPTemp::TempToPTemp(const TempToPTempParameters &params) :
+    p0_{params.p0.value()},
+    kappa_{params.kappa.value()}
+{
+    oops::Log::trace() << "TempToPTemp::TempToPTemp(params)" << std::endl;
 }
 
 std::string TempToPTemp::name() const

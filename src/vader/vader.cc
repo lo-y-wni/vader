@@ -29,14 +29,32 @@ Vader::~Vader() {
 void Vader::createCookbook(std::unordered_map<std::string,
                                               std::vector<std::string>>
                                              definition,
-                           const eckit::Configuration & config) {
+                           const boost::optional<std::vector<RecipeParametersBase>> & allRecipeParams) {
     oops::Log::trace() << "entering Vader::createCookbook" << std::endl;
     std::vector<std::unique_ptr<RecipeBase>> recipes;
     for (auto defEntry : definition) {
         recipes.clear();
         for (auto recipeName : defEntry.second) {
-            recipes.push_back(std::unique_ptr<RecipeBase>
-                              (RecipeFactory::create(recipeName, config)));
+            // There might not be any recipe parameters at all.
+            // There might not be parameters for THIS recipe.
+            // We must prepare for all eventualities.
+            bool parametersFound = false;
+            // boost::optional<RecipeParametersBase> recipeParams = boost::none;
+            if (allRecipeParams != boost::none) {
+                for (auto & singleRecipeParams : *allRecipeParams) {
+                    if (singleRecipeParams.name.value() == recipeName) {
+                        recipes.push_back(std::unique_ptr<RecipeBase>
+                              (RecipeFactory::create(recipeName, singleRecipeParams)));
+                        parametersFound = true;
+                        break;
+                    }
+                }
+            }
+            if (!parametersFound) {
+                auto emptyRecipeParams = RecipeFactory::createParameters(recipeName);
+                        recipes.push_back(std::unique_ptr<RecipeBase>
+                              (RecipeFactory::create(recipeName, *emptyRecipeParams)));
+            }
         }
         cookbook_[defEntry.first] = std::move(recipes);
     }
@@ -51,9 +69,7 @@ Vader::Vader(const VaderParameters & parameters) {
     oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
 
     // TODO::Configuration can alter the default cookbook here
-    // TODO:: convert createCookbook to use Parameters
-    eckit::LocalConfiguration config = parameters.toConfiguration();
-    createCookbook(definition, config);
+    createCookbook(definition, parameters.recipeParams);
 }
 // -----------------------------------------------------------------------------
 /*! \brief Change Variable

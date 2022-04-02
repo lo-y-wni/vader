@@ -14,8 +14,8 @@ namespace vader
 {
 
 // -----------------------------------------------------------------------------
-Recipe::Recipe(const std::string name, const eckit::Configuration &conf)
-    : recipe_{RecipeFactory::create(name, conf)} {}
+Recipe::Recipe(const std::string name, const RecipeParametersBase & params)
+    : recipe_{RecipeFactory::create(name, params)} {}
 // -----------------------------------------------------------------------------
 std::string Recipe::name() const
 {

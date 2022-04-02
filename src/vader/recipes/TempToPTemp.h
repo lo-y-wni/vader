@@ -14,8 +14,21 @@
 #include "eckit/config/Configuration.h"
 #include "atlas/field/FieldSet.h"
 #include "vader/vader/RecipeBase.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
 namespace vader {
+
+class TempToPTempParameters : RecipeParametersBase {
+  OOPS_CONCRETE_PARAMETERS(TempToPTempParameters, RecipeParametersBase)
+
+ public:
+  oops::RequiredParameter<std::string> name{
+     "recipe name",
+     this};
+  oops::Parameter<double> p0{"p0", "p-naught", 1000.0, this};
+  oops::Parameter<double> kappa{"kappa", "kappa", 0.2857, this};
+};
 
 // -----------------------------------------------------------------------------
 /*! \brief TempToPTemp class defines a recipe for potential temperature
@@ -31,7 +44,8 @@ class TempToPTemp : public RecipeBase {
     static const std::string Name;
     static const std::vector<std::string> Ingredients;
 
-    explicit TempToPTemp(const eckit::Configuration &);
+    TempToPTemp();
+    explicit TempToPTemp(const TempToPTempParameters &);
 
     // Recipe base class overrides
     std::string name() const override;

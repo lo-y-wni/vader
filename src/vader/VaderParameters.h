@@ -12,6 +12,7 @@
 
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
+#include "RecipeBase.h"
 
 namespace vader {
 
@@ -24,10 +25,10 @@ class VaderParameters : public oops::Parameters {
 //   /// component of the Composite operator. If `variables` is not set, the operator will simulate
 //   /// all ObsSpace variables. Please see the documentation of the Composite operator for further
 //   /// details.
-//   oops::OptionalParameter<std::vector<ufo::Variable>> variables{
-//      "variables",
-//      "List of variables to be simulated",
-//      this};
+  oops::OptionalParameter<std::vector<RecipeParametersBase>> recipeParams{
+     "recipe parameters",
+     "Parameters to configure recipe functionality",
+     this};
 
 //   /// The boolean parameter `level index 0 is closest to surface` can be set to `true`
 //   /// for GeoVaLs whose level index 0 is closest to the Earth's surface.

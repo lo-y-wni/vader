@@ -6,7 +6,6 @@ vader/recipe.h
 vader/recipe.cc
 vader/RecipeBase.h
 vader/RecipeBase.cc
-vader/RecipeParameters.h
 vader/cookbook.h
 vader/vader.cc
 vader/VaderParameters.h

@@ -56,7 +56,7 @@ class Vader {
 
     void createCookbook(std::unordered_map<std::string,
                         std::vector<std::string>>,
-                        const eckit::Configuration &);
+                        const boost::optional<std::vector<RecipeParametersBase>> &);
     bool getVariable(atlas::FieldSet * afieldset,
                      oops::Variables & neededVars,
                      const std::string targetVariable) const;

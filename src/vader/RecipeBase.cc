@@ -8,7 +8,7 @@
 #include "vader/vader/RecipeBase.h"
 
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 #include "eckit/config/Configuration.h"
 #include "oops/util/abor1_cpp.h"
@@ -30,20 +30,50 @@ RecipeFactory::RecipeFactory(const std::string & name) {
 // -----------------------------------------------------------------------------
 
 RecipeBase * RecipeFactory::create(const std::string name,
-                                   const eckit::Configuration & conf) {
-  oops::Log::trace() << "RecipeFactory::create starting for name: " << name <<
+                                   const RecipeParametersBase & params) {
+  oops::Log::trace() << "RecipeFactory::create(name, params) starting for name: " << name <<
     std::endl;
-  typename std::unordered_map<std::string, RecipeFactory*>::iterator jloc =
+  typename std::map<std::string, RecipeFactory*>::iterator jloc =
     getMakers().find(name);
   if (jloc == getMakers().end()) {
     oops::Log::error() << name << " does not exist in vader::RecipeFactory." <<
       std::endl;
     ABORT("Element does not exist in vader::RecipeFactory.");
   }
-  RecipeBase * ptr = jloc->second->make(name, conf);
-  oops::Log::trace() << "RecipeFactory::create finished for name: " << name <<
+  RecipeBase * ptr = jloc->second->make(params);
+  oops::Log::trace() << "RecipeFactory::create(name, params) finished for name: " << name <<
     std::endl;
   return ptr;
+}
+
+// -----------------------------------------------------------------------------
+
+RecipeBase * RecipeFactory::create(const std::string name) {
+  oops::Log::trace() << "RecipeFactory::create(name) starting for name: " << name <<
+    std::endl;
+  typename std::map<std::string, RecipeFactory*>::iterator jloc =
+    getMakers().find(name);
+  if (jloc == getMakers().end()) {
+    oops::Log::error() << name << " does not exist in vader::RecipeFactory." <<
+      std::endl;
+    ABORT("Element does not exist in vader::RecipeFactory.");
+  }
+  RecipeBase * ptr = jloc->second->make();
+  oops::Log::trace() << "RecipeFactory::create(name) finished for name: " << name <<
+    std::endl;
+  return ptr;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+std::unique_ptr<RecipeParametersBase>
+RecipeFactory::createParameters(const std::string &name) {
+  typename std::map<std::string, RecipeFactory*>::iterator it =
+      getMakers().find(name);
+  if (it == getMakers().end()) {
+    throw std::runtime_error(name + " does not exist in vader::RecipeFactory");
+  }
+  return it->second->makeParameters();
 }
 
 void RecipeBase::print(std::ostream & os) const {
