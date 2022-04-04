@@ -14,8 +14,8 @@ namespace vader
 {
 
 // -----------------------------------------------------------------------------
-Recipe::Recipe(const std::string name, const RecipeParametersBase & params)
-    : recipe_{RecipeFactory::create(name, params)} {}
+Recipe::Recipe(const std::string name, const Parameters_ & params)
+    : recipe_{RecipeFactory::create(name, params.recipeParams)} {}
 // -----------------------------------------------------------------------------
 std::string Recipe::name() const
 {

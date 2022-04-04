@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2021  UCAR.
+ * (C) Copyright 2021-2022  UCAR.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -38,7 +38,7 @@ TempToPTemp::TempToPTemp() :
     oops::Log::trace() << "TempToPTemp::TempToPTemp()" << std::endl;
 }
 
-TempToPTemp::TempToPTemp(const TempToPTempParameters &params) :
+TempToPTemp::TempToPTemp(const Parameters_ &params) :
     p0_{params.p0.value()},
     kappa_{params.kappa.value()}
 {

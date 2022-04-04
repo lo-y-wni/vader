@@ -20,10 +20,13 @@
 #include "oops/base/Variables.h"
 #include "oops/util/AssociativeContainers.h"
 #include "oops/util/parameters/HasParameters_.h"
-#include "oops/util/parameters/OptionalPolymorphicParameter.h"
+// #include "oops/util/parameters/OptionalPolymorphicParameter.h"
+#include "oops/util/parameters/RequiredPolymorphicParameter.h"
 #include "oops/util/parameters/Parameters.h"
 #include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
+#include "oops/util/parameters/ConfigurationParameter.h"
+#include "oops/util/parameters/ParametersOrConfiguration.h"
 
 namespace vader {
 
@@ -31,7 +34,7 @@ namespace vader {
 
 // -----------------------------------------------------------------------------
 class RecipeParametersBase : public oops::Parameters {
-  OOPS_ABSTRACT_PARAMETERS(RecipeParametersBase, oops::Parameters)
+  OOPS_ABSTRACT_PARAMETERS(RecipeParametersBase, Parameters)
 
  public:
   oops::RequiredParameter<std::string> name{
@@ -42,6 +45,7 @@ class RecipeParametersBase : public oops::Parameters {
 class GenericRecipeParameters : public RecipeParametersBase {
   OOPS_CONCRETE_PARAMETERS(GenericRecipeParameters, RecipeParametersBase)
  public:
+    oops::ConfigurationParameter config{this};
 };
 
 // -----------------------------------------------------------------------------
@@ -111,10 +115,13 @@ class RecipeFactory {
 
 template<class T>
 class RecipeMaker : public RecipeFactory {
-  typedef oops::TParameters_IfAvailableElseFallbackType_t<T, GenericRecipeParameters>
-    Parameters_;
-  virtual RecipeBase * make(const RecipeParametersBase & params) override
-    { return new T(params); }
+  /// Defined as T::Parameters_ if T defines a Parameters_ type; otherwise as
+  /// GenericRecipeParameters.
+  typedef typename T::Parameters_ Parameters_;
+  virtual RecipeBase * make(const RecipeParametersBase & params) override {
+    const auto &stronglyTypedParams = dynamic_cast<const Parameters_&>(params);
+    return new T(stronglyTypedParams);
+  }
   virtual RecipeBase * make() override { return new T(); }
  
    std::unique_ptr<RecipeParametersBase> makeParameters() const override {
@@ -130,7 +137,7 @@ class RecipeParametersWrapper : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(RecipeParametersWrapper, Parameters)
 
  public:
-  oops::OptionalPolymorphicParameter<RecipeParametersBase, RecipeFactory> recipeParams{
+  oops::RequiredPolymorphicParameter<RecipeParametersBase, RecipeFactory> recipeParams{
      "recipe name",
      this};
 

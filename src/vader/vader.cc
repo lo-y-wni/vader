@@ -29,7 +29,7 @@ Vader::~Vader() {
 void Vader::createCookbook(std::unordered_map<std::string,
                                               std::vector<std::string>>
                                              definition,
-                           const boost::optional<std::vector<RecipeParametersBase>> & allRecipeParams) {
+                           const boost::optional<std::vector<RecipeParametersWrapper>> & allRecipeParams) {
     oops::Log::trace() << "entering Vader::createCookbook" << std::endl;
     std::vector<std::unique_ptr<RecipeBase>> recipes;
     for (auto defEntry : definition) {
@@ -42,9 +42,9 @@ void Vader::createCookbook(std::unordered_map<std::string,
             // boost::optional<RecipeParametersBase> recipeParams = boost::none;
             if (allRecipeParams != boost::none) {
                 for (auto & singleRecipeParams : *allRecipeParams) {
-                    if (singleRecipeParams.name.value() == recipeName) {
+                    if (singleRecipeParams.recipeParams.value().name.value() == recipeName) {
                         recipes.push_back(std::unique_ptr<RecipeBase>
-                              (RecipeFactory::create(recipeName, singleRecipeParams)));
+                              (RecipeFactory::create(recipeName, singleRecipeParams.recipeParams)));
                         parametersFound = true;
                         break;
                     }

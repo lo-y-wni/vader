@@ -26,7 +26,9 @@ namespace vader {
 class Recipe  : public util::Printable,
                 private boost::noncopyable {
  public:
-    Recipe(const std::string, const RecipeParametersBase &);
+    typedef RecipeParametersWrapper Parameters_;
+
+    Recipe(const std::string, const Parameters_ &);
 
     std::string name() const;
     std::vector<std::string> ingredients() const;

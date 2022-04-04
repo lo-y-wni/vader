@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2021 UCAR
+ * (C) Copyright 2021-2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -19,7 +19,7 @@
 
 namespace vader {
 
-class TempToPTempParameters : RecipeParametersBase {
+class TempToPTempParameters : public RecipeParametersBase {
   OOPS_CONCRETE_PARAMETERS(TempToPTempParameters, RecipeParametersBase)
 
  public:
@@ -44,8 +44,10 @@ class TempToPTemp : public RecipeBase {
     static const std::string Name;
     static const std::vector<std::string> Ingredients;
 
+    typedef TempToPTempParameters Parameters_;
+
     TempToPTemp();
-    explicit TempToPTemp(const TempToPTempParameters &);
+    explicit TempToPTemp(const Parameters_ &);
 
     // Recipe base class overrides
     std::string name() const override;

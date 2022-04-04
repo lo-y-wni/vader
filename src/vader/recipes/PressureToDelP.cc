@@ -1,11 +1,10 @@
 /*
- * (C) Copyright 2021  UCAR.
+ * (C) Copyright 2021-2022  UCAR.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "PressureToDelP.h"
 #include <math.h>
 #include <iostream>
 #include <vector>
@@ -14,6 +13,7 @@
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
 #include "vader/vader/vadervariables.h"
+#include "vader/vader/recipes/PressureToDelP.h"
 
 namespace vader
 {
@@ -25,8 +25,14 @@ const std::vector<std::string> PressureToDelP::Ingredients = {VV_PS};
 // Register the maker
 static RecipeMaker<PressureToDelP> makerPressureToDelP_(PressureToDelP::Name);
 
-PressureToDelP::PressureToDelP(const eckit::Configuration &config)
+PressureToDelP::PressureToDelP()
 {
+    oops::Log::trace() << "PressureToDelP::PressureToDelP()" << std::endl;
+}
+
+PressureToDelP::PressureToDelP(const PressureToDelPParameters &params)
+{
+    oops::Log::trace() << "PressureToDelP::PressureToDelP(params)" << std::endl;
 }
 
 std::string PressureToDelP::name() const

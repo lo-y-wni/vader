@@ -25,7 +25,7 @@ class VaderParameters : public oops::Parameters {
 //   /// component of the Composite operator. If `variables` is not set, the operator will simulate
 //   /// all ObsSpace variables. Please see the documentation of the Composite operator for further
 //   /// details.
-  oops::OptionalParameter<std::vector<RecipeParametersBase>> recipeParams{
+  oops::OptionalParameter<std::vector<RecipeParametersWrapper>> recipeParams{
      "recipe parameters",
      "Parameters to configure recipe functionality",
      this};
