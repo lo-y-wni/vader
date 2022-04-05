@@ -24,7 +24,7 @@ namespace vader
 const std::string TempToPTemp::Name = "TempToPTemp";
 const std::vector<std::string> TempToPTemp::Ingredients = {VV_TS, VV_PS};
 const double default_kappa = 0.2857;
-const double p0_not_in_config = -1.0;
+const double p0_not_in_params = -1.0;
 const double default_Pa_p0 = 100000.0;
 const double default_hPa_p0 = 1000.0;
 
@@ -32,7 +32,7 @@ const double default_hPa_p0 = 1000.0;
 static RecipeMaker<TempToPTemp> makerTempToPTemp_(TempToPTemp::Name);
 
 TempToPTemp::TempToPTemp() :
-    p0_{p0_not_in_config},
+    p0_{p0_not_in_params},
     kappa_{default_kappa}
 {
     oops::Log::trace() << "TempToPTemp::TempToPTemp()" << std::endl;
@@ -43,6 +43,8 @@ TempToPTemp::TempToPTemp(const Parameters_ &params) :
     kappa_{params.kappa.value()}
 {
     oops::Log::trace() << "TempToPTemp::TempToPTemp(params)" << std::endl;
+    oops::Log::debug() << "TempToPTemp params p0 value: " << params.p0.value() << std::endl;
+    oops::Log::debug() << "TempToPTemp params kappa value: " << params.kappa.value() << std::endl;
 }
 
 std::string TempToPTemp::name() const
@@ -68,8 +70,10 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
 
     temperature.metadata().get("units", t_units);
     surface_pressure.metadata().get("units", ps_units);
-    if (p0_ == p0_not_in_config)
+    if (p0_ == p0_not_in_params)
     {
+        oops::Log::debug() << "TempToPTemp: p0 not in parameters. Deducing value "
+            "from pressure units." << std::endl;
         // If p0 not specified in config, determine it from surface_pressure units
         if (ps_units == "Pa")
         {

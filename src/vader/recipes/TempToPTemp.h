@@ -26,7 +26,7 @@ class TempToPTempParameters : public RecipeParametersBase {
   oops::RequiredParameter<std::string> name{
      "recipe name",
      this};
-  oops::Parameter<double> p0{"p0", "p-naught", 1000.0, this};
+  oops::Parameter<double> p0{"p0", "p-naught", -1.0, this};
   oops::Parameter<double> kappa{"kappa", "kappa", 0.2857, this};
 };
 
