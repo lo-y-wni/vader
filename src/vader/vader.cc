@@ -28,8 +28,8 @@ Vader::~Vader() {
 // -----------------------------------------------------------------------------
 void Vader::createCookbook(std::unordered_map<std::string,
                                               std::vector<std::string>>
-                                             definition,
-                           const boost::optional<std::vector<RecipeParametersWrapper>> & allRecipeParams) {
+                                              definition,
+                const boost::optional<std::vector<RecipeParametersWrapper>> & allRecpParamWraps) {
     oops::Log::trace() << "entering Vader::createCookbook" << std::endl;
     std::vector<std::unique_ptr<RecipeBase>> recipes;
     for (auto defEntry : definition) {
@@ -39,12 +39,12 @@ void Vader::createCookbook(std::unordered_map<std::string,
             // There might not be parameters for THIS recipe.
             // We must prepare for all eventualities.
             bool parametersFound = false;
-            // boost::optional<RecipeParametersBase> recipeParams = boost::none;
-            if (allRecipeParams != boost::none) {
-                for (auto & singleRecipeParams : *allRecipeParams) {
-                    if (singleRecipeParams.recipeParams.value().name.value() == recipeName) {
+            if (allRecpParamWraps != boost::none) {
+                for (auto & singleRecpParamWrap : *allRecpParamWraps) {
+                    if (singleRecpParamWrap.recipeParams.value().name.value() == recipeName) {
                         recipes.push_back(std::unique_ptr<RecipeBase>
-                              (RecipeFactory::create(recipeName, singleRecipeParams.recipeParams)));
+                            (RecipeFactory::create(recipeName, 
+                                singleRecpParamWrap.recipeParams)));
                         parametersFound = true;
                         break;
                     }

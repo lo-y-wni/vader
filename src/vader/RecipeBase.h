@@ -42,12 +42,6 @@ class RecipeParametersBase : public oops::Parameters {
      this};
 };
 
-class GenericRecipeParameters : public RecipeParametersBase {
-  OOPS_CONCRETE_PARAMETERS(GenericRecipeParameters, RecipeParametersBase)
- public:
-    oops::ConfigurationParameter config{this};
-};
-
 // -----------------------------------------------------------------------------
 /*! \brief RecipeBase class defines interface for individual variable
            transformations.
@@ -115,8 +109,6 @@ class RecipeFactory {
 
 template<class T>
 class RecipeMaker : public RecipeFactory {
-  /// Defined as T::Parameters_ if T defines a Parameters_ type; otherwise as
-  /// GenericRecipeParameters.
   typedef typename T::Parameters_ Parameters_;
   virtual RecipeBase * make(const RecipeParametersBase & params) override {
     const auto &stronglyTypedParams = dynamic_cast<const Parameters_&>(params);

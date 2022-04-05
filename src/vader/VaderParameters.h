@@ -20,23 +20,15 @@ class VaderParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(VaderParameters, Parameters)
 
  public:
-//   /// An optional `variables` parameter, which controls which ObsSpace
-//   /// variables will be simulated. This option should only be set if this operator is used as a
-//   /// component of the Composite operator. If `variables` is not set, the operator will simulate
-//   /// all ObsSpace variables. Please see the documentation of the Composite operator for further
-//   /// details.
+  /// An optional `recipeParams` parameter, which contains an (optional)
+  /// list of Parameter (wrappers), each of which contains parameters
+  /// which configure one of the individual recipes.
+  /// Recipies should be designed so that they can be used with a 
+  /// default configuration and no parameters.
   oops::OptionalParameter<std::vector<RecipeParametersWrapper>> recipeParams{
      "recipe parameters",
-     "Parameters to configure recipe functionality",
+     "Parameters to configure individual recipe functionality",
      this};
-
-//   /// The boolean parameter `level index 0 is closest to surface` can be set to `true`
-//   /// for GeoVaLs whose level index 0 is closest to the Earth's surface.
-//   oops::Parameter<bool> levelIndex0IsClosestToSurface{
-//      "level index 0 is closest to surface",
-//      "GeoVaL level 0 is closest to the surface",
-//      false,
-//      this};
 };
 
 }  // namespace vader
