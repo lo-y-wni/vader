@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef VADER_VADERPARAMETERS_H_
-#define VADER_VADERPARAMETERS_H_
+#ifndef SRC_VADER_VADERPARAMETERS_H_
+#define SRC_VADER_VADERPARAMETERS_H_
 
 #include <vector>
 
@@ -23,7 +23,7 @@ class VaderParameters : public oops::Parameters {
   /// An optional `recipeParams` parameter, which contains an (optional)
   /// list of Parameter (wrappers), each of which contains parameters
   /// which configure one of the individual recipes.
-  /// Recipies should be designed so that they can be used with a 
+  /// Recipies should be designed so that they can be used with a
   /// default configuration and no parameters.
   oops::OptionalParameter<std::vector<RecipeParametersWrapper>> recipeParams{
      "recipe parameters",
@@ -33,4 +33,4 @@ class VaderParameters : public oops::Parameters {
 
 }  // namespace vader
 
-#endif  // VADER_VADERPARAMETERS_H_
+#endif  // SRC_VADER_VADERPARAMETERS_H_

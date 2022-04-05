@@ -29,7 +29,8 @@ Vader::~Vader() {
 void Vader::createCookbook(std::unordered_map<std::string,
                                               std::vector<std::string>>
                                               definition,
-                const boost::optional<std::vector<RecipeParametersWrapper>> & allRecpParamWraps) {
+                const boost::optional<std::vector<RecipeParametersWrapper>> &
+                    allRecpParamWraps) {
     oops::Log::trace() << "entering Vader::createCookbook" << std::endl;
     std::vector<std::unique_ptr<RecipeBase>> recipes;
     for (auto defEntry : definition) {
@@ -41,9 +42,10 @@ void Vader::createCookbook(std::unordered_map<std::string,
             bool parametersFound = false;
             if (allRecpParamWraps != boost::none) {
                 for (auto & singleRecpParamWrap : *allRecpParamWraps) {
-                    if (singleRecpParamWrap.recipeParams.value().name.value() == recipeName) {
+                    if (singleRecpParamWrap.recipeParams.value().name.value()
+                                                                == recipeName) {
                         recipes.push_back(std::unique_ptr<RecipeBase>
-                            (RecipeFactory::create(recipeName, 
+                            (RecipeFactory::create(recipeName,
                                 singleRecpParamWrap.recipeParams)));
                         parametersFound = true;
                         break;
@@ -51,9 +53,11 @@ void Vader::createCookbook(std::unordered_map<std::string,
                 }
             }
             if (!parametersFound) {
-                auto emptyRecipeParams = RecipeFactory::createParameters(recipeName);
+                auto emptyRecipeParams =
+                    RecipeFactory::createParameters(recipeName);
                         recipes.push_back(std::unique_ptr<RecipeBase>
-                              (RecipeFactory::create(recipeName, *emptyRecipeParams)));
+                              (RecipeFactory::create(recipeName,
+                                *emptyRecipeParams)));
             }
         }
         cookbook_[defEntry.first] = std::move(recipes);
@@ -66,9 +70,10 @@ Vader::Vader(const VaderParameters & parameters) {
     std::unordered_map<std::string, std::vector<std::string>> definition =
         getDefaultCookbookDef();
     oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
-    oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
+    oops::Log::debug() << "Vader::Vader parameters = " << parameters
+        << std::endl;
 
-    // TODO::Configuration can alter the default cookbook here
+    // TODO(vahl): Configuration can alter the default cookbook here
     createCookbook(definition, parameters.recipeParams);
 }
 // -----------------------------------------------------------------------------
@@ -182,8 +187,8 @@ bool Vader::getVariable(atlas::FieldSet * afieldset,
                         recipeList->second[i]->name() << " contains the target."
                         << std::endl;
                     // This could cause infinite recursion if we didn't check.
-                    // TODO: infinite recursion probably still possible with
-                    //       badly-constructed cookbook.
+                    // TODO(vahl): infinite recursion probably still possible
+                    //       with badly-constructed cookbook.
                     break;
                 }
                 haveIngredient =

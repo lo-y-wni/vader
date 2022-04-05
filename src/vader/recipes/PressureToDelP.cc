@@ -19,7 +19,7 @@ namespace vader
 {
 
 // Static attribute initialization
-const std::string PressureToDelP::Name = "PressureToDelP";
+const char PressureToDelP::Name[] = "PressureToDelP";
 const std::vector<std::string> PressureToDelP::Ingredients = {VV_PS};
 
 // Register the maker
@@ -50,7 +50,7 @@ bool PressureToDelP::execute(atlas::FieldSet *afieldset)
     bool delp_filled = false;
 
     oops::Log::trace() << "entering ps_to_delp execute function" << std::endl;
-    // TODO: Implement conversion logic
+    // TODO(Someone who knows this algorithm): Implement conversion logic
     oops::Log::trace() << "leaving ps_to_delp execute function" << std::endl;
     return delp_filled;
 }

@@ -19,18 +19,14 @@
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
 #include "oops/util/AssociativeContainers.h"
-#include "oops/util/parameters/HasParameters_.h"
-// #include "oops/util/parameters/OptionalPolymorphicParameter.h"
 #include "oops/util/parameters/RequiredPolymorphicParameter.h"
 #include "oops/util/parameters/Parameters.h"
 #include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
-#include "oops/util/parameters/ConfigurationParameter.h"
-#include "oops/util/parameters/ParametersOrConfiguration.h"
 
 namespace vader {
 
-// static const char * recipeNameString = "recipe name";
+static const char * recipeNameString = "recipe name";
 
 // -----------------------------------------------------------------------------
 class RecipeParametersBase : public oops::Parameters {
@@ -38,7 +34,7 @@ class RecipeParametersBase : public oops::Parameters {
 
  public:
   oops::RequiredParameter<std::string> name{
-     "recipe name",
+     recipeNameString,
      this};
 };
 
@@ -84,15 +80,18 @@ class RecipeFactory {
   static RecipeBase * create(const std::string name,
                              const RecipeParametersBase &);
   static RecipeBase * create(const std::string name);
-  static std::unique_ptr<RecipeParametersBase> createParameters(const std::string &);
+  static std::unique_ptr<RecipeParametersBase>
+                                        createParameters(const std::string &);
 
   static std::vector<std::string> getMakerNames() {
     return oops::keys(getMakers());
   }
 
   virtual ~RecipeFactory() = default;
+
  protected:
   explicit RecipeFactory(const std::string &);
+
  private:
   virtual RecipeBase* make(const RecipeParametersBase &) = 0;
   virtual RecipeBase* make() = 0;
@@ -109,19 +108,19 @@ class RecipeFactory {
 
 template<class T>
 class RecipeMaker : public RecipeFactory {
-  typedef typename T::Parameters_ Parameters_;
-  virtual RecipeBase * make(const RecipeParametersBase & params) override {
-    const auto &stronglyTypedParams = dynamic_cast<const Parameters_&>(params);
-    return new T(stronglyTypedParams);
-  }
-  virtual RecipeBase * make() override { return new T(); }
- 
-   std::unique_ptr<RecipeParametersBase> makeParameters() const override {
-    return std::make_unique<Parameters_>();
-  }
+    typedef typename T::Parameters_ Parameters_;
+    RecipeBase * make(const RecipeParametersBase & params) override {
+        const auto &stronglyTypedParams =
+            dynamic_cast<const Parameters_&>(params);
+        return new T(stronglyTypedParams);
+    }
+    RecipeBase * make() override { return new T(); }
+    std::unique_ptr<RecipeParametersBase> makeParameters() const override {
+        return std::make_unique<Parameters_>();
+    }
 
  public:
-  explicit RecipeMaker(const std::string & name) : RecipeFactory(name) {}
+     explicit RecipeMaker(const std::string & name) : RecipeFactory(name) {}
 };
 
 // -----------------------------------------------------------------------------
@@ -129,10 +128,10 @@ class RecipeParametersWrapper : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(RecipeParametersWrapper, Parameters)
 
  public:
-  oops::RequiredPolymorphicParameter<RecipeParametersBase, RecipeFactory> recipeParams{
-     "recipe name",
-     this};
-
+    oops::RequiredPolymorphicParameter<RecipeParametersBase, RecipeFactory>
+        recipeParams {
+        recipeNameString,
+        this};
 };
 // -----------------------------------------------------------------------------
 

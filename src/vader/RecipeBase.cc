@@ -31,8 +31,8 @@ RecipeFactory::RecipeFactory(const std::string & name) {
 
 RecipeBase * RecipeFactory::create(const std::string name,
                                    const RecipeParametersBase & params) {
-  oops::Log::trace() << "RecipeFactory::create(name, params) starting for name: " << name <<
-    std::endl;
+  oops::Log::trace() << "RecipeFactory::create(name, params) starting for "
+    "name: " << name << std::endl;
   typename std::map<std::string, RecipeFactory*>::iterator jloc =
     getMakers().find(name);
   if (jloc == getMakers().end()) {
@@ -41,16 +41,16 @@ RecipeBase * RecipeFactory::create(const std::string name,
     ABORT("Element does not exist in vader::RecipeFactory.");
   }
   RecipeBase * ptr = jloc->second->make(params);
-  oops::Log::trace() << "RecipeFactory::create(name, params) finished for name: " << name <<
-    std::endl;
+  oops::Log::trace() << "RecipeFactory::create(name, params) finished for "
+    "name: " << name << std::endl;
   return ptr;
 }
 
 // -----------------------------------------------------------------------------
 
 RecipeBase * RecipeFactory::create(const std::string name) {
-  oops::Log::trace() << "RecipeFactory::create(name) starting for name: " << name <<
-    std::endl;
+  oops::Log::trace() << "RecipeFactory::create(name) starting for name: "
+    << name << std::endl;
   typename std::map<std::string, RecipeFactory*>::iterator jloc =
     getMakers().find(name);
   if (jloc == getMakers().end()) {
@@ -59,12 +59,12 @@ RecipeBase * RecipeFactory::create(const std::string name) {
     ABORT("Element does not exist in vader::RecipeFactory.");
   }
   RecipeBase * ptr = jloc->second->make();
-  oops::Log::trace() << "RecipeFactory::create(name) finished for name: " << name <<
-    std::endl;
+  oops::Log::trace() << "RecipeFactory::create(name) finished for name: "
+    << name << std::endl;
   return ptr;
 }
 
-// -------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 std::unique_ptr<RecipeParametersBase>
 RecipeFactory::createParameters(const std::string &name) {

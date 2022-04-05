@@ -21,7 +21,7 @@ namespace vader
 // -----------------------------------------------------------------------------
 
 // Static attribute initialization
-const std::string TempToPTemp::Name = "TempToPTemp";
+const char TempToPTemp::Name[] = "TempToPTemp";
 const std::vector<std::string> TempToPTemp::Ingredients = {VV_TS, VV_PS};
 const double default_kappa = 0.2857;
 const double p0_not_in_params = -1.0;
@@ -43,8 +43,10 @@ TempToPTemp::TempToPTemp(const Parameters_ &params) :
     kappa_{params.kappa.value()}
 {
     oops::Log::trace() << "TempToPTemp::TempToPTemp(params)" << std::endl;
-    oops::Log::debug() << "TempToPTemp params p0 value: " << params.p0.value() << std::endl;
-    oops::Log::debug() << "TempToPTemp params kappa value: " << params.kappa.value() << std::endl;
+    oops::Log::debug() << "TempToPTemp params p0 value: " << params.p0.value()
+        << std::endl;
+    oops::Log::debug() << "TempToPTemp params kappa value: "
+        << params.kappa.value() << std::endl;
 }
 
 std::string TempToPTemp::name() const
@@ -61,7 +63,8 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
 {
     bool potential_temperature_filled = false;
 
-    oops::Log::trace() << "entering TempToPTemp::execute function" << std::endl;
+    oops::Log::trace() << "entering TempToPTemp::execute function"
+        << std::endl;
 
     atlas::Field temperature = afieldset->field(VV_TS);
     atlas::Field surface_pressure = afieldset->field(VV_PS);
@@ -72,9 +75,8 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
     surface_pressure.metadata().get("units", ps_units);
     if (p0_ == p0_not_in_params)
     {
-        oops::Log::debug() << "TempToPTemp: p0 not in parameters. Deducing value "
-            "from pressure units." << std::endl;
-        // If p0 not specified in config, determine it from surface_pressure units
+        oops::Log::debug() << "TempToPTemp: p0 not in parameters. Deducing "
+            "value from pressure units." << std::endl;
         if (ps_units == "Pa")
         {
             p0_ = default_Pa_p0;
@@ -82,7 +84,7 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
             p0_ = default_hPa_p0;
         } else {
             oops::Log::error() <<
-               "TempToPTemp::execute failed because p0 could not be determined."
+              "TempToPTemp::execute failed because p0 could not be determined."
                << std::endl;
             return false;
         }
@@ -94,7 +96,8 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
     std::endl;
 
     auto temperature_view = atlas::array::make_view<double, 2>(temperature);
-    auto surface_pressure_view = atlas::array::make_view<double, 1>(surface_pressure);
+    auto surface_pressure_view =
+        atlas::array::make_view<double, 1>(surface_pressure);
     auto potential_temperature_view =
         atlas::array::make_view<double, 2>(potential_temperature);
 
@@ -102,9 +105,10 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
 
     int nlevels = temperature.levels();
     for (int level = 0; level < nlevels; ++level) {
-      for ( size_t jnode = 0; jnode < grid_size ; ++ jnode ) {
-        potential_temperature_view(jnode, level) = temperature_view(jnode, level) *
-                                                   pow(p0_ / surface_pressure_view(jnode), kappa_);
+      for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
+        potential_temperature_view(jnode, level) =
+            temperature_view(jnode, level) *
+            pow(p0_ / surface_pressure_view(jnode), kappa_);
       }
     }
 
