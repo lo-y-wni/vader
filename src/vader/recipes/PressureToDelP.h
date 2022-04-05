@@ -12,7 +12,7 @@
 #include <string>
 
 #include "atlas/field/FieldSet.h"
-#include "vader/vader/RecipeBase.h"
+#include "vader/RecipeBase.h"
 
 namespace vader
 {

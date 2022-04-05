@@ -12,8 +12,8 @@
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
-#include "vader/vader/vadervariables.h"
-#include "vader/vader/recipes/PressureToDelP.h"
+#include "vader/vadervariables.h"
+#include "vader/recipes/PressureToDelP.h"
 
 namespace vader
 {

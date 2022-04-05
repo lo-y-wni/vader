@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-#include "vader/vader/recipe.h"
+#include "vader/recipe.h"
 
 namespace vader
 {

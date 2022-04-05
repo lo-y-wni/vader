@@ -13,7 +13,7 @@
 
 #include "eckit/config/Configuration.h"
 #include "atlas/field/FieldSet.h"
-#include "vader/vader/RecipeBase.h"
+#include "vader/RecipeBase.h"
 #include "oops/util/parameters/Parameter.h"
 #include "oops/util/parameters/RequiredParameter.h"
 

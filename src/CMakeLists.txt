@@ -40,5 +40,7 @@ add_custom_target(${PROJECT_NAME}_headers ALL
                     COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILD_DIR_INCLUDE_PATH}
                     COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR} ${BUILD_DIR_INCLUDE_PATH}/${PROJECT_NAME})
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_headers)
-target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${BUILD_DIR_INCLUDE_PATH}>)
 
+## Include paths
+target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+                                      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
