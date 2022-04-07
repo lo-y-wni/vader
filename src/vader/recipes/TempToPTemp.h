@@ -8,13 +8,13 @@
 #ifndef SRC_VADER_RECIPES_TEMPTOPTEMP_H_
 #define SRC_VADER_RECIPES_TEMPTOPTEMP_H_
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "atlas/field/FieldSet.h"
-#include "vader/RecipeBase.h"
 #include "oops/util/parameters/Parameter.h"
 #include "oops/util/parameters/RequiredParameter.h"
+#include "vader/RecipeBase.h"
 
 namespace vader {
 

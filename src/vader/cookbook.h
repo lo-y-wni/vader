@@ -8,17 +8,17 @@
 #ifndef SRC_VADER_COOKBOOK_H_
 #define SRC_VADER_COOKBOOK_H_
 
-#include <vector>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "oops/util/Logger.h"
 #include "vader/vader.h"
 #include "vader/vadervariables.h"
 
 // Recipe headers
-#include "recipes/TempToPTemp.h"
 #include "recipes/PressureToDelP.h"
+#include "recipes/TempToPTemp.h"
 
 namespace vader
 {
@@ -27,9 +27,7 @@ namespace vader
 // This defines the recipes used (and their priority) by default in Vader
 // (Recipes can be added, removed, or rearranged in cookbook by specifying in
 //  yaml.)
-std::unordered_map<std::string, std::vector<std::string>>
-Vader::getDefaultCookbookDef()
-{
+std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
     return {
         // This defines the default Vader Cookbook
         // Key: name of the variable produced by all the recipes in the Value

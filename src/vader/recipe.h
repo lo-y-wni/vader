@@ -9,13 +9,13 @@
 #define SRC_VADER_RECIPE_H_
 
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <boost/noncopyable.hpp>
 
-#include "oops/util/Printable.h"
 #include "atlas/field/FieldSet.h"
+#include "oops/util/Printable.h"
 #include "vader/RecipeBase.h"
 
 namespace vader {

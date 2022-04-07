@@ -8,8 +8,8 @@
 #ifndef SRC_VADER_RECIPES_PRESSURETODELP_H_
 #define SRC_VADER_RECIPES_PRESSURETODELP_H_
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "atlas/field/FieldSet.h"
 #include "vader/RecipeBase.h"

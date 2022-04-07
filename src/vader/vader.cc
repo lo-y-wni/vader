@@ -5,19 +5,19 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <utility>
-#include <unordered_map>
 #include <algorithm>
+#include <iostream>
+#include <memory>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
-#include "vader/vader.h"
 #include "vader/cookbook.h"
+#include "vader/vader.h"
 
 namespace vader {
 
@@ -51,11 +51,9 @@ void Vader::createCookbook(std::unordered_map<std::string,
                 }
             }
             if (!parametersFound) {
-                auto emptyRecipeParams =
-                    RecipeFactory::createParameters(recipeName);
+                auto emptyRecipeParams = RecipeFactory::createParameters(recipeName);
                 recipes.push_back(std::unique_ptr<RecipeBase>
-                              (RecipeFactory::create(recipeName,
-                                *emptyRecipeParams)));
+                                  (RecipeFactory::create(recipeName, *emptyRecipeParams)));
             }
         }
         cookbook_[defEntry.first] = std::move(recipes);

@@ -8,16 +8,16 @@
 #ifndef SRC_VADER_VADER_H_
 #define SRC_VADER_VADER_H_
 
-#include <unordered_map>
 #include <memory>
-#include <vector>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
+#include "RecipeBase.h"
 #include "VaderParameters.h"
 
-#include "RecipeBase.h"
 
 namespace vader {
 

@@ -7,8 +7,8 @@
 
 #include "vader/RecipeBase.h"
 
-#include <vector>
 #include <map>
+#include <vector>
 
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"

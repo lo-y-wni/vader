@@ -18,9 +18,9 @@
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
 #include "oops/util/AssociativeContainers.h"
-#include "oops/util/parameters/RequiredPolymorphicParameter.h"
 #include "oops/util/parameters/Parameters.h"
 #include "oops/util/parameters/RequiredParameter.h"
+#include "oops/util/parameters/RequiredPolymorphicParameter.h"
 #include "oops/util/Printable.h"
 
 namespace vader {
