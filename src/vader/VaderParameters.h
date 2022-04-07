@@ -20,10 +20,12 @@ class VaderParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(VaderParameters, Parameters)
 
  public:
+  /// Vader's design is that it should not have any RequiredParameters
+  ///
   /// An optional `recipeParams` parameter, which contains an (optional)
   /// list of Parameter (wrappers), each of which contains parameters
   /// which configure one of the individual recipes.
-  /// Recipies should be designed so that they can be used with a
+  /// Recipies should also be designed so that they can be used with a
   /// default configuration and no parameters.
   oops::OptionalParameter<std::vector<RecipeParametersWrapper>> recipeParams{
      "recipe parameters",
