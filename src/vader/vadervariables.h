@@ -83,8 +83,7 @@ const char VV_TB_CLR[]      = "brightness_temperature_assuming_clear_sky";
 const char VV_TOTAL_TRANSMIT[]= "toa_total_transmittance";
 const char VV_LVL_TRANSMIT[]= "transmittances_of_atmosphere_layer";
 const char VV_LVL_WEIGHTFUNC[]= "weightingfunction_of_atmosphere_layer";
-const char VV_PMAXLEV_WEIGHTFUNC[]=
-    "pressure_level_at_peak_of_weightingfunction";
+const char VV_PMAXLEV_WEIGHTFUNC[]= "pressure_level_at_peak_of_weightingfunction";
 const char VV_TSAVG5[]    = "average_surface_temperature_within_field_of_view";
 const char VV_SEA_FRIC_VEL[]= "friction_velocity_over_water";
 const char VV_REFL[]        = "equivalent_reflectivity_factor";
@@ -126,20 +125,15 @@ const char VV_SS004[] = "mass_fraction_of_sea_salt004_in_air";
 const char VV_SS005[] = "mass_fraction_of_sea_salt005_in_air";
 const char VV_BCPHOBIC[] = "mass_fraction_of_hydrophobic_black_carbon_in_air";
 const char VV_BCPHILIC[] = "mass_fraction_of_hydrophilic_black_carbon_in_air";
-const char VV_OCPHOBIC[] =
-    "mass_fraction_of_hydrophobic_organic_carbon_in_air";
-const char VV_OCPHILIC[] =
-    "mass_fraction_of_hydrophilic_organic_carbon_in_air";
+const char VV_OCPHOBIC[] = "mass_fraction_of_hydrophobic_organic_carbon_in_air";
+const char VV_OCPHILIC[] = "mass_fraction_of_hydrophilic_organic_carbon_in_air";
 const char VV_SULFATE[] = "mass_fraction_of_sulfate_in_air";
 const char VV_NO3AN1[] = "mass_fraction_of_nitrate001_in_air";
 const char VV_NO3AN2[] = "mass_fraction_of_nitrate002_in_air";
 const char VV_NO3AN3[] = "mass_fraction_of_nitrate003_in_air";
-const char VV_EXT1[] =
-    "volume_extinction_in_air_due_to_aerosol_particles_lambda1";
-const char VV_EXT2[] =
-    "volume_extinction_in_air_due_to_aerosol_particles_lambda2";
-const char VV_EXT3[] =
-    "volume_extinction_in_air_due_to_aerosol_particles_lambda3";
+const char VV_EXT1[] = "volume_extinction_in_air_due_to_aerosol_particles_lambda1";
+const char VV_EXT2[] = "volume_extinction_in_air_due_to_aerosol_particles_lambda2";
+const char VV_EXT3[] = "volume_extinction_in_air_due_to_aerosol_particles_lambda3";
 const char VV_AIRDENS[] = "moist_air_density";
 
 }  // namespace vader
