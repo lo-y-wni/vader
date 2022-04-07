@@ -15,14 +15,6 @@ vader/recipes/PressureToDelP.h
 vader/recipes/PressureToDelP.cc
 )
 
-# if (VADER_BUILD_LANGUAGE_FORTRAN)
-#   list( APPEND vader_src_files obsspace_mod.F90)
-# endif()
-
-# list( APPEND vader_fortran_interface_includes
-# obsspace_interface.f
-# )
-
 include(GNUInstallDirs)
 ecbuild_add_library( TARGET ${PROJECT_NAME}
                      SOURCES ${${PROJECT_NAME}_src_files}
@@ -30,8 +22,6 @@ ecbuild_add_library( TARGET ${PROJECT_NAME}
                      HEADER_DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
                      LINKER_LANGUAGE CXX )
 
-# target_link_libraries( ${PROJECT_NAME} PUBLIC NetCDF::NetCDF_C )
-# target_link_libraries( ${PROJECT_NAME} PUBLIC fckit )
 target_link_libraries( ${PROJECT_NAME} PUBLIC ${oops_LIBRARIES} ) #TODO: Change to "oops::oops" once oops adds namespace support
 
 #Configure include directory layout for build-tree to match install-tree
