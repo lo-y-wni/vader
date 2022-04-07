@@ -10,7 +10,6 @@
 #include <vector>
 #include <map>
 
-#include "eckit/config/Configuration.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
 

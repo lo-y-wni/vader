@@ -15,7 +15,6 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "eckit/config/Configuration.h"
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
 #include "oops/util/AssociativeContainers.h"

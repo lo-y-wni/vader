@@ -11,7 +11,6 @@
 #include <vector>
 #include <string>
 
-#include "eckit/config/Configuration.h"
 #include "atlas/field/FieldSet.h"
 #include "vader/RecipeBase.h"
 #include "oops/util/parameters/Parameter.h"
