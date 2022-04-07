@@ -41,7 +41,7 @@ class TempToPTempParameters : public RecipeParametersBase {
  */
 class TempToPTemp : public RecipeBase {
  public:
-    static const std::string Name;
+    static const char Name[];
     static const std::vector<std::string> Ingredients;
 
     typedef TempToPTempParameters Parameters_;

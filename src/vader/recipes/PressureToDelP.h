@@ -33,7 +33,7 @@ class PressureToDelPParameters : public RecipeParametersBase {
 class PressureToDelP : public RecipeBase
 {
  public:
-    static const std::string Name;
+    static const char Name[];
     static const std::vector<std::string> Ingredients;
 
     typedef PressureToDelPParameters Parameters_;
