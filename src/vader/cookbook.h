@@ -23,7 +23,7 @@
 namespace vader
 {
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // This defines the recipes used (and their priority) by default in Vader
 // (Recipes can be added, removed, or rearranged in cookbook by specifying in
 //  yaml.)

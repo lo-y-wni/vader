@@ -15,7 +15,7 @@
 
 namespace vader {
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 RecipeFactory::RecipeFactory(const std::string & name) {
   if (getMakers().find(name) != getMakers().end()) {
@@ -26,26 +26,24 @@ RecipeFactory::RecipeFactory(const std::string & name) {
   getMakers()[name] = this;
 }
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 RecipeBase * RecipeFactory::create(const std::string name,
                                    const RecipeParametersBase & params) {
-  oops::Log::trace() << "RecipeFactory::create(name, params) starting for "
-    "name: " << name << std::endl;
-  typename std::map<std::string, RecipeFactory*>::iterator jloc =
-    getMakers().find(name);
+  oops::Log::trace() << "RecipeFactory::create(name, params) starting for name: " << name <<
+    std::endl;
+  typename std::map<std::string, RecipeFactory*>::iterator jloc = getMakers().find(name);
   if (jloc == getMakers().end()) {
-    oops::Log::error() << name << " does not exist in vader::RecipeFactory." <<
-      std::endl;
+    oops::Log::error() << name << " does not exist in vader::RecipeFactory." << std::endl;
     ABORT("Element does not exist in vader::RecipeFactory.");
   }
   RecipeBase * ptr = jloc->second->make(params);
-  oops::Log::trace() << "RecipeFactory::create(name, params) finished for "
-    "name: " << name << std::endl;
+  oops::Log::trace() << "RecipeFactory::create(name, params) finished for name: " << name <<
+    std::endl;
   return ptr;
 }
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 RecipeBase * RecipeFactory::create(const std::string name) {
   oops::Log::trace() << "RecipeFactory::create(name) starting for name: "
@@ -53,17 +51,15 @@ RecipeBase * RecipeFactory::create(const std::string name) {
   typename std::map<std::string, RecipeFactory*>::iterator jloc =
     getMakers().find(name);
   if (jloc == getMakers().end()) {
-    oops::Log::error() << name << " does not exist in vader::RecipeFactory." <<
-      std::endl;
+    oops::Log::error() << name << " does not exist in vader::RecipeFactory." << std::endl;
     ABORT("Element does not exist in vader::RecipeFactory.");
   }
   RecipeBase * ptr = jloc->second->make();
-  oops::Log::trace() << "RecipeFactory::create(name) finished for name: "
-    << name << std::endl;
+  oops::Log::trace() << "RecipeFactory::create(name) finished for name: " << name << std::endl;
   return ptr;
 }
 
-// ----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 std::unique_ptr<RecipeParametersBase>
 RecipeFactory::createParameters(const std::string &name) {
@@ -79,6 +75,6 @@ void RecipeBase::print(std::ostream & os) const {
   os << name();
 }
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 }  // namespace vader

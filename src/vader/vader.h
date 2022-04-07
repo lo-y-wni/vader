@@ -21,7 +21,7 @@
 
 namespace vader {
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /*! \brief Vader class to handle variable transformations
  *
  *  \details This class provides generic variable transformations via the

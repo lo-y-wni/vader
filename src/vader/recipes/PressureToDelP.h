@@ -27,7 +27,7 @@ class PressureToDelPParameters : public RecipeParametersBase {
      // No parameters for this recipe currently
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /// Recipe base class
 
 class PressureToDelP : public RecipeBase

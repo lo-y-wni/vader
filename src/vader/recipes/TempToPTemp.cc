@@ -18,7 +18,7 @@
 
 namespace vader
 {
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 // Static attribute initialization
 const char TempToPTemp::Name[] = "TempToPTemp";
@@ -84,8 +84,7 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
             p0_ = default_hPa_p0;
         } else {
             oops::Log::error() <<
-              "TempToPTemp::execute failed because p0 could not be determined."
-               << std::endl;
+              "TempToPTemp::execute failed because p0 could not be determined." << std::endl;
             return false;
         }
     }
@@ -96,10 +95,8 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
     std::endl;
 
     auto temperature_view = atlas::array::make_view<double, 2>(temperature);
-    auto surface_pressure_view =
-        atlas::array::make_view<double, 1>(surface_pressure);
-    auto potential_temperature_view =
-        atlas::array::make_view<double, 2>(potential_temperature);
+    auto surface_pressure_view = atlas::array::make_view<double, 1>(surface_pressure);
+    auto potential_temperature_view = atlas::array::make_view<double, 2>(potential_temperature);
 
     size_t grid_size = surface_pressure.size();
 
@@ -107,8 +104,7 @@ bool TempToPTemp::execute(atlas::FieldSet *afieldset)
     for (int level = 0; level < nlevels; ++level) {
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         potential_temperature_view(jnode, level) =
-            temperature_view(jnode, level) *
-            pow(p0_ / surface_pressure_view(jnode), kappa_);
+            temperature_view(jnode, level) * pow(p0_ / surface_pressure_view(jnode), kappa_);
       }
     }
 

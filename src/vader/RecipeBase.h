@@ -27,7 +27,7 @@ namespace vader {
 
 static const char * recipeNameString = "recipe name";
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class RecipeParametersBase : public oops::Parameters {
   OOPS_ABSTRACT_PARAMETERS(RecipeParametersBase, Parameters)
 
@@ -37,7 +37,7 @@ class RecipeParametersBase : public oops::Parameters {
      this};
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /*! \brief RecipeBase class defines interface for individual variable
            transformations.
  *
@@ -71,7 +71,7 @@ class RecipeBase : public util::Printable,
   virtual void print(std::ostream &) const;
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 /// Recipe Factory
 class RecipeFactory {
@@ -79,8 +79,7 @@ class RecipeFactory {
   static RecipeBase * create(const std::string name,
                              const RecipeParametersBase &);
   static RecipeBase * create(const std::string name);
-  static std::unique_ptr<RecipeParametersBase>
-                                        createParameters(const std::string &);
+  static std::unique_ptr<RecipeParametersBase> createParameters(const std::string &);
 
   static std::vector<std::string> getMakerNames() {
     return oops::keys(getMakers());
@@ -103,14 +102,13 @@ class RecipeFactory {
   }
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 template<class T>
 class RecipeMaker : public RecipeFactory {
     typedef typename T::Parameters_ Parameters_;
     RecipeBase * make(const RecipeParametersBase & params) override {
-        const auto &stronglyTypedParams =
-            dynamic_cast<const Parameters_&>(params);
+        const auto &stronglyTypedParams = dynamic_cast<const Parameters_&>(params);
         return new T(stronglyTypedParams);
     }
     RecipeBase * make() override { return new T(); }
@@ -122,17 +120,16 @@ class RecipeMaker : public RecipeFactory {
      explicit RecipeMaker(const std::string & name) : RecipeFactory(name) {}
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class RecipeParametersWrapper : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(RecipeParametersWrapper, Parameters)
 
  public:
-    oops::RequiredPolymorphicParameter<RecipeParametersBase, RecipeFactory>
-        recipeParams {
+    oops::RequiredPolymorphicParameter<RecipeParametersBase, RecipeFactory> recipeParams {
         recipeNameString,
         this};
 };
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 }  // namespace vader
 

@@ -29,7 +29,7 @@ class TempToPTempParameters : public RecipeParametersBase {
   oops::Parameter<double> kappa{"kappa", "kappa", 0.2857, this};
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /*! \brief TempToPTemp class defines a recipe for potential temperature
  *
  *  \details This instantiation of RecipeBase produces potential temperature
