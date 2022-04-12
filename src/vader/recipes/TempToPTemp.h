@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2021 UCAR
+ * (C) Copyright 2021-2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,16 +8,28 @@
 #ifndef SRC_VADER_RECIPES_TEMPTOPTEMP_H_
 #define SRC_VADER_RECIPES_TEMPTOPTEMP_H_
 
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "eckit/config/Configuration.h"
 #include "atlas/field/FieldSet.h"
-#include "vader/vader/RecipeBase.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/RequiredParameter.h"
+#include "vader/RecipeBase.h"
 
 namespace vader {
 
-// -----------------------------------------------------------------------------
+class TempToPTempParameters : public RecipeParametersBase {
+  OOPS_CONCRETE_PARAMETERS(TempToPTempParameters, RecipeParametersBase)
+
+ public:
+  oops::RequiredParameter<std::string> name{
+     "recipe name",
+     this};
+  oops::Parameter<double> p0{"p0", "p-naught", -1.0, this};
+  oops::Parameter<double> kappa{"kappa", "kappa", 0.2857, this};
+};
+
+// ------------------------------------------------------------------------------------------------
 /*! \brief TempToPTemp class defines a recipe for potential temperature
  *
  *  \details This instantiation of RecipeBase produces potential temperature
@@ -28,10 +40,13 @@ namespace vader {
  */
 class TempToPTemp : public RecipeBase {
  public:
-    static const std::string Name;
+    static const char Name[];
     static const std::vector<std::string> Ingredients;
 
-    explicit TempToPTemp(const eckit::Configuration &);
+    typedef TempToPTempParameters Parameters_;
+
+    TempToPTemp();
+    explicit TempToPTemp(const Parameters_ &);
 
     // Recipe base class overrides
     std::string name() const override;

@@ -5,55 +5,84 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <utility>
-#include <unordered_map>
 #include <algorithm>
+#include <iostream>
+#include <memory>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
-#include "vader/vader/vader.h"
-#include "vader/vader/cookbook.h"
+#include "vader/cookbook.h"
+#include "vader/vader.h"
 
 namespace vader {
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 Vader::~Vader() {
     oops::Log::trace() << "Vader::~Vader done" << std::endl;
 }
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void Vader::createCookbook(std::unordered_map<std::string,
                                               std::vector<std::string>>
-                                             definition,
-                           const eckit::Configuration & config) {
+                                              definition,
+                        const std::vector<RecipeParametersWrapper> &
+                    allRecpParamWraps) {
     oops::Log::trace() << "entering Vader::createCookbook" << std::endl;
     std::vector<std::unique_ptr<RecipeBase>> recipes;
     for (auto defEntry : definition) {
         recipes.clear();
         for (auto recipeName : defEntry.second) {
-            recipes.push_back(std::unique_ptr<RecipeBase>
-                              (RecipeFactory::create(recipeName, config)));
+            // There might not be any recipe parameters at all.
+            // There might not be parameters for THIS recipe.
+            // We must prepare for all eventualities.
+            bool parametersFound = false;
+            for (auto & singleRecpParamWrap : allRecpParamWraps) {
+                if (singleRecpParamWrap.recipeParams.value().name.value()
+                                                            == recipeName) {
+                    recipes.push_back(std::unique_ptr<RecipeBase>
+                        (RecipeFactory::create(recipeName,
+                            singleRecpParamWrap.recipeParams)));
+                    parametersFound = true;
+                    break;
+                }
+            }
+            if (!parametersFound) {
+                auto emptyRecipeParams = RecipeFactory::createParameters(recipeName);
+                recipes.push_back(std::unique_ptr<RecipeBase>
+                                  (RecipeFactory::create(recipeName, *emptyRecipeParams)));
+            }
         }
         cookbook_[defEntry.first] = std::move(recipes);
     }
     oops::Log::trace() << "leaving Vader::createCookbook" << std::endl;
 }
-// -----------------------------------------------------------------------------
-Vader::Vader(const eckit::Configuration & config) {
+// ------------------------------------------------------------------------------------------------
+Vader::Vader(const VaderParameters & parameters) {
     util::Timer timer(classname(), "Vader");
+    // TODO(vahl): Parameters can alter the default cookbook here
     std::unordered_map<std::string, std::vector<std::string>> definition =
         getDefaultCookbookDef();
-    oops::Log::trace() << "entering Vader::Vader(config) " << std::endl;
-    oops::Log::debug() << "Vader::Vader config = " << config << std::endl;
+    oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
+    oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
 
-    // TODO::Configuration can alter the default cookbook here
-    createCookbook(definition, config);
+    // Vader is designed to function without parameters. So VaderParameters
+    // should not have any RequiredParameters.
+    //
+    // To simplify things for vader clients, they should declare vader Parameters with a
+    // default construction of empty/default VaderParameters. i.e. their Parameters should contain:
+    // oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
+    //
+    if (parameters.recipeParams.value() == boost::none) {
+        createCookbook(definition);
+    } else {
+        createCookbook(definition, *parameters.recipeParams.value());
+    }
 }
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /*! \brief Change Variable
 *
 * \details **changeVar** is the only method of Vader that will be called
@@ -77,8 +106,7 @@ void Vader::changeVar(atlas::FieldSet * afieldset,
                       oops::Variables & neededVars) const {
     util::Timer timer(classname(), "changeVar");
     oops::Log::trace() << "entering Vader::changeVar " << std::endl;
-    oops::Log::debug() << "neededVars passed to Vader::changeVar: "
-        << neededVars << std::endl;
+    oops::Log::debug() << "neededVars passed to Vader::changeVar: " << neededVars << std::endl;
 
     oops::Variables ingredients{};
 
@@ -94,11 +122,11 @@ void Vader::changeVar(atlas::FieldSet * afieldset,
             << targetVariable << std::endl;
         getVariable(afieldset, neededVars, targetVariable);
     }
-    oops::Log::debug() << "neededVars remaining after Vader::changeVar: " <<
-        neededVars << std::endl;
+    oops::Log::debug() << "neededVars remaining after Vader::changeVar: " << neededVars
+        << std::endl;
     oops::Log::trace() << "leaving Vader::changeVar: " << std::endl;
 }
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /*! \brief Get Variable
 *
 * \details **getVariable** contains Vader's primary algorithm for attempting to
@@ -120,16 +148,15 @@ bool Vader::getVariable(atlas::FieldSet * afieldset,
                         const std::string targetVariable) const {
     bool variableFilled = false;
 
-    oops::Log::trace() << "entering Vader::getVariable for variable: " <<
-        targetVariable << std::endl;
+    oops::Log::trace() << "entering Vader::getVariable for variable: " << targetVariable <<
+        std::endl;
 
     auto fieldSetFieldNames = afieldset->field_names();
 
     if (std::find(fieldSetFieldNames.begin(),
         fieldSetFieldNames.end(), targetVariable) == fieldSetFieldNames.end()) {
         oops::Log::debug() << "Field '" << targetVariable <<
-            "' is not allocated the fieldset. Vader cannot make it."
-            << std::endl;
+            "' is not allocated the fieldset. Vader cannot make it." << std::endl;
         oops::Log::trace() << "leaving Vader::getVariable for variable: " <<
             targetVariable << std::endl;
         return false;
@@ -151,44 +178,36 @@ bool Vader::getVariable(atlas::FieldSet * afieldset,
     // to Recipe objects that produce 'variableName'
     if ((recipeList != cookbook_.end()) && !recipeList->second.empty()) {
         oops::Log::debug() <<
-            "Vader cookbook contains at least one recipe for '" <<
-            targetVariable << "'" << std::endl;
+            "Vader cookbook contains at least one recipe for '" << targetVariable << "'" <<
+            std::endl;
         for (int i=0; i < recipeList->second.size(); ++i) {
-            oops::Log::debug() <<
-                "Checking to see if we have ingredients for recipe: " <<
+            oops::Log::debug() << "Checking to see if we have ingredients for recipe: " <<
                 recipeList->second[i]->name() << std::endl;
             bool haveIngredient = false;
             for (auto ingredient : recipeList->second[i]->ingredients()) {
                 if (ingredient == targetVariable) {
                     oops::Log::error() << "Error: Ingredient list for " <<
-                        recipeList->second[i]->name() << " contains the target."
-                        << std::endl;
+                        recipeList->second[i]->name() << " contains the target." << std::endl;
                     // This could cause infinite recursion if we didn't check.
-                    // TODO: infinite recursion probably still possible with
-                    //       badly-constructed cookbook.
+                    // TODO(vahl): infinite recursion probably still possible
+                    //       with badly-constructed cookbook.
                     break;
                 }
                 haveIngredient =
-                    (std::find(fieldSetFieldNames.begin(),
-                               fieldSetFieldNames.end(),
-                               ingredient) != fieldSetFieldNames.end()) &&
-                    (!neededVars.has(ingredient));
+                    (std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient)
+                        != fieldSetFieldNames.end()) && (!neededVars.has(ingredient));
                 if (!haveIngredient) {
                     oops::Log::debug() << "ingredient " << ingredient <<
-                        " not found. Recursively checking if Vader can make it."
-                        << std::endl;
-                    haveIngredient = getVariable(afieldset, neededVars,
-                                                 ingredient);
+                        " not found. Recursively checking if Vader can make it." << std::endl;
+                    haveIngredient = getVariable(afieldset, neededVars, ingredient);
                 }
                 oops::Log::debug() << "ingredient " << ingredient <<
-                    (haveIngredient ? " is" : " is not") << " available." <<
-                    std::endl;
+                    (haveIngredient ? " is" : " is not") << " available." << std::endl;
                 if (!haveIngredient) break;
             }
             if (haveIngredient) {
                 oops::Log::debug() <<
-                    "All ingredients are in the fieldset. Executing the recipe."
-                    << std::endl;
+                    "All ingredients are in the fieldset. Executing the recipe." << std::endl;
                 // Potentially a recipe might require set-up that should only be
                 // performed the first time
                 if (recipeList->second[i]->requiresSetup()) {
@@ -206,8 +225,7 @@ bool Vader::getVariable(atlas::FieldSet * afieldset,
                         << recipeList->second[i]->name() << std::endl;
                 }
             } else {
-                oops::Log::debug() <<
-                    "Do not have all the ingredients for this recipe." <<
+                oops::Log::debug() << "Do not have all the ingredients for this recipe." <<
                     std::endl;
             }
         }
@@ -215,8 +233,8 @@ bool Vader::getVariable(atlas::FieldSet * afieldset,
         oops::Log::debug() << "Vader cookbook does not contain a recipe for: "
             << targetVariable << std::endl;
     }
-    oops::Log::trace() << "leaving Vader::getVariable for variable: " <<
-        targetVariable << std::endl;
+    oops::Log::trace() << "leaving Vader::getVariable for variable: " << targetVariable <<
+        std::endl;
     return variableFilled;
 }
 

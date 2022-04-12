@@ -8,19 +8,20 @@
 #ifndef SRC_VADER_VADER_H_
 #define SRC_VADER_VADER_H_
 
-#include <unordered_map>
 #include <memory>
-#include <vector>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
-
 #include "RecipeBase.h"
+#include "VaderParameters.h"
+
 
 namespace vader {
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /*! \brief Vader class to handle variable transformations
  *
  *  \details This class provides generic variable transformations via the
@@ -41,7 +42,7 @@ namespace vader {
 class Vader {
  public:
     static const std::string classname() {return "Vader";}
-    explicit Vader(const eckit::Configuration & config);
+    explicit Vader(const VaderParameters & parameters);
     ~Vader();
 
     /// Calculates as many variables in the list as possible
@@ -53,9 +54,9 @@ class Vader {
     std::unordered_map<std::string, std::vector<std::string>>
         getDefaultCookbookDef();
 
-    void createCookbook(std::unordered_map<std::string,
-                        std::vector<std::string>>,
-                        const eckit::Configuration &);
+    void createCookbook(std::unordered_map<std::string, std::vector<std::string>>,
+                        const std::vector<RecipeParametersWrapper> & allRecpParamWraps =
+                              std::vector<RecipeParametersWrapper>());
     bool getVariable(atlas::FieldSet * afieldset,
                      oops::Variables & neededVars,
                      const std::string targetVariable) const;

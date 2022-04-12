@@ -32,10 +32,6 @@ option( ENABLE_VADER_DOC "Build VADER documentation" OFF )
 
 # Required
 find_package( jedicmake QUIET )  # Prefer find modules from jedi-cmake
-# find_package( OpenMP COMPONENTS C CXX Fortran )
-# find_package( NetCDF REQUIRED COMPONENTS C )
-find_package( eckit 1.11.6 REQUIRED )
-# find_package( fckit 0.7.0 REQUIRED )
 find_package( oops 1.0.0 REQUIRED )
 
 ## Sources

@@ -8,21 +8,36 @@
 #ifndef SRC_VADER_RECIPEBASE_H_
 #define SRC_VADER_RECIPEBASE_H_
 
-#include <unordered_map>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include <boost/noncopyable.hpp>
 
-#include "eckit/config/Configuration.h"
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
+#include "oops/util/AssociativeContainers.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
+#include "oops/util/parameters/RequiredPolymorphicParameter.h"
 #include "oops/util/Printable.h"
 
 namespace vader {
 
-// -----------------------------------------------------------------------------
+static const char * recipeNameString = "recipe name";
+
+// ------------------------------------------------------------------------------------------------
+class RecipeParametersBase : public oops::Parameters {
+  OOPS_ABSTRACT_PARAMETERS(RecipeParametersBase, Parameters)
+
+ public:
+  oops::RequiredParameter<std::string> name{
+     recipeNameString,
+     this};
+};
+
+// ------------------------------------------------------------------------------------------------
 /*! \brief RecipeBase class defines interface for individual variable
            transformations.
  *
@@ -56,36 +71,65 @@ class RecipeBase : public util::Printable,
   virtual void print(std::ostream &) const;
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 /// Recipe Factory
 class RecipeFactory {
  public:
   static RecipeBase * create(const std::string name,
-                             const eckit::Configuration &);
+                             const RecipeParametersBase &);
+  static RecipeBase * create(const std::string name);
+  static std::unique_ptr<RecipeParametersBase> createParameters(const std::string &);
+
+  static std::vector<std::string> getMakerNames() {
+    return oops::keys(getMakers());
+  }
+
   virtual ~RecipeFactory() = default;
+
  protected:
   explicit RecipeFactory(const std::string &);
+
  private:
-  virtual RecipeBase* make(const std::string, const eckit::Configuration &) = 0;
-  static std::unordered_map < std::string, RecipeFactory * > & getMakers() {
-    static std::unordered_map < std::string, RecipeFactory * > makers_;
+  virtual RecipeBase* make(const RecipeParametersBase &) = 0;
+  virtual RecipeBase* make() = 0;
+
+  virtual std::unique_ptr<RecipeParametersBase> makeParameters() const = 0;
+
+  static std::map < std::string, RecipeFactory * > & getMakers() {
+    static std::map < std::string, RecipeFactory * > makers_;
     return makers_;
   }
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 template<class T>
 class RecipeMaker : public RecipeFactory {
-  virtual RecipeBase * make(const std::string name,
-                            const eckit::Configuration & conf)
-    { return new T(conf); }
+    typedef typename T::Parameters_ Parameters_;
+    RecipeBase * make(const RecipeParametersBase & params) override {
+        const auto &stronglyTypedParams = dynamic_cast<const Parameters_&>(params);
+        return new T(stronglyTypedParams);
+    }
+    RecipeBase * make() override { return new T(); }
+    std::unique_ptr<RecipeParametersBase> makeParameters() const override {
+        return std::make_unique<Parameters_>();
+    }
+
  public:
-  explicit RecipeMaker(const std::string & name) : RecipeFactory(name) {}
+     explicit RecipeMaker(const std::string & name) : RecipeFactory(name) {}
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+class RecipeParametersWrapper : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(RecipeParametersWrapper, Parameters)
+
+ public:
+    oops::RequiredPolymorphicParameter<RecipeParametersBase, RecipeFactory> recipeParams {
+        recipeNameString,
+        this};
+};
+// ------------------------------------------------------------------------------------------------
 
 }  // namespace vader
 

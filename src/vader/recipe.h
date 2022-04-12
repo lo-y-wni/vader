@@ -9,24 +9,26 @@
 #define SRC_VADER_RECIPE_H_
 
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <boost/noncopyable.hpp>
 
-#include "oops/util/Printable.h"
 #include "atlas/field/FieldSet.h"
-#include "vader/vader/RecipeBase.h"
+#include "oops/util/Printable.h"
+#include "vader/RecipeBase.h"
 
 namespace vader {
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /// Recipe class
 
 class Recipe  : public util::Printable,
                 private boost::noncopyable {
  public:
-    Recipe(const std::string, const eckit::Configuration &);
+    typedef RecipeParametersWrapper Parameters_;
+
+    Recipe(const std::string, const Parameters_ &);
 
     std::string name() const;
     std::vector<std::string> ingredients() const;
