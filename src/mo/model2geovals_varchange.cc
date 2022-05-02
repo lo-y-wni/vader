@@ -11,8 +11,8 @@
 #include "atlas/array.h"
 #include "atlas/functionspace.h"
 
-#include "lfrictransforms/model2geovals_varchange.h"
-#include "lfrictransforms/utils.h"
+#include "mo/model2geovals_varchange.h"
+#include "mo/utils.h"
 
 #include "oops/util/Logger.h"
 
