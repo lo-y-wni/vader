@@ -14,11 +14,12 @@ vader/recipes/TempToPTemp.cc
 vader/recipes/PressureToDelP.h
 vader/recipes/PressureToDelP.cc
 mo/common_varchange.h
+mo/model2geovals_linearvarchange.h
 mo/control2analysis_varchange.h
 mo/model2geovals_varchange.h
 mo/model2geovals_varchange.cc
-mo/model2geovals_linearvarchange.h
-mo/utils
+mo/utils.h
+mo/utils.cc
 )
 
 include(GNUInstallDirs)
