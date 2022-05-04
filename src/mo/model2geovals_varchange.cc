@@ -38,8 +38,6 @@ bool evalTotalMassMoistAir(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalTotalMassMoistAir()] starting ..." << std::endl;
 
-  bool total_mass_moist_air = false;
-
   auto ds_m_v  = atlas::array::make_view<double, 2>(fields["m_v"]);
   auto ds_m_ci = atlas::array::make_view<double, 2>(fields["m_ci"]);
   auto ds_m_cl = atlas::array::make_view<double, 2>(fields["m_cl"]);
@@ -56,7 +54,7 @@ bool evalTotalMassMoistAir(atlas::FieldSet & fields)
 
   parallelFor(fspace, evaluateMt, conf);
 
-  total_mass_moist_air = true;
+  bool total_mass_moist_air = true;
 
   oops::Log::trace() << "[evalTotalMassMoistAir()] ...exit" << std::endl;
 
@@ -74,8 +72,6 @@ bool evalRatioToMt(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalRatioToMt()] starting ..." << std::endl;
 
-  bool target_field = false;
-
   // fields[0] = m_x = [ mv | mci | mcl | m_r ]
   auto ds_m_x  = atlas::array::make_view<double, 2>(fields[0]);
   auto ds_m_t  = atlas::array::make_view<double, 2>(fields[1]);
@@ -91,7 +87,7 @@ bool evalRatioToMt(atlas::FieldSet & fields)
 
   parallelFor(fspace, evaluateRatioToMt, conf);
 
-  target_field = true;
+  bool target_field = true;
 
   oops::Log::trace() << "[evalRatioToMt()] ... exit" << std::endl;
 
