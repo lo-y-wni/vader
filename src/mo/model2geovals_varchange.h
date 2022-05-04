@@ -37,6 +37,10 @@
 
 namespace lfricvt {
 
+
+static constexpr double p_zero = 1.0e5;
+
+
 /// \brief function to initialize a field;
 /// the field is stored into a Atlas data structure with rank=2
 ///
@@ -104,6 +108,30 @@ bool evalMassCloudLiquid(atlas::FieldSet & fields);
 ///   m_t = total mass of moist air
 ///
 bool evalMassRain(atlas::FieldSet & fields);
+
+
+/// \brief function to evaluate the 'air temperature':
+///   air_temperature = theta x exner
+/// where ...
+///   theta = theta, air potential temperature (LFRic names)
+///   exner = exner_in_wth, exner pressure on wtheta points (LFRic names)
+///
+/// note that ...
+/// 'theta' and 'exner' are on the same levels
+///
+bool evalAirTemperature(atlas::FieldSet & fields);
+
+
+/// \brief function to evaluate the 'pressure levels minus one' from
+/// 'exner_levels'
+/// where ...
+///   exner_levels = exner (LFRic name)
+///
+/// note that ...
+/// 'pressure levels minus one' refers to the pressures on rho levels
+//  but not including the pressure level above the model top
+///
+bool evalPressureLevelsMinusOne(atlas::FieldSet & fields);
 
 
 }  // namespace lfricvt

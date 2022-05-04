@@ -7,13 +7,29 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "atlas/field.h"
+#include "atlas/functionspace.h"
 
 #include "oops/util/Logger.h"
 
 
+
+//--
+// ++ Atlas Field, FieldSet ++
+
+
+/// \brief procedure to check the fields stored into the
+///        data structure FieldSet (data validation)
+void checkFieldSetContent(const atlas::FieldSet & fields,
+                          const std::vector<std::string> expected_fields);
+
+
 //--
 // ++ Atlas Function Spaces ++
+
 
 /// \brief procedure to call a functor for a given concrete implementation
 ///        of a function space type

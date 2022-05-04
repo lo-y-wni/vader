@@ -8,6 +8,10 @@
 
 
 
+#include <math.h>
+#include <string>
+#include <vector>
+
 #include "atlas/array.h"
 #include "atlas/functionspace.h"
 
@@ -15,6 +19,8 @@
 #include "mo/utils.h"
 
 #include "oops/util/Logger.h"
+
+#include "ufo/utils/Constants.h"
 
 
 namespace lfricvt {
@@ -38,6 +44,9 @@ bool evalTotalMassMoistAir(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalTotalMassMoistAir()] starting ..." << std::endl;
 
+  std::vector<std::string> fnames {"m_v", "m_ci", "m_cl", "m_r", "m_t"};
+  checkFieldSetContent(fields, fnames);
+
   auto ds_m_v  = atlas::array::make_view<double, 2>(fields["m_v"]);
   auto ds_m_ci = atlas::array::make_view<double, 2>(fields["m_ci"]);
   auto ds_m_cl = atlas::array::make_view<double, 2>(fields["m_cl"]);
@@ -56,7 +65,7 @@ bool evalTotalMassMoistAir(atlas::FieldSet & fields)
 
   bool total_mass_moist_air = true;
 
-  oops::Log::trace() << "[evalTotalMassMoistAir()] ...exit" << std::endl;
+  oops::Log::trace() << "[evalTotalMassMoistAir()] ... exit" << std::endl;
 
   return total_mass_moist_air;
 }
@@ -99,6 +108,9 @@ bool evalSpecificHumidity(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalSpecificHumidity()] starting ..." << std::endl;
 
+  std::vector<std::string> fnames {"m_v", "m_t", "q"};
+  checkFieldSetContent(fields, fnames);
+
   bool rvalue = evalRatioToMt(fields);
 
   oops::Log::trace() << "[evalSpecificHumidity()] ... exit" << std::endl;
@@ -110,6 +122,9 @@ bool evalSpecificHumidity(atlas::FieldSet & fields)
 bool evalMassCloudIce(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalMassCloudIce()] starting ..." << std::endl;
+
+  std::vector<std::string> fnames {"m_ci", "m_t", "qci"};
+  checkFieldSetContent(fields, fnames);
 
   bool rvalue = evalRatioToMt(fields);
 
@@ -123,6 +138,9 @@ bool evalMassCloudLiquid(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalMassCloudLiquid()] starting ..." << std::endl;
 
+  std::vector<std::string> fnames {"m_cl", "m_t", "qcl"};
+  checkFieldSetContent(fields, fnames);
+
   bool rvalue = evalRatioToMt(fields);
 
   oops::Log::trace() << "[evalMassCloudLiquid()] ... exit" << std::endl;
@@ -135,11 +153,71 @@ bool evalMassRain(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalMassRain()] starting ..." << std::endl;
 
+  std::vector<std::string> fnames {"m_r", "m_t", "qrain"};
+  checkFieldSetContent(fields, fnames);
+
   bool rvalue = evalRatioToMt(fields);
 
   oops::Log::trace() << "[evalMassRain()] ... exit" << std::endl;
 
   return rvalue;
+}
+
+
+bool evalAirTemperature(atlas::FieldSet & fields)
+{
+  oops::Log::trace() << "[evalAirTemperature()] starting ..." << std::endl;
+
+  std::vector<std::string> fnames {"theta", "exner", "air_temperature"};
+  checkFieldSetContent(fields, fnames);
+
+  auto ds_theta  = atlas::array::make_view<double, 2>(fields["theta"]);
+  auto ds_exner = atlas::array::make_view<double, 2>(fields["exner"]);
+  auto ds_atemp = atlas::array::make_view<double, 2>(fields["air_temperature"]);
+
+  auto fspace = fields["air_temperature"].functionspace();
+
+  auto evaluateAirTemp = [&] (atlas::idx_t i, atlas::idx_t j) {
+    ds_atemp(i, j) = ds_theta(i, j) * ds_exner(i, j); };
+
+  auto conf = atlas::util::Config("levels", fields["air_temperature"].levels()) |
+              atlas::util::Config("include_halo", true);
+
+  parallelFor(fspace, evaluateAirTemp, conf);
+
+  bool air_temperature = true;
+
+  oops::Log::trace() << "[evalAirTemperature()] ... exit" << std::endl;
+
+  return air_temperature;
+}
+
+
+bool evalPressureLevelsMinusOne(atlas::FieldSet & fields)
+{
+  oops::Log::trace() << "[evalPressureLevelsMinusOne()] starting ..." << std::endl;
+
+  std::vector<std::string> fnames {"exner_levels", "pressure_levels_minus_one"};
+  checkFieldSetContent(fields, fnames);
+
+  auto ds_el  = atlas::array::make_view<double, 2>(fields["exner_levels"]);
+  auto ds_plmo = atlas::array::make_view<double, 2>(fields["pressure_levels_minus_one"]);
+
+  auto fspace = fields["pressure_levels_minus_one"].functionspace();
+
+  auto evaluatePresLevelsMinusOne = [&] (atlas::idx_t i, atlas::idx_t j) {
+    ds_plmo(i, j) = p_zero * pow(ds_el(i, j), (1/ufo::Constants::rd_over_cp)); };
+
+  auto conf = atlas::util::Config("levels", fields["pressure_levels_minus_one"].levels()) |
+              atlas::util::Config("include_halo", true);
+
+  parallelFor(fspace, evaluatePresLevelsMinusOne, conf);
+
+  bool pres_levels_minus_one = true;
+
+  oops::Log::trace() << "[evalPressureLevelsMinusOne()] ... exit" << std::endl;
+
+  return pres_levels_minus_one;
 }
 
 
