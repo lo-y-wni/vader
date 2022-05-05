@@ -63,11 +63,9 @@ bool evalTotalMassMoistAir(atlas::FieldSet & fields)
 
   parallelFor(fspace, evaluateMt, conf);
 
-  bool total_mass_moist_air = true;
-
   oops::Log::trace() << "[evalTotalMassMoistAir()] ... exit" << std::endl;
 
-  return total_mass_moist_air;
+  return true;
 }
 
 
@@ -96,11 +94,9 @@ bool evalRatioToMt(atlas::FieldSet & fields)
 
   parallelFor(fspace, evaluateRatioToMt, conf);
 
-  bool target_field = true;
-
   oops::Log::trace() << "[evalRatioToMt()] ... exit" << std::endl;
 
-  return target_field;
+  return true;
 }
 
 
@@ -185,11 +181,9 @@ bool evalAirTemperature(atlas::FieldSet & fields)
 
   parallelFor(fspace, evaluateAirTemp, conf);
 
-  bool air_temperature = true;
-
   oops::Log::trace() << "[evalAirTemperature()] ... exit" << std::endl;
 
-  return air_temperature;
+  return true;
 }
 
 
@@ -213,11 +207,9 @@ bool evalPressureLevelsMinusOne(atlas::FieldSet & fields)
 
   parallelFor(fspace, evaluatePresLevelsMinusOne, conf);
 
-  bool pres_levels_minus_one = true;
-
   oops::Log::trace() << "[evalPressureLevelsMinusOne()] ... exit" << std::endl;
 
-  return pres_levels_minus_one;
+  return true;
 }
 
 
