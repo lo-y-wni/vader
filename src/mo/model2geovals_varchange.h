@@ -30,16 +30,7 @@
 ///
 
 
-//
-
-
-//--
-
-namespace lfricvt {
-
-
-static constexpr double p_zero = 1.0e5;
-
+namespace mo {
 
 /// \brief function to initialize a field;
 /// the field is stored into a Atlas data structure with rank=2
@@ -134,4 +125,4 @@ bool evalAirTemperature(atlas::FieldSet & fields);
 bool evalPressureLevelsMinusOne(atlas::FieldSet & fields);
 
 
-}  // namespace lfricvt
+}  // namespace mo

@@ -14,7 +14,7 @@
 
 //--
 // ++ Atlas Field, FieldSet ++
-
+namespace mo {
 
 void checkFieldSetContent(const atlas::FieldSet & fields,
                           const std::vector<std::string> expected_fields) {
@@ -26,3 +26,5 @@ void checkFieldSetContent(const atlas::FieldSet & fields,
     }
   }
 }
+
+}  // namespace mo

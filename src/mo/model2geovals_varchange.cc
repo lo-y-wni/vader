@@ -20,10 +20,8 @@
 
 #include "oops/util/Logger.h"
 
-#include "ufo/utils/Constants.h"
 
-
-namespace lfricvt {
+namespace mo {
 
 
 void initField_rank2(atlas::Field & field, const double value_init)
@@ -200,7 +198,7 @@ bool evalPressureLevelsMinusOne(atlas::FieldSet & fields)
   auto fspace = fields["pressure_levels_minus_one"].functionspace();
 
   auto evaluatePresLevelsMinusOne = [&] (atlas::idx_t i, atlas::idx_t j) {
-    ds_plmo(i, j) = p_zero * pow(ds_el(i, j), (1/ufo::Constants::rd_over_cp)); };
+    ds_plmo(i, j) = Constants::p_zero * pow(ds_el(i, j), (1/Constants::rd_over_cp)); };
 
   auto conf = atlas::util::Config("levels", fields["pressure_levels_minus_one"].levels()) |
               atlas::util::Config("include_halo", true);
@@ -213,4 +211,4 @@ bool evalPressureLevelsMinusOne(atlas::FieldSet & fields)
 }
 
 
-}  // namespace lfricvt
+}  // namespace mo
