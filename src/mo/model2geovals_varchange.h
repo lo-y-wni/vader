@@ -16,7 +16,7 @@
 ///
 /// \details This repository contains a set of functions associated with
 /// 'transformations'.
-/// The tranformations are applied to Atlas data structures.
+/// The transformations are applied to Atlas data structures.
 ///
 /// Here the term 'transformation' is used in a broad sense.
 /// Examples of transformations are:
