@@ -13,13 +13,31 @@
 #include "atlas/field.h"
 #include "atlas/functionspace.h"
 
+#include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
-
 
 namespace mo {
 
 struct Constants {
+  // Lower temperature bound in lookup table
+  static constexpr double TLoBound = 183.15;
+
+  // Upper temperature bound in lookup table
+  static constexpr double THiBound = 338.15;
+
+  // Temperature increment in lookup table
+  static constexpr double Tinc = 0.1;
+
+  // Round off coefficient for static cast
+  static constexpr double deps = 1e-12;
+
+  // Size of Look up table (1551)
+  static constexpr int svpLookUpLength =
+    static_cast<int>((THiBound - TLoBound + deps)/Tinc)  + 1;
+
   static constexpr double p_zero = 1.0e5;
+  static constexpr double zerodegc = 273.15;             // conversion between degrees Celsius
+                                                         // and Kelvin
   static constexpr double deg2rad        = M_PI / 180.;
   static constexpr double rad2deg        = 180. * M_1_PI;
   static constexpr double grav           = 9.80665e+0;
@@ -103,6 +121,36 @@ struct Constants {
 void checkFieldSetContent(const atlas::FieldSet & fields,
                           const std::vector<std::string> expected_fields);
 
+/// \brief function to read data from a netcdf file
+/// sVPFilePath: the path and name of the netcdf file
+/// shortname: array to be read from the file
+/// lookupSize: dimension of the array
+///
+std::vector<double> getLookUp(const std::string & sVPFilePath,
+                              const std::string & shortName,
+                              const std::size_t lookupSize);
+
+/// \brief function to read data from a netcdf file
+/// sVPFilePath: the path and name of the netcdf file
+/// shortname: list of arrays, with same dimensions, to be read from the file
+/// lookupSize: dimension of each array
+///
+std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
+                                            const oops::Variables & vars,
+                                            const std::size_t lookupSize);
+
+extern "C" {
+// -----------------------------------------------------------------------------
+  void umGetLookUp_f90(
+    const int &,
+    const char *,
+    const int &,
+    const char *,
+    const int &,
+    double &);
+
+// -----------------------------------------------------------------------------
+} // extern "C"
 
 //--
 // ++ Atlas Function Spaces ++
