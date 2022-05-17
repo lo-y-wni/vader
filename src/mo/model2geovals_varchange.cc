@@ -211,4 +211,34 @@ bool evalPressureLevelsMinusOne(atlas::FieldSet & fields)
 }
 
 
+bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields)
+{
+  oops::Log::trace() << "[evalSpecificHumidityFromRH_2m()] starting ..." << std::endl;
+
+  std::vector<std::string> fnames {"qsat",
+                                   "relative_humidity_2m",
+                                   "specific_humidity_at_two_meters_above_surface"};
+  checkFieldSetContent(fields, fnames);
+
+  auto ds_qsat = atlas::array::make_view<double, 2>(fields["qsat"]);
+  auto ds_rh = atlas::array::make_view<double, 2>(fields["relative_humidity_2m"]);
+  auto ds_q2m = atlas::array::make_view<double, 2>(
+    fields["specific_humidity_at_two_meters_above_surface"]);
+
+  auto fspace = fields["specific_humidity_at_two_meters_above_surface"].functionspace();
+
+  auto evaluateSpecificHumidity_2m = [&] (atlas::idx_t i, atlas::idx_t j) {
+    ds_q2m(i, j) = ds_rh(i, j) * ds_qsat(i, j); };
+
+  auto conf = atlas::util::Config("levels",
+    fields["specific_humidity_at_two_meters_above_surface"].levels()) |
+              atlas::util::Config("include_halo", true);
+
+  parallelFor(fspace, evaluateSpecificHumidity_2m, conf);
+
+  oops::Log::trace() << "[evalSpecificHumidityFromRH_2m()] ... exit" << std::endl;
+
+  return true;
+}
+
 }  // namespace mo

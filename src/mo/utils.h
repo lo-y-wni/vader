@@ -16,6 +16,7 @@
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
 
+
 namespace mo {
 
 struct Constants {
@@ -113,48 +114,17 @@ struct Constants {
 };
 
 
+//--
 // ++ Atlas Field, FieldSet ++
-
 
 /// \brief procedure to check the fields stored into the
 ///        data structure FieldSet (data validation)
 void checkFieldSetContent(const atlas::FieldSet & fields,
                           const std::vector<std::string> expected_fields);
 
-/// \brief function to read data from a netcdf file
-/// sVPFilePath: the path and name of the netcdf file
-/// shortname: array to be read from the file
-/// lookupSize: dimension of the array
-///
-std::vector<double> getLookUp(const std::string & sVPFilePath,
-                              const std::string & shortName,
-                              const std::size_t lookupSize);
-
-/// \brief function to read data from a netcdf file
-/// sVPFilePath: the path and name of the netcdf file
-/// shortname: list of arrays, with same dimensions, to be read from the file
-/// lookupSize: dimension of each array
-///
-std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
-                                            const oops::Variables & vars,
-                                            const std::size_t lookupSize);
-
-extern "C" {
-// -----------------------------------------------------------------------------
-  void umGetLookUp_f90(
-    const int &,
-    const char *,
-    const int &,
-    const char *,
-    const int &,
-    double &);
-
-// -----------------------------------------------------------------------------
-} // extern "C"
 
 //--
 // ++ Atlas Function Spaces ++
-
 
 /// \brief procedure to call a functor for a given concrete implementation
 ///        of a function space type
@@ -179,4 +149,37 @@ void parallelFor(const atlas::FunctionSpace & fspace,
   executeFunc(fspace, [&](const auto& fspace){fspace.parallel_for(conf, functor);});
 }
 
-} // namespace mo
+
+//--
+// ++ I/O processing ++
+
+/// \brief function to read data from a netcdf file
+/// sVPFilePath: the path and name of the netcdf file
+/// shortname: array to be read from the file
+/// lookupSize: dimension of the array
+///
+std::vector<double> getLookUp(const std::string & sVPFilePath,
+                              const std::string & shortName,
+                              const std::size_t lookupSize);
+
+/// \brief function to read data from a netcdf file
+/// sVPFilePath: the path and name of the netcdf file
+/// shortname: list of arrays, with same dimensions, to be read from the file
+/// lookupSize: dimension of each array
+///
+std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
+                                            const oops::Variables & vars,
+                                            const std::size_t lookupSize);
+
+extern "C" {
+  void umGetLookUp_f90(
+    const int &,
+    const char *,
+    const int &,
+    const char *,
+    const int &,
+    double &);
+
+}  // extern "C"
+
+}  // namespace mo

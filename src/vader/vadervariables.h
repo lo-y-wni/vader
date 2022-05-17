@@ -12,7 +12,7 @@
 
 namespace vader {
 
-const char VV_SVP[]   = "svp"; // saturation vapor pressure;
+const char VV_SVP[]  = "svp";  // saturation vapor pressure;
 const char VV_TV[]   = "virtual_temperature";
 const char VV_TS[]   = "air_temperature";
 const char VV_PT[]   = "potential_temperature";

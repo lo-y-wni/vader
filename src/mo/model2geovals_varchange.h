@@ -125,4 +125,13 @@ bool evalAirTemperature(atlas::FieldSet & fields);
 bool evalPressureLevelsMinusOne(atlas::FieldSet & fields);
 
 
+/// \brief function to evaluate the 'specific humidity at two meters above surface':
+///   q2m = rh * qsat
+/// where ...
+///   q2m  = specific humidity at two meters above surface
+///   rh   = relative humidity at two meters above surface
+///   qsat = saturation specific humidity
+///
+bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields);
+
 }  // namespace mo

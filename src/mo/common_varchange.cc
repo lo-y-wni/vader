@@ -6,6 +6,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <ostream>
@@ -28,9 +30,9 @@
 
 #include "vader/vadervariables.h"
 
-// -----------------------------------------------------------------------------
+
 namespace mo {
-// -----------------------------------------------------------------------------
+
 
 bool evalSatVaporPressure(atlas::FieldSet & fields)
 {
@@ -70,8 +72,8 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
      return (v2 - v1)/ Constants::Tinc;
   };
 
-  double w; // weight
-  std::size_t indx; //index
+  double w;  // weight
+  std::size_t indx;  // index
 
   oops::Variables lookUpVars(std::vector<std::string>{"svp", "dlsvp", "svpW", "dlsvpW"});
   auto lookUpData = getLookUps(constantsFilePath, lookUpVars, Constants::svpLookUpLength);
@@ -79,8 +81,8 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
 
   // The check for the presence of required input fields will be performed by the Vader
   // algorithm when this code is in a Vader Recipe. At that time this check can be removed.
-  if ( !fields.has_field(vader::VV_TS) ||
-       !fields.has_field(vader::VV_SVP)) {
+  if ( !fields.has(vader::VV_TS) ||
+       !fields.has(vader::VV_SVP)) {
     return false;
   }
 
@@ -111,6 +113,7 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
   return true;
 }
 
+
 bool evalSatSpecificHumidity(const atlas::Field & t, const atlas::Field & pbar,
                              const atlas::Field & svp, atlas::Field & qsat)
 {
@@ -126,12 +129,12 @@ bool evalSatSpecificHumidity(const atlas::Field & t, const atlas::Field & pbar,
 
   auto evaluateQsat = [&] (atlas::idx_t i, atlas::idx_t j) {
     // Converts from sat vapour pressure in pure water to pressure in air
-    double fsubw = 1.0 + 1.0E-8*pbarView(i, j)*( 4.5 +
-                      6.0e-4*( tView(i, j) - Constants::zerodegc )
-                      *( tView(i, j) - Constants::zerodegc ) );
-    qsatView(i, j) =  Constants::rd_over_rv * svpView (i, j) /
-          (std::max (pbarView(i, j), svpView (i, j)) -
-          (1.0 - Constants::rd_over_rv) * svpView (i, j)); };
+    double fsubw = 1.0 + 1.0E-8*pbarView(i, j) * (4.5 +
+                      6.0e-4*(tView(i, j) - Constants::zerodegc) *
+                      (tView(i, j) - Constants::zerodegc));
+    qsatView(i, j) =  Constants::rd_over_rv * svpView(i, j) /
+          (std::max(pbarView(i, j), svpView(i, j)) -
+          (1.0 - Constants::rd_over_rv) * svpView(i, j)); };
 
   auto fspace = qsat.functionspace();
 
@@ -142,4 +145,4 @@ bool evalSatSpecificHumidity(const atlas::Field & t, const atlas::Field & pbar,
   return true;
 }
 
-}
+}  // namespace mo

@@ -6,19 +6,26 @@
  */
 
 
+#include <string>
+#include <vector>
+
 #include "mo/utils.h"
 
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
 
+
 //--
-// ++ Atlas Field, FieldSet ++
+
 namespace mo {
+
+
+// ++ Atlas Field, FieldSet ++
 
 void checkFieldSetContent(const atlas::FieldSet & fields,
                           const std::vector<std::string> expected_fields) {
-  for (auto ef : expected_fields) {
-    if (!fields.has_field(ef)) {
+  for (auto& ef : expected_fields) {
+    if (!fields.has(ef)) {
       oops::Log::error() << "ERROR - data validation failed "
                             "(an expected field is missing)" << std::endl;
       throw std::runtime_error("data validation failed");
@@ -26,10 +33,12 @@ void checkFieldSetContent(const atlas::FieldSet & fields,
   }
 }
 
+
+// ++ I/O processing ++
+
 std::vector<double> getLookUp(const std::string & sVPFilePath,
                               const std::string & shortName,
                               const std::size_t lookupSize) {
-
   std::vector<double> values(lookupSize, 0);
 
   umGetLookUp_f90(static_cast<int>(sVPFilePath.size()),
@@ -46,7 +55,6 @@ std::vector<double> getLookUp(const std::string & sVPFilePath,
 std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
                                             const oops::Variables & vars,
                                             const std::size_t lookupSize) {
-
   std::vector<std::vector<double>> values(vars.size(), std::vector<double>(lookupSize));
 
   for (std::size_t i = 0; i < values.size(); ++i) {
@@ -55,7 +63,5 @@ std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
 
   return values;
 }
-
-
 
 }  // namespace mo
