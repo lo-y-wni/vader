@@ -27,6 +27,11 @@ set( CMAKE_DIRECTORY_LABELS ${PROJECT_NAME} )
 ## Configuration options
 include( ${PROJECT_NAME}_compiler_flags )
 option( ENABLE_VADER_DOC "Build VADER documentation" OFF )
+option( ENABLE_VADER_MO  "Build VADER Met Office Code" OFF )
+
+message( STATUS "VADER variables")
+message( STATUS "  - ENABLE_VADER_DOC: ${ENABLE_VADER_DOC}" )
+message( STATUS "  - ENABLE_VADER_MO: ${ENABLE_VADER_MO}" )
 
 ## Dependencies
 

@@ -13,6 +13,9 @@ vader/recipes/TempToPTemp.h
 vader/recipes/TempToPTemp.cc
 vader/recipes/PressureToDelP.h
 vader/recipes/PressureToDelP.cc
+)
+if ( ENABLE_VADER_MO )
+list( APPEND vader_src_files
 mo/common_varchange.h
 mo/common_varchange.cc
 mo/model2geovals_linearvarchange.h
@@ -23,6 +26,7 @@ mo/svp_interface.F90
 mo/utils.h
 mo/utils.cc
 )
+endif()
 
 include(GNUInstallDirs)
 ecbuild_add_library( TARGET ${PROJECT_NAME}
