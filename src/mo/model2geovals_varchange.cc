@@ -66,23 +66,22 @@ bool evalTotalMassMoistAir(atlas::FieldSet & fields)
   return true;
 }
 
-
 /// \brief function to evaluate the quantity:
 ///   qx = m_x/m_t
 /// where ...
 ///   m_x = [ mv | mci | mcl | m_r ]
 ///   m_t  = total mass of moist air
 ///
-bool evalRatioToMt(atlas::FieldSet & fields)
+bool evalRatioToMt(atlas::FieldSet & fields, const std::vector<std::string> & vars)
 {
   oops::Log::trace() << "[evalRatioToMt()] starting ..." << std::endl;
 
   // fields[0] = m_x = [ mv | mci | mcl | m_r ]
-  auto ds_m_x  = atlas::array::make_view<double, 2>(fields[0]);
-  auto ds_m_t  = atlas::array::make_view<double, 2>(fields[1]);
-  auto ds_tfield  = atlas::array::make_view<double, 2>(fields[2]);
+  auto ds_m_x  = atlas::array::make_view<double, 2>(fields[vars[0]]);
+  auto ds_m_t  = atlas::array::make_view<double, 2>(fields[vars[1]]);
+  auto ds_tfield  = atlas::array::make_view<double, 2>(fields[vars[2]]);
 
-  auto fspace = fields[1].functionspace();
+  auto fspace = fields[vars[1]].functionspace();
 
   auto evaluateRatioToMt = [&] (atlas::idx_t i, atlas::idx_t j) {
     ds_tfield(i, j) = ds_m_x(i, j) / ds_m_t(i, j); };
@@ -102,10 +101,10 @@ bool evalSpecificHumidity(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalSpecificHumidity()] starting ..." << std::endl;
 
-  std::vector<std::string> fnames {"m_v", "m_t", "q"};
+  std::vector<std::string> fnames {"m_v", "m_t", "specific_humidity"};
   checkFieldSetContent(fields, fnames);
 
-  bool rvalue = evalRatioToMt(fields);
+  bool rvalue = evalRatioToMt(fields, fnames);
 
   oops::Log::trace() << "[evalSpecificHumidity()] ... exit" << std::endl;
 
@@ -117,10 +116,11 @@ bool evalMassCloudIce(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalMassCloudIce()] starting ..." << std::endl;
 
-  std::vector<std::string> fnames {"m_ci", "m_t", "qci"};
+  std::vector<std::string> fnames {"m_ci", "m_t",
+                                   "mass_content_of_cloud_ice_in_atmosphere_layer"};
   checkFieldSetContent(fields, fnames);
 
-  bool rvalue = evalRatioToMt(fields);
+  bool rvalue = evalRatioToMt(fields, fnames);
 
   oops::Log::trace() << "[evalMassCloudIce()] ... exit" << std::endl;
 
@@ -132,10 +132,11 @@ bool evalMassCloudLiquid(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalMassCloudLiquid()] starting ..." << std::endl;
 
-  std::vector<std::string> fnames {"m_cl", "m_t", "qcl"};
+  std::vector<std::string> fnames {"m_cl", "m_t",
+                                   "mass_content_of_cloud_liquid_water_in_atmosphere_layer"};
   checkFieldSetContent(fields, fnames);
 
-  bool rvalue = evalRatioToMt(fields);
+  bool rvalue = evalRatioToMt(fields, fnames);
 
   oops::Log::trace() << "[evalMassCloudLiquid()] ... exit" << std::endl;
 
@@ -150,7 +151,7 @@ bool evalMassRain(atlas::FieldSet & fields)
   std::vector<std::string> fnames {"m_r", "m_t", "qrain"};
   checkFieldSetContent(fields, fnames);
 
-  bool rvalue = evalRatioToMt(fields);
+  bool rvalue = evalRatioToMt(fields, fnames);
 
   oops::Log::trace() << "[evalMassRain()] ... exit" << std::endl;
 

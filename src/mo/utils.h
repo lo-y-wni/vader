@@ -122,7 +122,6 @@ struct Constants {
 void checkFieldSetContent(const atlas::FieldSet & fields,
                           const std::vector<std::string> expected_fields);
 
-
 //--
 // ++ Atlas Function Spaces ++
 

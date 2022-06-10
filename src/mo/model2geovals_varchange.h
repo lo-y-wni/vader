@@ -55,7 +55,6 @@ void setUniformValue_rank2(atlas::Field & field, const double value);
 ///
 bool evalTotalMassMoistAir(atlas::FieldSet & fields);
 
-
 /// \brief function to evaluate the quantity:
 ///   qx = m_x/m_t
 /// where ...

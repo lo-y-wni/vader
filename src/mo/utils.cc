@@ -33,7 +33,6 @@ void checkFieldSetContent(const atlas::FieldSet & fields,
   }
 }
 
-
 // ++ I/O processing ++
 
 std::vector<double> getLookUp(const std::string & sVPFilePath,
