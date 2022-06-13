@@ -59,16 +59,16 @@ std::vector<std::string> TempToPTemp::ingredients() const
     return TempToPTemp::Ingredients;
 }
 
-bool TempToPTemp::execute(atlas::FieldSet *afieldset)
+bool TempToPTemp::execute(atlas::FieldSet & afieldset)
 {
     bool potential_temperature_filled = false;
 
     oops::Log::trace() << "entering TempToPTemp::execute function"
         << std::endl;
 
-    atlas::Field temperature = afieldset->field(VV_TS);
-    atlas::Field surface_pressure = afieldset->field(VV_PS);
-    atlas::Field potential_temperature = afieldset->field(VV_PT);
+    atlas::Field temperature = afieldset.field(VV_TS);
+    atlas::Field surface_pressure = afieldset.field(VV_PS);
+    atlas::Field potential_temperature = afieldset.field(VV_PT);
     std::string t_units, ps_units;
 
     temperature.metadata().get("units", t_units);

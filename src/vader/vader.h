@@ -46,7 +46,7 @@ class Vader {
     ~Vader();
 
     /// Calculates as many variables in the list as possible
-    void changeVar(atlas::FieldSet * afieldset, oops::Variables &) const;
+    void changeVar(atlas::FieldSet &, oops::Variables &) const;
 
  private:
     std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>>
@@ -57,7 +57,7 @@ class Vader {
     void createCookbook(std::unordered_map<std::string, std::vector<std::string>>,
                         const std::vector<RecipeParametersWrapper> & allRecpParamWraps =
                               std::vector<RecipeParametersWrapper>());
-    bool getVariable(atlas::FieldSet * afieldset,
+    bool getVariable(atlas::FieldSet & afieldset,
                      oops::Variables & neededVars,
                      const std::string targetVariable) const;
 };

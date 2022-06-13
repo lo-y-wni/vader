@@ -61,11 +61,11 @@ class RecipeBase : public util::Printable,
 /// Flag indicating whether the recipe requires setup.
   virtual bool requiresSetup() { return false; }
 /// setup must return true on success, false on failure
-  virtual bool setup(atlas::FieldSet *) { return true; }
+  virtual bool setup(atlas::FieldSet &) { return true; }
 
 /// Execute method performs the variable change
 /// execute must return true on success, false on failure
-  virtual bool execute(atlas::FieldSet *) = 0;
+  virtual bool execute(atlas::FieldSet &) = 0;
 
  private:
   virtual void print(std::ostream &) const;

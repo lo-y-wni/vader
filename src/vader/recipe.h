@@ -33,8 +33,8 @@ class Recipe  : public util::Printable,
     std::string name() const;
     std::vector<std::string> ingredients() const;
     bool requiresSetup() const;
-    bool setup(atlas::FieldSet *);
-    bool execute(atlas::FieldSet *);
+    bool setup(atlas::FieldSet &);
+    bool execute(atlas::FieldSet &);
 
  private:
     void print(std::ostream &) const;

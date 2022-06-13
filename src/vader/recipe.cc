@@ -32,12 +32,12 @@ bool Recipe::requiresSetup() const
     return recipe_->requiresSetup();
 }
 // ------------------------------------------------------------------------------------------------
-bool Recipe::setup(atlas::FieldSet *afieldset)
+bool Recipe::setup(atlas::FieldSet & afieldset)
 {
     return recipe_->setup(afieldset);
 }
 // ------------------------------------------------------------------------------------------------
-bool Recipe::execute(atlas::FieldSet *afieldset)
+bool Recipe::execute(atlas::FieldSet & afieldset)
 {
     return recipe_->execute(afieldset);
 }

@@ -102,7 +102,7 @@ Vader::Vader(const VaderParameters & parameters) {
 * \param[in,out] neededVars Names of unpopulated Fields in afieldset
 *
 */
-void Vader::changeVar(atlas::FieldSet * afieldset,
+void Vader::changeVar(atlas::FieldSet & afieldset,
                       oops::Variables & neededVars) const {
     util::Timer timer(classname(), "changeVar");
     oops::Log::trace() << "entering Vader::changeVar " << std::endl;
@@ -110,7 +110,7 @@ void Vader::changeVar(atlas::FieldSet * afieldset,
 
     oops::Variables ingredients{};
 
-    auto fieldSetFieldNames = afieldset->field_names();
+    auto fieldSetFieldNames = afieldset.field_names();
     // Loop through all the requested fields in neededVars
     // Since neededVars can be modified by getVariable and getVariable calls
     // itself recursively, we make a copy of the list here before we start.
@@ -143,7 +143,7 @@ void Vader::changeVar(atlas::FieldSet * afieldset,
 * \return boolean 'true' if it successfully populates targetVariable, else false
 *
 */
-bool Vader::getVariable(atlas::FieldSet * afieldset,
+bool Vader::getVariable(atlas::FieldSet & afieldset,
                         oops::Variables & neededVars,
                         const std::string targetVariable) const {
     bool variableFilled = false;
@@ -151,7 +151,7 @@ bool Vader::getVariable(atlas::FieldSet * afieldset,
     oops::Log::trace() << "entering Vader::getVariable for variable: " << targetVariable <<
         std::endl;
 
-    auto fieldSetFieldNames = afieldset->field_names();
+    auto fieldSetFieldNames = afieldset.field_names();
 
     if (std::find(fieldSetFieldNames.begin(),
         fieldSetFieldNames.end(), targetVariable) == fieldSetFieldNames.end()) {
