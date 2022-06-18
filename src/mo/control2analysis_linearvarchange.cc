@@ -12,9 +12,160 @@
 #include "mo/utils.h"
 
 #include "atlas/array/MakeView.h"
-#include "atlas/field/FieldSet.h"
 
 namespace mo {
+
+void thetavP2HexnerTL(atlas::FieldSet & fields) {
+    const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
+    const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
+    const auto pView = atlas::array::make_view<double, 2>(fields["p"]);
+    const auto hexnerView = atlas::array::make_view<double, 2>(fields["hexner"]);
+    const auto thetavIncView = atlas::array::make_view<double, 2>(fields["thetavInc"]);
+    const auto pIncView = atlas::array::make_view<double, 2>(fields["pInc"]);
+    auto hexnerIncView = atlas::array::make_view<double, 2>(fields["hexnerInc"]);
+
+    for (atlas::idx_t jn = 0; jn < fields["hexner"].shape(0); ++jn) {
+      hexnerIncView(jn, 0) = mo::Constants::rd_over_cp *
+        hexnerView(jn, 0) * pIncView(jn, 0) / pView(jn, 0);
+
+      for (atlas::idx_t jl = 1; jl < fields["hexner"].levels(); ++jl) {
+        hexnerIncView(jn, jl) = hexnerIncView(jn, jl-1) +
+          ((mo::Constants::grav * thetavIncView(jn, jl-1) *
+            (rpView(jn, jl) - rpView(jn, jl-1))) /
+            (mo::Constants::cp * thetavView(jn, jl-1) * thetavView(jn, jl-1)));
+      }
+    }
+}
+
+void thetavP2HexnerAD(atlas::FieldSet & fields) {
+    const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
+    const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
+    const auto pView = atlas::array::make_view<double, 2>(fields["p"]);
+    const auto hexnerView = atlas::array::make_view<double, 2>(fields["hexner"]);
+    auto thetavHatView = atlas::array::make_view<double, 2>(fields["thetavHat"]);
+    auto pHatView = atlas::array::make_view<double, 2>(fields["pHat"]);
+    auto hexnerHatView = atlas::array::make_view<double, 2>(fields["hexnerHat"]);
+
+    for (atlas::idx_t jn = 0; jn < fields["hexner"].shape(0); ++jn) {
+      for (atlas::idx_t jl = fields["hexner"].levels()-1; jl > 0; --jl) {
+        thetavHatView(jn, jl-1) = thetavHatView(jn, jl-1) +
+          ( (mo::Constants::grav * hexnerHatView(jn, jl) *
+          (rpView(jn, jl) - rpView(jn, jl-1))) /
+          (mo::Constants::cp * thetavView(jn, jl-1) * thetavView(jn, jl-1)));
+
+        hexnerHatView(jn, jl-1) = hexnerHatView(jn, jl-1) +
+          hexnerHatView(jn, jl);
+        hexnerHatView(jn, jl) = 0.0;
+      }
+
+      pHatView(jn, 0) =  pHatView(jn, 0) +
+        mo::Constants::rd_over_cp *
+        hexnerView(jn, 0) * hexnerHatView(jn, 0) / pView(jn, 0);
+      hexnerHatView(jn, 0) = 0.0;
+    }
+}
+
+void hexner2ThetavTL(atlas::FieldSet & fields) {
+  const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
+  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
+  const auto hexnerIncView = atlas::array::make_view<double, 2>(fields["hexnerInc"]);
+  auto thetavIncView = atlas::array::make_view<double, 2>(fields["thetavInc"]);
+
+  atlas::idx_t levelsm1 = fields["thetavInc"].levels()-1;
+  for (atlas::idx_t jn = 0; jn < fields["thetavInc"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < fields["thetavInc"].levels()-1; ++jl) {
+      thetavIncView(jn, jl) =
+        (hexnerIncView(jn, jl+1) - hexnerIncView(jn, jl)) *
+            (mo::Constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
+            (mo::Constants::grav * (rpView(jn, jl) - rpView(jn, jl)));
+    }
+    // note thetavInc at surface is the same as level 1
+    // thetavInc at top level is zero because we assume that
+    // hexnerIncView(jn,thetalevels minus 1) =
+    //   hexnerIncView(jn,thetalevels minus 2)
+    // Note that hexner has rho levels not p.
+    thetavIncView(jn, levelsm1) = 0.0;
+  }
+}
+
+void hexner2ThetavAD(atlas::FieldSet & fields) {
+  const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
+  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
+  auto thetavHatView = atlas::array::make_view<double, 2>(fields["thetavHat"]);
+  auto hexnerHatView = atlas::array::make_view<double, 2>(fields["hexnerHat"]);
+
+  atlas::idx_t levelsm1 = fields["thetavHat"].levels()-1;
+  atlas::idx_t levelsm2 = fields["thetavHat"].levels()-2;
+  for (atlas::idx_t jn = 0; jn < fields["thetavHat"].shape(0); ++jn) {
+    thetavHatView(jn, levelsm1) = 0.0;
+
+    for (atlas::idx_t jl = levelsm2; jl > -1; --jl) {
+      hexnerHatView(jn, jl) =  hexnerHatView(jn, jl) + thetavHatView(jn, jl) *
+        (mo::Constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
+        (mo::Constants::grav * (rpView(jn, jl) - rpView(jn, jl)) );
+      hexnerHatView(jn, jl) = hexnerHatView(jn, jl) - thetavHatView(jn, jl) *
+        (mo::Constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
+        (mo::Constants::grav * (rpView(jn, jl) - rpView(jn, jl)));
+      thetavHatView(jn, jl) = 0.0;
+    }
+  }
+}
+
+void thetavExner2RhoTL(atlas::FieldSet & fields) {
+  const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
+  const auto rthetaView = atlas::array::make_view<double, 2>(fields["height"]);
+  const auto exnerView = atlas::array::make_view<double, 2>(fields["exner"]);
+  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
+  const auto rhoRRView = atlas::array::make_view<double, 2>(fields["rhoRR"]);
+  const auto exnerIncView = atlas::array::make_view<double, 2>(fields["exnerInc"]);
+  const auto thetavIncView = atlas::array::make_view<double, 2>(fields["thetavInc"]);
+  auto rhoRRIncView = atlas::array::make_view<double, 2>(fields["rhoRRInc"]);
+
+  for (atlas::idx_t jn = 0; jn < rhoRRIncView.shape(0); ++jn) {
+    for (atlas::idx_t jl = 1; jl < fields["rhoRRInc"].levels(); ++jl) {
+      rhoRRIncView(jn, jl) = rhoRRView(jn, jl) * (exnerIncView(jn, jl) /
+        exnerView(jn, jl) - (((rpView(jn, jl) - rthetaView(jn, jl-1)) *
+        thetavIncView(jn, jl) + (rthetaView(jn, jl) - rpView(jn, jl)) *
+        thetavIncView(jn, jl-1)) / ((rpView(jn, jl) - rthetaView(jn, jl-1)) *
+        thetavView(jn, jl) + (rthetaView(jn, jl) - rpView(jn, jl)) *
+        thetavView(jn, jl-1))));
+    }
+    for (atlas::idx_t jl = 0; jl < fields["rhoRRInc"].levels(); ++jl) {
+      rhoRRIncView(jn, jl) = rhoRRView(jn, jl) * (exnerIncView(jn, jl) /
+      exnerView(jn, jl) - thetavIncView(jn, jl)/ thetavView(jn, jl));
+    }
+  }
+}
+
+void thetavExner2RhoAD(atlas::FieldSet & fields) {
+  const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
+  const auto rthetaView = atlas::array::make_view<double, 2>(fields["height"]);
+  const auto exnerView = atlas::array::make_view<double, 2>(fields["exner"]);
+  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
+  const auto rhoRRView = atlas::array::make_view<double, 2>(fields["rhoRR"]);
+  auto exnerHatView = atlas::array::make_view<double, 2>(fields["exnerHat"]);
+  auto thetavHatView = atlas::array::make_view<double, 2>(fields["thetavHat"]);
+  auto rhoRRHatView = atlas::array::make_view<double, 2>(fields["rhoRRHat"]);
+
+  for (atlas::idx_t jn = 0; jn < rhoRRHatView.shape(0); ++jn) {
+    for (atlas::idx_t jl = fields["rhoRRHat"].levels()-1; jl >= 0; --jl) {
+      exnerHatView(jn, jl) += rhoRRView(jn, jl) * rhoRRHatView(jn, jl) /
+        exnerView(jn, jl);
+
+      thetavHatView(jn, jl+1) -= rhoRRView(jn, jl) * rhoRRHatView(jn, jl) *
+        (rpView(jn, jl) - rthetaView(jn, jl)) /
+        ((rpView(jn, jl) - rthetaView(jn, jl)) * thetavView(jn, jl+1) +
+        (rthetaView(jn, jl+1) - rpView(jn, jl)) * thetavView(jn, jl) );
+
+      thetavHatView(jn, jl) -= rhoRRView(jn, jl) * rhoRRHatView(jn, jl) *
+        (rthetaView(jn, jl+1) - rpView(jn, jl)) /
+        ((rpView(jn, jl) - rthetaView(jn, jl)) * thetavView(jn, jl+1) +
+        (rthetaView(jn, jl+1) - rpView(jn, jl)) * thetavView(jn, jl));
+
+      rhoRRHatView(jn, jl) = 0.0;
+    }
+  }
+}
 
 void qqclqcf2qtTL(atlas::FieldSet & incFields) {
   const std::vector<std::string> fnames {"specific_humidity",

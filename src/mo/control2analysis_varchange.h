@@ -7,14 +7,14 @@
  */
 
 #pragma once
-/*
-#include "atlas/field/Field.h"
+
+#include "atlas/field/FieldSet.h"
 
 /// \details Transformation from virtual potential temperature (thetav) to
 ///          hydrostatically-balanced exner hexner
 ///          Uses pressure level 0 and not psurf.
-bool thetavP2Hexner(const atlas::Field & rp,
-                   const atlas::Field & thetav,
-                   const atlas::Field & p,
-                   atlas::Field & hexner);
-*/
+bool thetavP2Hexner(atlas::FieldSet & fields);
+
+/// \details This is a straight inverse of thetavP2Hexner
+///          Note that we need to revisit this for the top level for thetav.
+void hexner2PThetav(atlas::FieldSet & fields);
