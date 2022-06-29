@@ -8,7 +8,7 @@
 
 
 
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -20,6 +20,7 @@
 
 #include "oops/util/Logger.h"
 
+using atlas::array::make_view;
 
 namespace mo {
 
@@ -238,6 +239,57 @@ bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields)
   parallelFor(fspace, evaluateSpecificHumidity_2m, conf);
 
   oops::Log::trace() << "[evalSpecificHumidityFromRH_2m()] ... exit" << std::endl;
+
+  return true;
+}
+
+
+bool evalParamAParamB(atlas::FieldSet & fields)
+{
+  oops::Log::trace() << "[evalParamAParamB2()] starting ..." << std::endl;
+
+  std::vector<std::string> fnames {"height", "height_levels",
+                                   "air_pressure_levels_minus_one",
+                                   "specific_humidity",
+                                   "param_a", "param_b"};
+  checkFieldSetContent(fields, fnames);
+
+  std::size_t blindex;
+  if (!fields["height"].metadata().has("boundary_layer_index")) {
+    oops::Log::error() << "ERROR - data validation failed "
+                          "we expect boundary_layer_index value "
+                          "in the meta data of the height field" << std::endl;
+  }
+  fields["height"].metadata().get("boundary_layer_index", blindex);
+
+  auto heightView = make_view<const double, 2>(fields["height"]);
+  auto heightLevelsView = make_view<const double, 2>(fields["height_levels"]);
+  auto pressureLevelsView = make_view<const double, 2>(fields["air_pressure_levels_minus_one"]);
+  auto specificHumidityView = make_view<const double, 2>(fields["specific_humidity"]);
+  auto param_aView = make_view<double, 2>(fields["param_a"]);
+  auto param_bView = make_view<double, 2>(fields["param_b"]);
+
+  // temperature at level above boundary layer
+  double t_bl;
+  // temperature at model surface height
+  double t_msh;
+
+  double exp_pmsh = mo::Constants::Lclr * mo::Constants::rd / mo::Constants::grav;
+
+  for (atlas::idx_t jn = 0; jn < param_aView.shape(0); ++jn) {
+    t_bl = (-mo::Constants::grav / mo::Constants::rd) *
+           (heightLevelsView(jn, blindex + 1) - heightLevelsView(jn, blindex)) /
+           log(pressureLevelsView(jn, blindex + 1) / pressureLevelsView(jn, blindex));
+
+    t_bl = t_bl / (1.0 + mo::Constants::c_virtual * specificHumidityView(jn, blindex));
+
+    t_msh = t_bl + mo::Constants::Lclr * (heightView(jn, blindex) - heightLevelsView(jn, 0));
+
+    param_aView(jn, 0) = heightLevelsView(jn, 0) + t_msh / mo::Constants::Lclr;
+    param_bView(jn, 0) = t_msh / (pow(pressureLevelsView(jn, 0), exp_pmsh) * mo::Constants::Lclr);
+  }
+
+  oops::Log::trace() << "[evalParamAParamB()] ... exit" << std::endl;
 
   return true;
 }

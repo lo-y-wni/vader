@@ -83,12 +83,13 @@ struct Constants {
   static constexpr double Lclr           = 0.0065;       // constant lapse rate
   static constexpr double t2tv           = 0.608;        // constant lapse rate
   static constexpr double von_karman     = 0.41;         // Von Karman Constant
-  static constexpr double es_w_0         = 611.2;        // saturation vapor pressure of water at
-                                                         //    0degC
+  static constexpr double es_w_0         = 611.2;        // saturation vapor pressure of water
+                                                         //   at 0degC
   static constexpr double euzc_0         = 34.0;         // constant for estimating euphotic layer
   static constexpr double euzc_1         = -0.39;        // constant for estimating euphotic layer
-  static constexpr double epsilon        = 0.62198;      // Ratio of molecular weight of
-                                                         //       water and dry air
+  static constexpr double epsilon        = 0.62198;      // ratio of molecular weight of
+                                                         //   water and dry air
+  static constexpr double c_virtual      = (1.0/epsilon) - 1.0;
 
   // International Civil Aviation Organization (ICAO) atmosphere.
   // https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere

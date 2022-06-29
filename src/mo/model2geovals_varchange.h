@@ -119,7 +119,7 @@ bool evalAirTemperature(atlas::FieldSet & fields);
 ///
 /// note that ...
 /// 'pressure levels minus one' refers to the pressures on rho levels
-//  but not including the pressure level above the model top
+///  but not including the pressure level above the model top
 ///
 bool evalPressureLevelsMinusOne(atlas::FieldSet & fields);
 
@@ -132,5 +132,27 @@ bool evalPressureLevelsMinusOne(atlas::FieldSet & fields);
 ///   qsat = saturation specific humidity
 ///
 bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields);
+
+
+/// \brief function to evaluate 'param_a' and 'param_b';
+/// 'param_a' and 'param_b' are  two 'derived' fields used to evaluate
+/// the background pressure at the observation height
+///
+///          param_a = f(height_levels[0], t_msh)
+///          param_b = f(t_msh, pressure_level_minus_one[0])
+/// where ...
+///     height_levels[0] = model surface height
+///            t_msh = temperature at model surface height
+///     pressure_level_minus_one[0] = pressure at model surface height
+///
+/// input data (fields) needed for the calculations:
+///     height = height on theta model levels (not including surface)
+///        (it includes metadata "boundary_layer_index" )
+///     height_levels = height on rho model levels
+///     pressure_levels_minus_one = pressure on rho model levels
+///     specific_humidity
+///
+bool evalParamAParamB(atlas::FieldSet & fields);
+
 
 }  // namespace mo
