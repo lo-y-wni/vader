@@ -112,6 +112,69 @@ bool evalSpecificHumidity(atlas::FieldSet & fields)
   return rvalue;
 }
 
+bool evalRelativeHumidity(atlas::FieldSet & fields)
+{
+  oops::Log::trace() << "[evalRelativeHumidity()] starting ..." << std::endl;
+
+  std::vector<std::string> fnames {"specific_humidity",
+                                   "qsat", "relative_humidity"};
+  checkFieldSetContent(fields, fnames);
+
+  auto rhView = atlas::array::make_view<double, 2>(fields["relative_humidity"]);
+  auto qView = atlas::array::make_view<double, 2>(fields["specific_humidity"]);
+  auto qsatView = atlas::array::make_view<double, 2>(fields["qsat"]);
+
+  auto conf = atlas::util::Config("levels", fields["relative_humidity"].levels()) |
+              atlas::util::Config("include_halo", true);
+
+  auto evaluateRH = [&] (atlas::idx_t i, atlas::idx_t j) {
+    rhView(i, j) = qView(i, j)/qsatView(i, j) * 100.0;
+    if (rhView(i, j) < 0.0) {rhView(i, j) = 0.0;} };
+
+  auto fspace = fields["relative_humidity"].functionspace();
+
+  parallelFor(fspace, evaluateRH, conf);
+
+  oops::Log::trace() << "[evalRelativeHumidity()] ... exit" << std::endl;
+
+  return true;
+}
+
+bool evalTotalRelativeHumidity(atlas::FieldSet & fields)
+{
+  oops::Log::trace() << "[evalTotalRelativeHumidity()] starting ..." << std::endl;
+
+  std::vector<std::string> fnames {"specific_humidity",
+                                   "mass_content_of_cloud_liquid_water_in_atmosphere_layer",
+                                   "mass_content_of_cloud_ice_in_atmosphere_layer", "qrain",
+                                   "qsat", "rht"};
+  checkFieldSetContent(fields, fnames);
+
+  auto rhtView = atlas::array::make_view<double, 2>(fields["rht"]);
+  auto qView = atlas::array::make_view<double, 2>(fields["specific_humidity"]);
+  auto qclView = atlas::array::make_view<double, 2>
+                 (fields["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
+  auto qciView = atlas::array::make_view<double, 2>
+                 (fields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
+  auto qrainView = atlas::array::make_view<double, 2>(fields["qrain"]);
+  auto qsatView = atlas::array::make_view<double, 2>(fields["qsat"]);
+
+  auto conf = atlas::util::Config("levels", fields["rht"].levels()) |
+              atlas::util::Config("include_halo", true);
+
+  auto evaluateRHT = [&] (atlas::idx_t i, atlas::idx_t j) {
+    rhtView(i, j) = (qView(i, j)+qclView(i, j)+qciView(i, j)+qrainView(i, j))/qsatView(i, j)
+                 * 100.0;
+    if (rhtView(i, j) < 0.0) {rhtView(i, j) = 0.0;} };
+
+  auto fspace = fields["rht"].functionspace();
+
+  parallelFor(fspace, evaluateRHT, conf);
+
+  oops::Log::trace() << "[evalTotalRelativeHumidity()] ... exit" << std::endl;
+
+  return true;
+}
 
 bool evalMassCloudIce(atlas::FieldSet & fields)
 {

@@ -72,4 +72,48 @@
 
  end subroutine c_umGetLookUp
  !-------------------------------------------------------------------
+ subroutine c_umGetLookUp2D(filename_length, c_filename, &
+                        & fieldname_length, c_fieldname, nbins, nlevels, &
+                        & values) bind(c,name='umGetLookUp2D_f90')
+
+   use iso_c_binding
+   use netcdf
+   use kinds
+   use string_f_c_mod
+
+   integer, parameter :: char_length = 800
+
+   integer(c_int),                intent(in)    :: filename_length
+   character(kind=c_char, len=1), intent(in)    :: c_filename(filename_length+1)
+   integer(c_int),                intent(in)    :: fieldname_length
+   character(kind=c_char, len=1), intent(in)    :: c_fieldname(fieldname_length+1)
+   integer(c_int),                intent(in)    :: nbins
+   integer(c_int),                intent(in)    :: nlevels
+   real(c_double),                intent(inout) :: values(nlevels,nbins)
+
+   character(len=char_length) :: filename
+   character(len=char_length) :: fieldname
+
+   integer :: nc
+   integer(c_int) :: ncid,  varid
+
+
+   call c_f_string(c_filename, filename)
+   call c_f_string(c_fieldname, fieldname)
+
+
+   nc = nf90_open(filename, nf90_nowrite, ncid)
+   call err_report(nc, "nf90_open "//trim(filename) )
+
+   nc = nf90_inq_varid(ncid, fieldname, varid)
+   call err_report(nc, "nf90_inq_varid "//trim(fieldname) )
+
+   nc = nf90_get_var(ncid, varid, values)
+   call err_report(nc, "nf90_get_var ")
+
+   nc = nf90_close(ncid)
+   call err_report(nc, "nf90_close ")
+
+ end subroutine c_umGetLookUp2D
+ !-------------------------------------------------------------------
  end module svp_data

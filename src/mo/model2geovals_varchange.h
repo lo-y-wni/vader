@@ -72,6 +72,24 @@ bool evalRatioToMt(atlas::FieldSet & fields);
 ///
 bool evalSpecificHumidity(atlas::FieldSet & fields);
 
+/// \brief function to evaluate the 'relative humidity':
+///   rh = q/qsat*100
+/// where ...
+///   q  = specific humidity
+///   qsat  = saturated specific humidity
+///
+bool evalRelativeHumidity(atlas::FieldSet & fields);
+
+/// \brief function to evaluate the 'total relative humidity':
+///   rh = (q+qcl+qci+qrain)/qsat*100
+/// where ...
+///   q  = specific humidity
+///   qcl = specific cloud water
+///   qci = specific cloud ice
+///   qrain = specific rain
+///   qsat  = saturated specific humidity
+///
+bool evalTotalRelativeHumidity(atlas::FieldSet & fields);
 
 /// \brief function to evaluate the 'mass content of cloud ice' in atmosphere layer:
 ///   qci = m_ci/m_t

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <Eigen/Core>
+
 #include <string>
 #include <vector>
 
@@ -15,6 +17,7 @@
 
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
+
 
 
 namespace mo {
@@ -35,6 +38,13 @@ struct Constants {
   // Size of Look up table (1551)
   static constexpr int svpLookUpLength =
     static_cast<int>((THiBound - TLoBound + deps)/Tinc)  + 1;
+
+  static constexpr std::size_t mioBins = 21;
+  static constexpr std::size_t mioLevs = 40;
+  static constexpr std::size_t mioLookUpLength = mioLevs*mioBins;
+  static constexpr std::double_t rHTBin = 0.05;
+  // tolerance for avoiding division by zero in getMIOFields
+  static constexpr std::double_t tol = 1.0e-5;
 
   static constexpr double p_zero = 1.0e5;
   static constexpr double zerodegc = 273.15;             // conversion between degrees Celsius
@@ -171,6 +181,20 @@ std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
                                             const oops::Variables & vars,
                                             const std::size_t lookupSize);
 
+/// \details getMIOFields returns the effective cloud fractions
+///          for the moisture incrementing operator (MIO)
+//  void getMIOFields(const atlas::Field & RHt,
+//                  const atlas::Field & Cl, const atlas::Field & Cf,
+//                  atlas::Field Cleff, atlas::Field Cfeff) const;
+void getMIOFields(const atlas::FieldSet & stateFields,
+                  atlas::FieldSet & ceffFields);
+
+/// \details This extracts the scaling coefficients that are applied to Cleff and Cfeff
+///          to generate the qcl and qcf increments in the moisture incrementing operator (MIO)
+///          The string s can be "qcl_coef" or "qcf_coef"
+Eigen::MatrixXd createMIOCoeff(const std::string mioFileName,
+                               const std::string s);
+
 extern "C" {
   void umGetLookUp_f90(
     const int &,
@@ -180,6 +204,14 @@ extern "C" {
     const int &,
     double &);
 
+  void umGetLookUp2D_f90(
+    const int &,
+    const char *,
+    const int &,
+    const char *,
+    const int &,
+    const int &,
+    double &);
 }  // extern "C"
 
 }  // namespace mo

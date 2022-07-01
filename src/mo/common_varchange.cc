@@ -11,6 +11,7 @@
 #include <functional>
 #include <memory>
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "atlas/array/MakeView.h"
@@ -75,10 +76,6 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
   double w;  // weight
   std::size_t indx;  // index
 
-  oops::Variables lookUpVars(std::vector<std::string>{"svp", "dlsvp", "svpW", "dlsvpW"});
-  auto lookUpData = getLookUps(constantsFilePath, lookUpVars, Constants::svpLookUpLength);
-  const std::vector<double> Lookup = lookUpData[0];  // supposed to be svp, but need checks
-
   // The check for the presence of required input fields will be performed by the Vader
   // algorithm when this code is in a Vader Recipe. At that time this check can be removed.
   if ( !fields.has(vader::VV_TS) ||
@@ -92,21 +89,33 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
     return false;
   }
 
-  auto tView  = atlas::array::make_view<double, 2>(fields[vader::VV_TS]);
-  auto svpView = atlas::array::make_view<double, 2>(fields[vader::VV_SVP]);
+  auto tView  = atlas::array::make_view<double, 2>(fields["air_temperature"]);
 
-  auto conf = atlas::util::Config("levels", fields[vader::VV_SVP].levels()) |
-              atlas::util::Config("include_halo", true);
+  oops::Variables lookUpVars(std::vector<std::string>{"svp", "dlsvp", "svpW", "dlsvpW"});
+  auto lookUpData = getLookUps(constantsFilePath, lookUpVars, Constants::svpLookUpLength);
 
-  // check this recipe to calculate svp is correct
-  auto evaluateSVP = [&] (atlas::idx_t i, atlas::idx_t j) {
-  indx = index(normalisedT(tView(i, j)));
-  w = weight(normalisedT(tView(i, j)));
-  svpView(i, j) = interp(w, Lookup.at(indx), Lookup.at(indx+1)); };
+  const std::vector<std::string> fnames {"svp", "dlsvpdT"};
+  int ival = 0;  // set ival = 2 to get svp wrt water
+  for (auto & ef : fnames) {
+    if (fields.has(ef)) {
+      auto svpView = atlas::array::make_view<double, 2>(fields[ef]);
 
-  auto fspace = fields[vader::VV_SVP].functionspace();
+      auto conf = atlas::util::Config("levels", fields[ef].levels()) |
+                  atlas::util::Config("include_halo", true);
 
-  parallelFor(fspace, evaluateSVP, conf);
+      // check this recipe to calculate svp is correct
+      const std::vector<double> Lookup = lookUpData[ival];
+      ++ival;
+      auto evaluateSVP = [&] (atlas::idx_t i, atlas::idx_t j) {
+      indx = index(normalisedT(tView(i, j)));
+      w = weight(normalisedT(tView(i, j)));
+      svpView(i, j) = interp(w, Lookup.at(indx), Lookup.at(indx+1)); };
+
+      auto fspace = fields[ef].functionspace();
+
+      parallelFor(fspace, evaluateSVP, conf);
+    }
+  }
 
   oops::Log::trace() << "[svp()] ... exit" << std::endl;
 
