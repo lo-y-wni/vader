@@ -37,11 +37,11 @@ struct Constants {
 
   // Size of Look up table (1551)
   static constexpr int svpLookUpLength =
-    static_cast<int>((THiBound - TLoBound + deps)/Tinc)  + 1;
+    static_cast<int>((THiBound - TLoBound + deps) / Tinc) + 1;
 
   static constexpr std::size_t mioBins = 21;
   static constexpr std::size_t mioLevs = 40;
-  static constexpr std::size_t mioLookUpLength = mioLevs*mioBins;
+  static constexpr std::size_t mioLookUpLength = mioLevs * mioBins;
   static constexpr std::double_t rHTBin = 0.05;
   // tolerance for avoiding division by zero in getMIOFields
   static constexpr std::double_t tol = 1.0e-5;
@@ -64,11 +64,11 @@ struct Constants {
   static constexpr double rspec_over_cp  = rspec/cp;
   static constexpr double pref           = 1.0e5;        // Reference pressure for calculating
                                                          //      exner
-  static constexpr double rd_over_rv     = rd/rv;
-  static constexpr double rd_over_cp     = rd/cp;
-  static constexpr double cv_over_cp     = cv/cp;
-  static constexpr double rv_over_rd     = rv/rd;
-  static constexpr double rd_over_g      = rd/grav;
+  static constexpr double rd_over_rv     = rd / rv;
+  static constexpr double rd_over_cp     = rd / cp;
+  static constexpr double cv_over_cp     = cv / cp;
+  static constexpr double rv_over_rd     = rv / rd;
+  static constexpr double rd_over_g      = rd / grav;
   static constexpr double g_over_rd      = grav / rd;
   static constexpr double mean_earth_rad = 6371.0;
   static constexpr double zero           = 0.0;
@@ -99,7 +99,7 @@ struct Constants {
   static constexpr double euzc_1         = -0.39;        // constant for estimating euphotic layer
   static constexpr double epsilon        = 0.62198;      // ratio of molecular weight of
                                                          //   water and dry air
-  static constexpr double c_virtual      = (1.0/epsilon) - 1.0;
+  static constexpr double c_virtual      = (1.0 / epsilon) - 1.0;
 
   // International Civil Aviation Organization (ICAO) atmosphere.
   // https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere

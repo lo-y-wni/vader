@@ -90,7 +90,7 @@ void getMIOFields(const atlas::FieldSet & stateFields,
     for (int jl = 0; jl < stateFields["rht"].levels(); ++jl) {
       if (jl < Constants::mioLevs) {
         std::size_t ibin = (rhtView(jn, jl) > 1.0) ? Constants::mioBins - 1 :
-                           static_cast<std::size_t>(floor(rhtView(jn, jl)/Constants::rHTBin));
+                           static_cast<std::size_t>(floor(rhtView(jn, jl) / Constants::rHTBin));
 
         std::double_t ceffdenom = (1.0 -  clView(jn, jl) * cfView(jn, jl) );
         if (ceffdenom > Constants::tol) {
@@ -101,7 +101,6 @@ void getMIOFields(const atlas::FieldSet & stateFields,
           cleffView(jn, jl) = 0.5;
           cfeffView(jn, jl) = 0.5;
         }
-
       } else {
         cleffView(jn, jl) = 0.0;
         cfeffView(jn, jl) = 0.0;
@@ -113,8 +112,8 @@ void getMIOFields(const atlas::FieldSet & stateFields,
 Eigen::MatrixXd createMIOCoeff(const std::string mioFileName,
                                const std::string s)
 {
-    Eigen::MatrixXd mioCoeff(Constants::mioLevs, Constants::mioBins);
-
+    Eigen::MatrixXd mioCoeff(static_cast<std::size_t>(Constants::mioLevs),
+                             static_cast<std::size_t>(Constants::mioBins));
     double valuesvec[Constants::mioLookUpLength];
 
     umGetLookUp2D_f90(static_cast<int>(mioFileName.size()),
