@@ -31,7 +31,7 @@
  !-------------------------------------------------------------------
  subroutine c_umGetLookUp(filename_length, c_filename, &
                         & fieldname_length, c_fieldname, values_size, &
-                        & values) bind(c,name='umGetLookUp_f90')
+                        & values) bind(c, name='umGetLookUp_f90')
 
    use iso_c_binding
    use netcdf
@@ -74,7 +74,7 @@
  !-------------------------------------------------------------------
  subroutine c_umGetLookUp2D(filename_length, c_filename, &
                         & fieldname_length, c_fieldname, nbins, nlevels, &
-                        & values) bind(c,name='umGetLookUp2D_f90')
+                        & values) bind(c, name='umGetLookUp2D_f90')
 
    use iso_c_binding
    use netcdf
@@ -114,6 +114,6 @@
    nc = nf90_close(ncid)
    call err_report(nc, "nf90_close ")
 
- end subroutine c_umGetLookUp2D
- !-------------------------------------------------------------------
- end module svp_data
+end subroutine c_umGetLookUp2D
+!-------------------------------------------------------------------
+end module svp_data

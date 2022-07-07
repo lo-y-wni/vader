@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "atlas/array.h"
+#include "atlas/field.h"
+
 #include "mo/utils.h"
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
@@ -61,9 +64,6 @@ std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
   return values;
 }
 
-//  void getMIOFields(const atlas::Field & RHt,
-//                                      const atlas::Field & Cl, const atlas::Field & Cf,
-//                                      atlas::Field Cleff, atlas::Field Cfeff) const {
 void getMIOFields(const atlas::FieldSet & stateFields,
                   atlas::FieldSet & ceffFields) {
   const std::string mioFileName = "Data/parameters/MIO_coefficients.nc";
@@ -89,7 +89,7 @@ void getMIOFields(const atlas::FieldSet & stateFields,
   for  (atlas::idx_t jn = 0; jn < stateFields["rht"].shape(0); ++jn) {
     for (int jl = 0; jl < stateFields["rht"].levels(); ++jl) {
       if (jl < Constants::mioLevs) {
-        std::size_t ibin = (rhtView(jn, jl) > 1.0) ? Constants::mioBins - 1 :
+        std::size_t ibin = (rhtView(jn, jl) > 100.0) ? Constants::mioBins - 1 :
                            static_cast<std::size_t>(floor(rhtView(jn, jl) / Constants::rHTBin));
 
         std::double_t ceffdenom = (1.0 -  clView(jn, jl) * cfView(jn, jl) );

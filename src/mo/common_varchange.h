@@ -28,7 +28,6 @@ bool evalSatVaporPressure(atlas::FieldSet & fields);
 
 /// \brief function to evaluate saturation specific humidity (qsat)
 /// Needs air pressure [Pa] and svp [Pa] Atlas fields and returns the qsat Atlas field
-bool evalSatSpecificHumidity(const atlas::Field & t, const atlas::Field & pbar,
-                             const atlas::Field & svp, atlas::Field & qsat);
+bool evalSatSpecificHumidity(atlas::FieldSet & fields);
 
 }  // namespace mo

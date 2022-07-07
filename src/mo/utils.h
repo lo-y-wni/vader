@@ -19,7 +19,6 @@
 #include "oops/util/Logger.h"
 
 
-
 namespace mo {
 
 struct Constants {
@@ -42,7 +41,7 @@ struct Constants {
   static constexpr std::size_t mioBins = 21;
   static constexpr std::size_t mioLevs = 40;
   static constexpr std::size_t mioLookUpLength = mioLevs * mioBins;
-  static constexpr std::double_t rHTBin = 0.05;
+  static constexpr std::double_t rHTBin = 5.0;
   // tolerance for avoiding division by zero in getMIOFields
   static constexpr std::double_t tol = 1.0e-5;
 
@@ -183,9 +182,6 @@ std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
 
 /// \details getMIOFields returns the effective cloud fractions
 ///          for the moisture incrementing operator (MIO)
-//  void getMIOFields(const atlas::Field & RHt,
-//                  const atlas::Field & Cl, const atlas::Field & Cf,
-//                  atlas::Field Cleff, atlas::Field Cfeff) const;
 void getMIOFields(const atlas::FieldSet & stateFields,
                   atlas::FieldSet & ceffFields);
 
@@ -213,5 +209,6 @@ extern "C" {
     const int &,
     double &);
 }  // extern "C"
+
 
 }  // namespace mo

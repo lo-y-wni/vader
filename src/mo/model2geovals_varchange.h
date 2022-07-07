@@ -78,6 +78,8 @@ bool evalSpecificHumidity(atlas::FieldSet & fields);
 ///   q  = specific humidity
 ///   qsat  = saturated specific humidity
 ///
+/// Note that we have a bool metadata switch that we need here "cap_super_sat"
+/// If it is not present then we assume that it is false (which is the default)
 bool evalRelativeHumidity(atlas::FieldSet & fields);
 
 /// \brief function to evaluate the 'total relative humidity':
@@ -130,16 +132,14 @@ bool evalMassRain(atlas::FieldSet & fields);
 bool evalAirTemperature(atlas::FieldSet & fields);
 
 
-/// \brief function to evaluate the 'pressure levels minus one' from
-/// 'exner_levels'
+/// \brief function to evaluate the 'air_pressure_levels' from
+/// 'exner_levels_minus_one', 'theta' , 'height_levels' fields
 /// where ...
-///   exner_levels = exner (LFRic name)
+///   'air_pressure_levels' is the same as 'air_pressure_levels_minus_one'
+/// except for the topmost level where the level is assumed to be in
+/// hydrostatic balance (and capped to be >0).
 ///
-/// note that ...
-/// 'pressure levels minus one' refers to the pressures on rho levels
-///  but not including the pressure level above the model top
-///
-bool evalPressureLevelsMinusOne(atlas::FieldSet & fields);
+bool evalAirPressureLevels(atlas::FieldSet & fields);
 
 
 /// \brief function to evaluate the 'specific humidity at two meters above surface':
@@ -171,6 +171,5 @@ bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields);
 ///     specific_humidity
 ///
 bool evalParamAParamB(atlas::FieldSet & fields);
-
 
 }  // namespace mo

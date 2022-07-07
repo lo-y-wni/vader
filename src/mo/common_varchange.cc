@@ -31,6 +31,7 @@
 
 #include "vader/vadervariables.h"
 
+using atlas::array::make_view;
 
 namespace mo {
 
@@ -91,7 +92,8 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
 
   auto tView  = atlas::array::make_view<double, 2>(fields["air_temperature"]);
 
-  oops::Variables lookUpVars(std::vector<std::string>{"svp", "dlsvp", "svpW", "dlsvpW"});
+  const std::vector<std::string> vars{"svp", "dlsvp", "svpW", "dlsvpW"};
+  oops::Variables lookUpVars(vars);
   auto lookUpData = getLookUps(constantsFilePath, lookUpVars, Constants::svpLookUpLength);
 
   const std::vector<std::string> fnames {"svp", "dlsvpdT"};
@@ -123,29 +125,37 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
 }
 
 
-bool evalSatSpecificHumidity(const atlas::Field & t, const atlas::Field & pbar,
-                             const atlas::Field & svp, atlas::Field & qsat)
+bool evalSatSpecificHumidity(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[getQsat()] starting ..." << std::endl;
 
-  auto tView = atlas::array::make_view<double, 2>(t);
-  auto pbarView = atlas::array::make_view<double, 2>(pbar);
-  auto qsatView = atlas::array::make_view<double, 2>(qsat);
-  auto svpView = atlas::array::make_view<double, 2>(svp);
+  auto pbarView = make_view<const double, 2>(fields["air_pressure"]);
+  auto svpView = make_view<const double, 2>(fields["svp"]);
+  auto tView = make_view<const double, 2>(fields["air_temperature"]);
+  auto qsatView = make_view<double, 2>(fields["qsat"]);
 
-  auto conf = atlas::util::Config("levels", qsat.levels()) |
+  auto conf = atlas::util::Config("levels", fields["qsat"].levels()) |
               atlas::util::Config("include_halo", true);
 
+  double fsubw;
   auto evaluateQsat = [&] (atlas::idx_t i, atlas::idx_t j) {
-    // Converts from sat vapour pressure in pure water to pressure in air
-    double fsubw = 1.0 + 1.0E-8*pbarView(i, j) * (4.5 +
-                      6.0e-4*(tView(i, j) - Constants::zerodegc) *
-                      (tView(i, j) - Constants::zerodegc));
-    qsatView(i, j) =  Constants::rd_over_rv * svpView(i, j) /
-          (std::max(pbarView(i, j), svpView(i, j)) -
-          (1.0 - Constants::rd_over_rv) * svpView(i, j)); };
+    // This formula for fsubw
+    // is taken from equation A4.7 of Adrian Gill's book: Atmosphere-Ocean
+    // Dynamics.  Note that his formula works in terms of pressure in MB and
+    // temperature in Celsius, so conversion of units leads to the slightly
+    // different equation used here.
+    fsubw = 1.0 + 1.0E-8 * pbarView(i, j) * (4.5 +
+            6.0e-4 * (tView(i, j) - Constants::zerodegc) *
+                     (tView(i, j) - Constants::zerodegc));
 
-  auto fspace = qsat.functionspace();
+    // Note that at very low pressures we apply a fix, to prevent a
+    // singularity (Qsat tends to 1.0 kg/kg).
+    qsatView(i, j) = fsubw * Constants::rd_over_rv * svpView(i, j) /
+          (std::max(pbarView(i, j), svpView(i, j)) -
+          (1.0 - Constants::rd_over_rv) * svpView(i, j));
+  };
+
+  auto fspace = fields["qsat"].functionspace();
 
   parallelFor(fspace, evaluateQsat, conf);
 

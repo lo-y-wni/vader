@@ -54,8 +54,6 @@ void thetavExner2RhoTL(atlas::FieldSet & fields);
 ///          onto the rho_grid.
 void thetavExner2RhoAD(atlas::FieldSet & fields);
 
-
-
 /// \details Calculate qT increment from the sum of q, qcl and qcf increments
 void qqclqcf2qtTL(atlas::FieldSet & incFields);
 
