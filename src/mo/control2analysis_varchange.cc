@@ -6,43 +6,43 @@
  */
 
 #include "atlas/array/MakeView.h"
+#include "mo/constants.h"
 #include "mo/control2analysis_varchange.h"
-#include "mo/utils.h"
+
+using atlas::array::make_view;
 
 namespace mo {
 
 bool thetavP2Hexner(atlas::FieldSet & fields) {
-  const auto rpView = atlas::array::make_view<double, 2>(fields["rp"]);
-  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
-  const auto pView = atlas::array::make_view<double, 2>(fields["p"]);
-  auto hexnerView = atlas::array::make_view<double, 2>(fields["hexner"]);
+  const auto rpView = make_view<const double, 2>(fields["rp"]);
+  const auto thetavView = make_view<const double, 2>(fields["thetav"]);
+  const auto pView = make_view<const double, 2>(fields["p"]);
+  auto hexnerView = make_view<double, 2>(fields["hexner"]);
 
   for (atlas::idx_t jn = 0; jn < fields["hexner"].shape(0); ++jn) {
-    hexnerView(jn, 0) = pow(pView(jn, 0) / mo::Constants::p_zero,
-      mo::Constants::rd_over_cp);
+    hexnerView(jn, 0) = pow(pView(jn, 0) / constants::p_zero,
+      constants::rd_over_cp);
     for (atlas::idx_t jl = 1; jl < fields["hexner"].levels(); ++jl) {
       hexnerView(jn, jl) = hexnerView(jn, jl-1) -
-        (mo::Constants::grav * (rpView(jn, jl) - rpView(jn, jl-1))) /
-        (mo::Constants::cp * thetavView(jn, jl));
+        (constants::grav * (rpView(jn, jl) - rpView(jn, jl-1))) /
+        (constants::cp * thetavView(jn, jl));
     }
   }
   return true;
 }
 
 void hexner2PThetav(atlas::FieldSet & fields) {
-  auto rpView = atlas::array::make_view<double, 2>(fields["rp"]);
-  auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
-  auto pView = atlas::array::make_view<double, 2>(fields["p"]);
-  auto hexnerView = atlas::array::make_view<double, 2>(fields["hexner"]);
+  const auto rpView = make_view<const double, 2>(fields["rp"]);
+  const auto hexnerView = make_view<const double, 2>(fields["hexner"]);
+  auto pView = make_view<double, 2>(fields["p"]);
+  auto thetavView = make_view<double, 2>(fields["thetav"]);
 
   for (atlas::idx_t jn = 0; jn < fields["hexner"].shape(0); ++jn) {
-    pView(jn, 0) =  mo::Constants::p_zero *
-      pow(hexnerView(jn, 0), (mo::Constants::cp/mo::Constants::rd));
+    pView(jn, 0) = constants::p_zero * pow(hexnerView(jn, 0), (constants::cp / constants::rd));
 
     for (atlas::idx_t jl = 1; jl < fields["hexner"].levels(); ++jl) {
-      thetavView(jn, jl) = -mo::Constants::grav * (rpView(jn, jl) -
-        rpView(jn, jl-1)) / (mo::Constants::cp * (hexnerView(jn, jl) -
-        hexnerView(jn, jl-1)));
+      thetavView(jn, jl) = -constants::grav * (rpView(jn, jl) - rpView(jn, jl-1)) /
+         (constants::cp * (hexnerView(jn, jl) - hexnerView(jn, jl-1)));
     }
     thetavView(jn, 0) = thetavView(jn, 1);
   }

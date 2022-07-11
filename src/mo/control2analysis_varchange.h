@@ -1,4 +1,3 @@
-
 /*
  * (C) Crown Copyright 2022 Met Office
  *

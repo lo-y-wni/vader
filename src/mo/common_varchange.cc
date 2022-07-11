@@ -1,11 +1,9 @@
-
 /*
  * (C) Crown Copyright 2022 Met Office
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
-
 
 #include <algorithm>
 #include <functional>
@@ -24,7 +22,8 @@
 #include "eckit/mpi/Comm.h"
 
 #include "mo/common_varchange.h"
-#include "mo/utils.h"
+#include "mo/constants.h"
+#include "mo/functions.h"
 
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
@@ -35,7 +34,6 @@ using atlas::array::make_view;
 
 namespace mo {
 
-
 bool evalSatVaporPressure(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[svp()] starting ..." << std::endl;
@@ -43,10 +41,10 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
   // normalised T lambda function
   // which enforces upper and lower bounds on T
   auto normalisedT = [](const double tVal) {
-    double t = (tVal - Constants::TLoBound)/Constants::Tinc;
+    double t = (tVal - constants::TLoBound)/constants::Tinc;
     double t1 = (t < 0.0 ? 0.0 : t);
-    double t2 = (t1 >= static_cast<double>(Constants::svpLookUpLength - 1)) ?
-                       static_cast<double>(Constants::svpLookUpLength - 1) : t1;
+    double t2 = (t1 >= static_cast<double>(constants::svpLookUpLength - 1)) ?
+                       static_cast<double>(constants::svpLookUpLength - 1) : t1;
     return t2;
   };
 
@@ -54,7 +52,7 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
   // avoids returning last index in table
   auto index = [](const double normalisedTVal) {
     std::size_t i = static_cast<std::size_t>(normalisedTVal);
-    return (i == Constants::svpLookUpLength - 1 ? Constants::svpLookUpLength - 2 : i);
+    return (i == constants::svpLookUpLength - 1 ? constants::svpLookUpLength - 2 : i);
   };
 
   // weight lamba function
@@ -71,7 +69,7 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
   // lambda function to determine the gradient of variable in table
   // with respect to temperature
   auto normalisedDiff = [](const double v1, const double v2) {
-     return (v2 - v1)/ Constants::Tinc;
+     return (v2 - v1)/ constants::Tinc;
   };
 
   double w;  // weight
@@ -89,18 +87,17 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
     // svp field not compatible with air temperature field, cannot continue.
     return false;
   }
-
-  auto tView  = atlas::array::make_view<double, 2>(fields["air_temperature"]);
-
+  const auto tView  = make_view<const double, 2>(fields["air_temperature"]);
   const std::vector<std::string> vars{"svp", "dlsvp", "svpW", "dlsvpW"};
   oops::Variables lookUpVars(vars);
-  auto lookUpData = getLookUps(constantsFilePath, lookUpVars, Constants::svpLookUpLength);
+  auto lookUpData = functions::getLookUps(constants::commonVarChangeFilePath, lookUpVars,
+                               constants::svpLookUpLength);
 
   const std::vector<std::string> fnames {"svp", "dlsvpdT"};
   int ival = 0;  // set ival = 2 to get svp wrt water
   for (auto & ef : fnames) {
     if (fields.has(ef)) {
-      auto svpView = atlas::array::make_view<double, 2>(fields[ef]);
+      auto svpView = make_view<double, 2>(fields[ef]);
 
       auto conf = atlas::util::Config("levels", fields[ef].levels()) |
                   atlas::util::Config("include_halo", true);
@@ -115,7 +112,7 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
 
       auto fspace = fields[ef].functionspace();
 
-      parallelFor(fspace, evaluateSVP, conf);
+      functions::parallelFor(fspace, evaluateSVP, conf);
     }
   }
 
@@ -124,14 +121,13 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
   return true;
 }
 
-
 bool evalSatSpecificHumidity(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[getQsat()] starting ..." << std::endl;
 
-  auto pbarView = make_view<const double, 2>(fields["air_pressure"]);
-  auto svpView = make_view<const double, 2>(fields["svp"]);
-  auto tView = make_view<const double, 2>(fields["air_temperature"]);
+  const auto pbarView = make_view<const double, 2>(fields["air_pressure"]);
+  const auto svpView = make_view<const double, 2>(fields["svp"]);
+  const auto tView = make_view<const double, 2>(fields["air_temperature"]);
   auto qsatView = make_view<double, 2>(fields["qsat"]);
 
   auto conf = atlas::util::Config("levels", fields["qsat"].levels()) |
@@ -145,19 +141,18 @@ bool evalSatSpecificHumidity(atlas::FieldSet & fields)
     // temperature in Celsius, so conversion of units leads to the slightly
     // different equation used here.
     fsubw = 1.0 + 1.0E-8 * pbarView(i, j) * (4.5 +
-            6.0e-4 * (tView(i, j) - Constants::zerodegc) *
-                     (tView(i, j) - Constants::zerodegc));
+            6.0e-4 * (tView(i, j) - constants::zerodegc) *
+                     (tView(i, j) - constants::zerodegc));
 
     // Note that at very low pressures we apply a fix, to prevent a
     // singularity (Qsat tends to 1.0 kg/kg).
-    qsatView(i, j) = fsubw * Constants::rd_over_rv * svpView(i, j) /
+    qsatView(i, j) = fsubw * constants::rd_over_rv * svpView(i, j) /
           (std::max(pbarView(i, j), svpView(i, j)) -
-          (1.0 - Constants::rd_over_rv) * svpView(i, j));
+          (1.0 - constants::rd_over_rv) * svpView(i, j));
   };
-
   auto fspace = fields["qsat"].functionspace();
 
-  parallelFor(fspace, evaluateQsat, conf);
+  functions::parallelFor(fspace, evaluateQsat, conf);
 
   oops::Log::trace() << "[getQsat()] ... exit" << std::endl;
 

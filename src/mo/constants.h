@@ -7,21 +7,11 @@
 
 #pragma once
 
-#include <Eigen/Core>
-
+#include <cmath>
 #include <string>
-#include <vector>
-
-#include "atlas/field.h"
-#include "atlas/functionspace.h"
-
-#include "oops/base/Variables.h"
-#include "oops/util/Logger.h"
-
 
 namespace mo {
-
-struct Constants {
+namespace constants {
   // Lower temperature bound in lookup table
   static constexpr double TLoBound = 183.15;
 
@@ -60,7 +50,7 @@ struct Constants {
   static constexpr double cv             = 7.1760e2;     // heat capacity at constant volume
                                                          //      for air
   static constexpr double rspec          = cp - cv;      // specific gas constant for dry air
-  static constexpr double rspec_over_cp  = rspec/cp;
+  static constexpr double rspec_over_cp  = rspec / cp;
   static constexpr double pref           = 1.0e5;        // Reference pressure for calculating
                                                          //      exner
   static constexpr double rd_over_rv     = rd / rv;
@@ -121,94 +111,8 @@ struct Constants {
   static constexpr double icao_pressure_surface = 1013.25;  // Assumed surface pressure [hPa]
   static constexpr double icao_pressure_l   = 226.32;    // Assumed pressure at 11,000 gpm [hPa]
   static constexpr double icao_pressure_u   = 54.7487;   // Assumed pressure at 20,000 gpm [hPa]
-};
 
-
-//--
-// ++ Atlas Field, FieldSet ++
-
-/// \brief procedure to check the fields stored into the
-///        data structure FieldSet (data validation)
-void checkFieldSetContent(const atlas::FieldSet & fields,
-                          const std::vector<std::string> expected_fields);
-
-//--
-// ++ Atlas Function Spaces ++
-
-/// \brief procedure to call a functor for a given concrete implementation
-///        of a function space type
-template<typename Functor>
-void executeFunc(const atlas::FunctionSpace & fspace, const Functor & functor) {
-  if (atlas::functionspace::NodeColumns(fspace)) {
-    functor(atlas::functionspace::CubedSphereNodeColumns(fspace));
-  } else if (atlas::functionspace::CellColumns(fspace)) {
-    functor(atlas::functionspace::CubedSphereCellColumns(fspace));
-  } else {
-    oops::Log::error() << "ERROR - a functor call failed "
-                          "(function space type not allowed)" << std::endl;
-    throw std::runtime_error("a functor call failed");
-  }
-}
-
-/// \brief wrapper for 'parallel_for'
-template<typename Functor>
-void parallelFor(const atlas::FunctionSpace & fspace,
-                 const Functor& functor,
-                 const atlas::util::Config& conf = atlas::util::Config()) {
-  executeFunc(fspace, [&](const auto& fspace){fspace.parallel_for(conf, functor);});
-}
-
-
-//--
-// ++ I/O processing ++
-
-/// \brief function to read data from a netcdf file
-/// sVPFilePath: the path and name of the netcdf file
-/// shortname: array to be read from the file
-/// lookupSize: dimension of the array
-///
-std::vector<double> getLookUp(const std::string & sVPFilePath,
-                              const std::string & shortName,
-                              const std::size_t lookupSize);
-
-/// \brief function to read data from a netcdf file
-/// sVPFilePath: the path and name of the netcdf file
-/// shortname: list of arrays, with same dimensions, to be read from the file
-/// lookupSize: dimension of each array
-///
-std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
-                                            const oops::Variables & vars,
-                                            const std::size_t lookupSize);
-
-/// \details getMIOFields returns the effective cloud fractions
-///          for the moisture incrementing operator (MIO)
-void getMIOFields(const atlas::FieldSet & stateFields,
-                  atlas::FieldSet & ceffFields);
-
-/// \details This extracts the scaling coefficients that are applied to Cleff and Cfeff
-///          to generate the qcl and qcf increments in the moisture incrementing operator (MIO)
-///          The string s can be "qcl_coef" or "qcf_coef"
-Eigen::MatrixXd createMIOCoeff(const std::string mioFileName,
-                               const std::string s);
-
-extern "C" {
-  void umGetLookUp_f90(
-    const int &,
-    const char *,
-    const int &,
-    const char *,
-    const int &,
-    double &);
-
-  void umGetLookUp2D_f90(
-    const int &,
-    const char *,
-    const int &,
-    const char *,
-    const int &,
-    const int &,
-    double &);
-}  // extern "C"
-
-
+  static const std::string commonVarChangeFilePath = "Data/parameters/svp_dlsvp_svpW_dlsvpW.nc";
+  static const std::string mioCoefficientsFilePath = "Data/parameters/MIO_coefficients.nc";
+}  // namespace constants
 }  // namespace mo

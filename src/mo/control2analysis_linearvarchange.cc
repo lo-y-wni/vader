@@ -8,76 +8,77 @@
 #include <string>
 #include <vector>
 
+#include "mo/constants.h"
 #include "mo/control2analysis_linearvarchange.h"
-#include "mo/utils.h"
 
 #include "atlas/array/MakeView.h"
+
+using atlas::array::make_view;
 
 namespace mo {
 
 void thetavP2HexnerTL(atlas::FieldSet & fields) {
-    const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
-    const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
-    const auto pView = atlas::array::make_view<double, 2>(fields["p"]);
-    const auto hexnerView = atlas::array::make_view<double, 2>(fields["hexner"]);
-    const auto thetavIncView = atlas::array::make_view<double, 2>(fields["thetavInc"]);
-    const auto pIncView = atlas::array::make_view<double, 2>(fields["pInc"]);
-    auto hexnerIncView = atlas::array::make_view<double, 2>(fields["hexnerInc"]);
+    const auto rpView = make_view<const double, 2>(fields["height_levels"]);
+    const auto thetavView = make_view<const double, 2>(fields["thetav"]);
+    const auto pView = make_view<const double, 2>(fields["p"]);
+    const auto hexnerView = make_view<const double, 2>(fields["hexner"]);
+    const auto thetavIncView = make_view<const double, 2>(fields["thetavInc"]);
+    const auto pIncView = make_view<const double, 2>(fields["pInc"]);
+    auto hexnerIncView = make_view<double, 2>(fields["hexnerInc"]);
 
     for (atlas::idx_t jn = 0; jn < fields["hexner"].shape(0); ++jn) {
-      hexnerIncView(jn, 0) = mo::Constants::rd_over_cp *
+      hexnerIncView(jn, 0) = constants::rd_over_cp *
         hexnerView(jn, 0) * pIncView(jn, 0) / pView(jn, 0);
 
       for (atlas::idx_t jl = 1; jl < fields["hexner"].levels(); ++jl) {
         hexnerIncView(jn, jl) = hexnerIncView(jn, jl-1) +
-          ((mo::Constants::grav * thetavIncView(jn, jl-1) *
+          ((constants::grav * thetavIncView(jn, jl-1) *
             (rpView(jn, jl) - rpView(jn, jl-1))) /
-            (mo::Constants::cp * thetavView(jn, jl-1) * thetavView(jn, jl-1)));
+            (constants::cp * thetavView(jn, jl-1) * thetavView(jn, jl-1)));
       }
     }
 }
 
 void thetavP2HexnerAD(atlas::FieldSet & fields) {
-    const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
-    const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
-    const auto pView = atlas::array::make_view<double, 2>(fields["p"]);
-    const auto hexnerView = atlas::array::make_view<double, 2>(fields["hexner"]);
-    auto thetavHatView = atlas::array::make_view<double, 2>(fields["thetavHat"]);
-    auto pHatView = atlas::array::make_view<double, 2>(fields["pHat"]);
-    auto hexnerHatView = atlas::array::make_view<double, 2>(fields["hexnerHat"]);
+    const auto rpView = make_view<const double, 2>(fields["height_levels"]);
+    const auto thetavView = make_view<const double, 2>(fields["thetav"]);
+    const auto pView = make_view<const double, 2>(fields["p"]);
+    const auto hexnerView = make_view<const double, 2>(fields["hexner"]);
+    auto thetavHatView = make_view<double, 2>(fields["thetavHat"]);
+    auto hexnerHatView = make_view<double, 2>(fields["hexnerHat"]);
+    auto pHatView = make_view<double, 2>(fields["pHat"]);
 
     for (atlas::idx_t jn = 0; jn < fields["hexner"].shape(0); ++jn) {
       for (atlas::idx_t jl = fields["hexner"].levels()-1; jl > 0; --jl) {
         thetavHatView(jn, jl-1) = thetavHatView(jn, jl-1) +
-          ( (mo::Constants::grav * hexnerHatView(jn, jl) *
+          ((constants::grav * hexnerHatView(jn, jl) *
           (rpView(jn, jl) - rpView(jn, jl-1))) /
-          (mo::Constants::cp * thetavView(jn, jl-1) * thetavView(jn, jl-1)));
+          (constants::cp * thetavView(jn, jl-1) * thetavView(jn, jl-1)));
 
         hexnerHatView(jn, jl-1) = hexnerHatView(jn, jl-1) +
           hexnerHatView(jn, jl);
         hexnerHatView(jn, jl) = 0.0;
       }
-
       pHatView(jn, 0) =  pHatView(jn, 0) +
-        mo::Constants::rd_over_cp *
+        constants::rd_over_cp *
         hexnerView(jn, 0) * hexnerHatView(jn, 0) / pView(jn, 0);
       hexnerHatView(jn, 0) = 0.0;
     }
 }
 
 void hexner2ThetavTL(atlas::FieldSet & fields) {
-  const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
-  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
-  const auto hexnerIncView = atlas::array::make_view<double, 2>(fields["hexnerInc"]);
-  auto thetavIncView = atlas::array::make_view<double, 2>(fields["thetavInc"]);
+  const auto rpView = make_view<const double, 2>(fields["height_levels"]);
+  const auto thetavView = make_view<const double, 2>(fields["thetav"]);
+  const auto hexnerIncView = make_view<const double, 2>(fields["hexnerInc"]);
+  auto thetavIncView = make_view<double, 2>(fields["thetavInc"]);
 
   atlas::idx_t levelsm1 = fields["thetavInc"].levels()-1;
   for (atlas::idx_t jn = 0; jn < fields["thetavInc"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < fields["thetavInc"].levels()-1; ++jl) {
       thetavIncView(jn, jl) =
         (hexnerIncView(jn, jl+1) - hexnerIncView(jn, jl)) *
-            (mo::Constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
-            (mo::Constants::grav * (rpView(jn, jl) - rpView(jn, jl)));
+            (constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
+            (constants::grav * (rpView(jn, jl) - rpView(jn, jl)));
     }
     // note thetavInc at surface is the same as level 1
     // thetavInc at top level is zero because we assume that
@@ -89,10 +90,10 @@ void hexner2ThetavTL(atlas::FieldSet & fields) {
 }
 
 void hexner2ThetavAD(atlas::FieldSet & fields) {
-  const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
-  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
-  auto thetavHatView = atlas::array::make_view<double, 2>(fields["thetavHat"]);
-  auto hexnerHatView = atlas::array::make_view<double, 2>(fields["hexnerHat"]);
+  const auto rpView = make_view<const double, 2>(fields["height_levels"]);
+  const auto thetavView = make_view<const double, 2>(fields["thetav"]);
+  auto thetavHatView = make_view<double, 2>(fields["thetavHat"]);
+  auto hexnerHatView = make_view<double, 2>(fields["hexnerHat"]);
 
   atlas::idx_t levelsm1 = fields["thetavHat"].levels()-1;
   atlas::idx_t levelsm2 = fields["thetavHat"].levels()-2;
@@ -101,25 +102,25 @@ void hexner2ThetavAD(atlas::FieldSet & fields) {
 
     for (atlas::idx_t jl = levelsm2; jl > -1; --jl) {
       hexnerHatView(jn, jl) =  hexnerHatView(jn, jl) + thetavHatView(jn, jl) *
-        (mo::Constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
-        (mo::Constants::grav * (rpView(jn, jl) - rpView(jn, jl)) );
+        (constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
+        (constants::grav * (rpView(jn, jl) - rpView(jn, jl)) );
       hexnerHatView(jn, jl) = hexnerHatView(jn, jl) - thetavHatView(jn, jl) *
-        (mo::Constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
-        (mo::Constants::grav * (rpView(jn, jl) - rpView(jn, jl)));
+        (constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
+        (constants::grav * (rpView(jn, jl) - rpView(jn, jl)));
       thetavHatView(jn, jl) = 0.0;
     }
   }
 }
 
 void thetavExner2RhoTL(atlas::FieldSet & fields) {
-  const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
-  const auto rthetaView = atlas::array::make_view<double, 2>(fields["height"]);
-  const auto exnerView = atlas::array::make_view<double, 2>(fields["exner"]);
-  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
-  const auto rhoRRView = atlas::array::make_view<double, 2>(fields["rhoRR"]);
-  const auto exnerIncView = atlas::array::make_view<double, 2>(fields["exnerInc"]);
-  const auto thetavIncView = atlas::array::make_view<double, 2>(fields["thetavInc"]);
-  auto rhoRRIncView = atlas::array::make_view<double, 2>(fields["rhoRRInc"]);
+  const auto rpView = make_view<const double, 2>(fields["height_levels"]);
+  const auto rthetaView = make_view<const double, 2>(fields["height"]);
+  const auto exnerView = make_view<const double, 2>(fields["exner"]);
+  const auto thetavView = make_view<const double, 2>(fields["thetav"]);
+  const auto rhoRRView = make_view<const double, 2>(fields["rhoRR"]);
+  const auto exnerIncView = make_view<const double, 2>(fields["exnerInc"]);
+  const auto thetavIncView = make_view<const double, 2>(fields["thetavInc"]);
+  auto rhoRRIncView = make_view<double, 2>(fields["rhoRRInc"]);
 
   for (atlas::idx_t jn = 0; jn < rhoRRIncView.shape(0); ++jn) {
     for (atlas::idx_t jl = 1; jl < fields["rhoRRInc"].levels(); ++jl) {
@@ -138,14 +139,14 @@ void thetavExner2RhoTL(atlas::FieldSet & fields) {
 }
 
 void thetavExner2RhoAD(atlas::FieldSet & fields) {
-  const auto rpView = atlas::array::make_view<double, 2>(fields["height_levels"]);
-  const auto rthetaView = atlas::array::make_view<double, 2>(fields["height"]);
-  const auto exnerView = atlas::array::make_view<double, 2>(fields["exner"]);
-  const auto thetavView = atlas::array::make_view<double, 2>(fields["thetav"]);
-  const auto rhoRRView = atlas::array::make_view<double, 2>(fields["rhoRR"]);
-  auto exnerHatView = atlas::array::make_view<double, 2>(fields["exnerHat"]);
-  auto thetavHatView = atlas::array::make_view<double, 2>(fields["thetavHat"]);
-  auto rhoRRHatView = atlas::array::make_view<double, 2>(fields["rhoRRHat"]);
+  const auto rpView = make_view<const double, 2>(fields["height_levels"]);
+  const auto rthetaView = make_view<const double, 2>(fields["height"]);
+  const auto exnerView = make_view<const double, 2>(fields["exner"]);
+  const auto thetavView = make_view<const double, 2>(fields["thetav"]);
+  const auto rhoRRView = make_view<const double, 2>(fields["rhoRR"]);
+  auto exnerHatView = make_view<double, 2>(fields["exnerHat"]);
+  auto thetavHatView = make_view<double, 2>(fields["thetavHat"]);
+  auto rhoRRHatView = make_view<double, 2>(fields["rhoRRHat"]);
 
   for (atlas::idx_t jn = 0; jn < rhoRRHatView.shape(0); ++jn) {
     for (atlas::idx_t jl = fields["rhoRRHat"].levels()-1; jl >= 0; --jl) {
@@ -168,17 +169,12 @@ void thetavExner2RhoAD(atlas::FieldSet & fields) {
 }
 
 void qqclqcf2qtTL(atlas::FieldSet & incFields) {
-  const std::vector<std::string> fnames {"specific_humidity",
-              "mass_content_of_cloud_liquid_water_in_atmosphere_layer",
-              "mass_content_of_cloud_ice_in_atmosphere_layer", "qt"};
-  checkFieldSetContent(incFields, fnames);
-
-  auto qIncView = atlas::array::make_view<const double, 2>(incFields["specific_humidity"]);
-  auto qclIncView = atlas::array::make_view<const double, 2>
+  const auto qIncView = make_view<const double, 2>(incFields["specific_humidity"]);
+  const auto qclIncView = make_view<const double, 2>
                     (incFields["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
-  auto qcfIncView = atlas::array::make_view<const double, 2>
+  const auto qcfIncView = make_view<const double, 2>
                     (incFields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
-  auto qtIncView = atlas::array::make_view<double, 2>(incFields["qt"]);
+  auto qtIncView = make_view<double, 2>(incFields["qt"]);
 
   for (atlas::idx_t jn = 0; jn < incFields["specific_humidity"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < incFields["specific_humidity"].levels(); ++jl) {
@@ -188,17 +184,12 @@ void qqclqcf2qtTL(atlas::FieldSet & incFields) {
 }
 
 void qqclqcf2qtAD(atlas::FieldSet & hatFields) {
-  const std::vector<std::string> fnames {"specific_humidity",
-              "mass_content_of_cloud_liquid_water_in_atmosphere_layer",
-              "mass_content_of_cloud_ice_in_atmosphere_layer", "qt"};
-  checkFieldSetContent(hatFields, fnames);
-
-  auto qHatView = atlas::array::make_view<double, 2>(hatFields["specific_humidity"]);
-  auto qclHatView = atlas::array::make_view<double, 2>
+  auto qHatView = make_view<double, 2>(hatFields["specific_humidity"]);
+  auto qclHatView = make_view<double, 2>
                     (hatFields["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
-  auto qcfHatView = atlas::array::make_view<double, 2>
+  auto qcfHatView = make_view<double, 2>
                     (hatFields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
-  auto qtHatView = atlas::array::make_view<double, 2>(hatFields["qt"]);
+  auto qtHatView = make_view<double, 2>(hatFields["qt"]);
 
   for (atlas::idx_t jn = 0; jn < hatFields["qt"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < hatFields["qt"].levels(); ++jl) {
@@ -213,43 +204,27 @@ void qqclqcf2qtAD(atlas::FieldSet & hatFields) {
 void qtTemperature2qqclqcfTL(const atlas::FieldSet & stateFields,
                              const atlas::FieldSet & ceffFieldSet,
                              atlas::FieldSet & incFields) {
-  const std::vector<std::string> fnames {"dlsvpdT", "qsat", "qt"};
-  checkFieldSetContent(stateFields, fnames);
+  const auto qsatView = make_view<const double, 2>(stateFields["qsat"]);
+  const auto dlsvpdTView = make_view<const double, 2>(stateFields["dlsvpdT"]);
 
-  auto qtView = atlas::array::make_view<double, 2>(stateFields["qt"]);
-  auto qsatView = atlas::array::make_view<double, 2>(stateFields["qsat"]);
-  auto dlsvpdTView = atlas::array::make_view<double, 2>(stateFields["dlsvpdT"]);
-
-  const std::vector<std::string> inc_fnames
-                                 {"qt", "air_temperature",
-                                  "specific_humidity",
-                                  "mass_content_of_cloud_liquid_water_in_atmosphere_layer",
-                                  "mass_content_of_cloud_ice_in_atmosphere_layer"};
-  checkFieldSetContent(incFields, inc_fnames);
-
-  auto qtIncView = atlas::array::make_view<const double, 2>(incFields["qt"]);
-  auto temperIncView = atlas::array::make_view<const double, 2>(incFields["air_temperature"]);
-  auto qIncView = atlas::array::make_view<double, 2>
-                  (incFields["specific_humidity"]);
-  auto qclIncView = atlas::array::make_view<double, 2>
+  const auto qtIncView = make_view<const double, 2>(incFields["qt"]);
+  const auto temperIncView = make_view<const double, 2>(incFields["air_temperature"]);
+  auto qclIncView = make_view<double, 2>
                     (incFields["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
-  auto qcfIncView = atlas::array::make_view<double, 2>
+  auto qcfIncView = make_view<double, 2>
                     (incFields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
+  auto qIncView = make_view<double, 2>(incFields["specific_humidity"]);
+
+  const auto cleffView = make_view<const double, 2>(ceffFieldSet["cleff"]);
+  const auto cfeffView = make_view<const double, 2>(ceffFieldSet["cfeff"]);
 
   double maxCldInc;
-
-  const std::vector<std::string> ceff_fnames {"cleff", "cfeff"};
-  checkFieldSetContent(ceffFieldSet, ceff_fnames);
-
-  auto cleffView = atlas::array::make_view<double, 2>(ceffFieldSet["cleff"]);
-  auto cfeffView = atlas::array::make_view<double, 2>(ceffFieldSet["cfeff"]);
-
   for (atlas::idx_t jn = 0; jn < incFields["qt"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < incFields["qt"].levels(); ++jl) {
-        maxCldInc = qtIncView(jn, jl)
-                - qsatView(jn, jl) * dlsvpdTView(jn, jl) * temperIncView(jn, jl);
-        qclIncView(jn, jl) =  cleffView(jn, jl) * maxCldInc;
-        qcfIncView(jn, jl) =  cfeffView(jn, jl) * maxCldInc;
+        maxCldInc = qtIncView(jn, jl) - qsatView(jn, jl) *
+            dlsvpdTView(jn, jl) * temperIncView(jn, jl);
+        qclIncView(jn, jl) = cleffView(jn, jl) * maxCldInc;
+        qcfIncView(jn, jl) = cfeffView(jn, jl) * maxCldInc;
         qIncView(jn, jl) = qtIncView(jn, jl) - qclIncView(jn, jl) - qcfIncView(jn, jl);
     }
   }
@@ -258,36 +233,21 @@ void qtTemperature2qqclqcfTL(const atlas::FieldSet & stateFields,
 void qtTemperature2qqclqcfAD(const atlas::FieldSet & stateFields,
                              const atlas::FieldSet & ceffFieldSet,
                              atlas::FieldSet & hatFields) {
-  const std::vector<std::string> fnames {"dlsvpdT", "qsat", "qt"};
-  checkFieldSetContent(stateFields, fnames);
+  const auto qsatView = make_view<const double, 2>(stateFields["qsat"]);
+  const auto dlsvpdTView = make_view<const double, 2>(stateFields["dlsvpdT"]);
 
-  auto qtView = atlas::array::make_view<double, 2>(stateFields["qt"]);
-  auto qsatView = atlas::array::make_view<double, 2>(stateFields["qsat"]);
-  auto dlsvpdTView = atlas::array::make_view<double, 2>(stateFields["dlsvpdT"]);
-
-  const std::vector<std::string> hat_fnames
-                                 {"qt", "air_temperature",
-                                  "specific_humidity",
-                                  "mass_content_of_cloud_liquid_water_in_atmosphere_layer",
-                                  "mass_content_of_cloud_ice_in_atmosphere_layer"};
-  checkFieldSetContent(hatFields, hat_fnames);
-
-  auto qtHatView = atlas::array::make_view<double, 2>(hatFields["qt"]);
-  auto temperHatView = atlas::array::make_view<double, 2>(hatFields["air_temperature"]);
-  auto qHatView = atlas::array::make_view<double, 2>(hatFields["specific_humidity"]);
-  auto qclHatView = atlas::array::make_view<double, 2>
+  auto temperHatView = make_view<double, 2>(hatFields["air_temperature"]);
+  auto qtHatView = make_view<double, 2>(hatFields["qt"]);
+  auto qHatView = make_view<double, 2>(hatFields["specific_humidity"]);
+  auto qclHatView = make_view<double, 2>
                     (hatFields["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
-  auto qcfHatView = atlas::array::make_view<double, 2>
+  auto qcfHatView = make_view<double, 2>
                     (hatFields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
 
+  const auto cleffView = make_view<const double, 2>(ceffFieldSet["cleff"]);
+  const auto cfeffView = make_view<const double, 2>(ceffFieldSet["cfeff"]);
+
   double qsatdlsvpdT;
-
-  const std::vector<std::string> ceff_fnames {"cleff", "cfeff"};
-  checkFieldSetContent(ceffFieldSet, ceff_fnames);
-
-  auto cleffView = atlas::array::make_view<double, 2>(ceffFieldSet["cleff"]);
-  auto cfeffView = atlas::array::make_view<double, 2>(ceffFieldSet["cfeff"]);
-
   for (atlas::idx_t jn = 0; jn < hatFields["qt"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < hatFields["qt"].levels(); ++jl) {
       qsatdlsvpdT = qsatView(jn, jl) * dlsvpdTView(jn, jl);

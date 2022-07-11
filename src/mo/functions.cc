@@ -12,29 +12,16 @@
 #include "atlas/array.h"
 #include "atlas/field.h"
 
-#include "mo/utils.h"
+#include "mo/constants.h"
+#include "mo/functions.h"
+
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
 
-//--
+using atlas::array::make_view;
 
 namespace mo {
-
-
-// ++ Atlas Field, FieldSet ++
-
-void checkFieldSetContent(const atlas::FieldSet & fields,
-                          const std::vector<std::string> expected_fields) {
-  for (auto& ef : expected_fields) {
-    if (!fields.has(ef)) {
-      oops::Log::error() << "ERROR - data validation failed "
-                            "(an expected field is missing)" << std::endl;
-      throw std::runtime_error("data validation failed");
-    }
-  }
-}
-
-// ++ I/O processing ++
+namespace functions {
 
 std::vector<double> getLookUp(const std::string & sVPFilePath,
                               const std::string & shortName,
@@ -66,34 +53,26 @@ std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
 
 void getMIOFields(const atlas::FieldSet & stateFields,
                   atlas::FieldSet & ceffFields) {
-  const std::string mioFileName = "Data/parameters/MIO_coefficients.nc";
-  const std::vector<std::string> fnames {"rht",
-                                         "liquid_cloud_volume_fraction_in_atmosphere_layer",
-                                         "ice_cloud_volume_fraction_in_atmosphere_layer"};
-  checkFieldSetContent(stateFields, fnames);
-
-  auto rhtView = atlas::array::make_view<double, 2>(stateFields["rht"]);
-  auto clView = atlas::array::make_view<double, 2>
+  const auto rhtView = make_view<const double, 2>(stateFields["rht"]);
+  const auto clView = make_view<const double, 2>
                 (stateFields["liquid_cloud_volume_fraction_in_atmosphere_layer"]);
-  auto cfView = atlas::array::make_view<double, 2>
+  const auto cfView = make_view<const double, 2>
                 (stateFields["ice_cloud_volume_fraction_in_atmosphere_layer"]);
 
-  const std::vector<std::string> fnames_out {"cleff", "cfeff"};
-  checkFieldSetContent(ceffFields, fnames_out);
-  auto cleffView = atlas::array::make_view<double, 2>(ceffFields["cleff"]);
-  auto cfeffView = atlas::array::make_view<double, 2>(ceffFields["cfeff"]);
+  auto cleffView = make_view<double, 2>(ceffFields["cleff"]);
+  auto cfeffView = make_view<double, 2>(ceffFields["cfeff"]);
 
-  Eigen::MatrixXd mioCoeffCl = createMIOCoeff(mioFileName, "qcl_coef");
-  Eigen::MatrixXd mioCoeffCf = createMIOCoeff(mioFileName, "qcf_coef");
+  Eigen::MatrixXd mioCoeffCl = createMIOCoeff(constants::mioCoefficientsFilePath, "qcl_coef");
+  Eigen::MatrixXd mioCoeffCf = createMIOCoeff(constants::mioCoefficientsFilePath, "qcf_coef");
 
   for  (atlas::idx_t jn = 0; jn < stateFields["rht"].shape(0); ++jn) {
     for (int jl = 0; jl < stateFields["rht"].levels(); ++jl) {
-      if (jl < Constants::mioLevs) {
-        std::size_t ibin = (rhtView(jn, jl) > 100.0) ? Constants::mioBins - 1 :
-                           static_cast<std::size_t>(floor(rhtView(jn, jl) / Constants::rHTBin));
+      if (jl < constants::mioLevs) {
+        std::size_t ibin = (rhtView(jn, jl) > 1.0) ? constants::mioBins - 1 :
+                           static_cast<std::size_t>(floor(rhtView(jn, jl) / constants::rHTBin));
 
         std::double_t ceffdenom = (1.0 -  clView(jn, jl) * cfView(jn, jl) );
-        if (ceffdenom > Constants::tol) {
+        if (ceffdenom > constants::tol) {
           std::double_t clcf = clView(jn, jl) * cfView(jn, jl);
           cleffView(jn, jl) = mioCoeffCl(jl, ibin) * (clView(jn, jl) - clcf) / ceffdenom;
           cfeffView(jn, jl) = mioCoeffCf(jl, ibin) * (cfView(jn, jl) - clcf) / ceffdenom;
@@ -112,26 +91,27 @@ void getMIOFields(const atlas::FieldSet & stateFields,
 Eigen::MatrixXd createMIOCoeff(const std::string mioFileName,
                                const std::string s)
 {
-    Eigen::MatrixXd mioCoeff(static_cast<std::size_t>(Constants::mioLevs),
-                             static_cast<std::size_t>(Constants::mioBins));
-    double valuesvec[Constants::mioLookUpLength];
+    Eigen::MatrixXd mioCoeff(static_cast<std::size_t>(constants::mioLevs),
+                             static_cast<std::size_t>(constants::mioBins));
+
+    std::vector<double> valuesvec(constants::mioLookUpLength, 0);
 
     umGetLookUp2D_f90(static_cast<int>(mioFileName.size()),
                       mioFileName.c_str(),
                       static_cast<int>(s.size()),
                       s.c_str(),
-                      static_cast<int>(Constants::mioBins),
-                      static_cast<int>(Constants::mioLevs),
+                      static_cast<int>(constants::mioBins),
+                      static_cast<int>(constants::mioLevs),
                       valuesvec[0]);
 
-    for (int j = 0; j < Constants::mioLevs; ++j) {
-        for (int i = 0; i < Constants::mioBins; ++i) {
+    for (int j = 0; j < constants::mioLevs; ++j) {
+        for (int i = 0; i < constants::mioBins; ++i) {
             // Fortran returns column major order, but C++ needs row major
-            mioCoeff(j, i) = valuesvec[i*Constants::mioLevs+j];
+            mioCoeff(j, i) = valuesvec[i * constants::mioLevs+j];
         }
     }
-
     return mioCoeff;
 }
 
+}  // namespace functions
 }  // namespace mo

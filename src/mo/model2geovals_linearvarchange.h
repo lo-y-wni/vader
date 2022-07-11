@@ -1,4 +1,3 @@
-
 /*
  * (C) Crown Copyright 2022 Met Office
  *
@@ -6,6 +5,4 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-
 #pragma once
-

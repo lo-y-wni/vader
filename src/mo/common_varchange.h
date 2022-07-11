@@ -1,11 +1,9 @@
-
 /*
  * (C) Crown Copyright 2022 Met Office
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
-
 
 #pragma once
 
@@ -15,10 +13,7 @@
 #include "atlas/field/Field.h"
 #include "atlas/field/FieldSet.h"
 
-
 namespace mo {
-
-const char constantsFilePath[] = "Data/parameters/svp_dlsvp_svpW_dlsvpW.nc";
 
 /// \brief function to evaluate saturation water pressure (svp) [Pa]
 /// the Atlas field in the argument must contain an inizialised air temperature field
