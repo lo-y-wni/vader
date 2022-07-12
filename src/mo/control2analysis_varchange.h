@@ -17,3 +17,13 @@ bool thetavP2Hexner(atlas::FieldSet & fields);
 /// \details This is a straight inverse of thetavP2Hexner
 ///          Note that we need to revisit this for the top level for thetav.
 void hexner2PThetav(atlas::FieldSet & fields);
+
+
+/// \details This calculates virtual air temperature increments.
+///          We store this as "air_temperature"
+bool evalAirTemperatureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & stateFlds);
+
+
+/// \details This calculates the adjont of the transform to virtual air temperature increments.
+///          We store this as "air_temperature"
+bool evalAirTemperatureAD(atlas::FieldSet & incFlds, const atlas::FieldSet & stateFlds);

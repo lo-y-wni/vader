@@ -51,22 +51,21 @@ std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
   return values;
 }
 
-void getMIOFields(const atlas::FieldSet & stateFields,
-                  atlas::FieldSet & ceffFields) {
-  const auto rhtView = make_view<const double, 2>(stateFields["rht"]);
+void getMIOFields(atlas::FieldSet & augStateFlds) {
+  const auto rhtView = make_view<const double, 2>(augStateFlds["rht"]);
   const auto clView = make_view<const double, 2>
-                (stateFields["liquid_cloud_volume_fraction_in_atmosphere_layer"]);
+                (augStateFlds["liquid_cloud_volume_fraction_in_atmosphere_layer"]);
   const auto cfView = make_view<const double, 2>
-                (stateFields["ice_cloud_volume_fraction_in_atmosphere_layer"]);
+                (augStateFlds["ice_cloud_volume_fraction_in_atmosphere_layer"]);
 
-  auto cleffView = make_view<double, 2>(ceffFields["cleff"]);
-  auto cfeffView = make_view<double, 2>(ceffFields["cfeff"]);
+  auto cleffView = make_view<double, 2>(augStateFlds["cleff"]);
+  auto cfeffView = make_view<double, 2>(augStateFlds["cfeff"]);
 
   Eigen::MatrixXd mioCoeffCl = createMIOCoeff(constants::mioCoefficientsFilePath, "qcl_coef");
   Eigen::MatrixXd mioCoeffCf = createMIOCoeff(constants::mioCoefficientsFilePath, "qcf_coef");
 
-  for  (atlas::idx_t jn = 0; jn < stateFields["rht"].shape(0); ++jn) {
-    for (int jl = 0; jl < stateFields["rht"].levels(); ++jl) {
+  for  (atlas::idx_t jn = 0; jn < augStateFlds["rht"].shape(0); ++jn) {
+    for (int jl = 0; jl < augStateFlds["rht"].levels(); ++jl) {
       if (jl < constants::mioLevs) {
         std::size_t ibin = (rhtView(jn, jl) > 1.0) ? constants::mioBins - 1 :
                            static_cast<std::size_t>(floor(rhtView(jn, jl) / constants::rHTBin));

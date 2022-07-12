@@ -69,11 +69,7 @@ std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
 
 /// \details getMIOFields returns the effective cloud fractions
 ///          for the moisture incrementing operator (MIO)
-//  void getMIOFields(const atlas::Field & RHt,
-//                  const atlas::Field & Cl, const atlas::Field & Cf,
-//                  atlas::Field Cleff, atlas::Field Cfeff) const;
-void getMIOFields(const atlas::FieldSet & stateFields,
-                  atlas::FieldSet & ceffFields);
+void getMIOFields(atlas::FieldSet & augStateFlds);
 
 /// \details This extracts the scaling coefficients that are applied to Cleff and Cfeff
 ///          to generate the qcl and qcf increments in the moisture incrementing operator (MIO)

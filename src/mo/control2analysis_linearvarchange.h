@@ -14,25 +14,24 @@ namespace mo {
 
 /// \details Tangent linear approximation to the
 ///          transformation from virtual potential temperature (thetav) to
-///          hydrostatically-balanced exner (hexner)
-void thetavP2HexnerTL(atlas::FieldSet & fields);
+///          hydrostatically-balanced exner (hydrostatic_exner_levels_minus_one)
+void thetavP2HexnerTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details Adjoint of the tangent linear approximation to the
 ///          transformation from virtual potential temperature (thetav) to
 ///          hydrostatically-balanced exner (hexner)
-///          Note:: zeroing of hexnerHatView not done.
-void thetavP2HexnerAD(atlas::FieldSet & fields);
+void thetavP2HexnerAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details Tangent linear approximation to the
 ///          transformation from hydrostatically-balanced exner (hexner)
 ///          to virtual potential temperature (thetav)
-void hexner2ThetavTL(atlas::FieldSet & fields);
+void hexner2ThetavTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details Adjoint of the tangent linear approximation to the
 ///          transformation from virtual potential temperature (thetav) to
 ///          hydrostatically-balanced exner (hexner)
 ///          Note:: zeroing of hexnerHatView not done.
-void hexner2ThetavAD(atlas::FieldSet & fields);
+void hexner2ThetavAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details Tangent linear approximation to create the scaled dry
 ///          density using exner and the dry virtual temperature
@@ -42,7 +41,7 @@ void hexner2ThetavAD(atlas::FieldSet & fields);
 ///                       ( exner        theta_vd  )
 ///          theta_vd and theta_vd' needs to be vertically interpolated
 ///          onto the rho_grid.
-void thetavExner2RhoTL(atlas::FieldSet & fields);
+void thetavExner2RhoTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details Adjoint of Tangent linear approximation to create the scaled dry
 ///          density using exner and the dry virtual temperature
@@ -52,22 +51,26 @@ void thetavExner2RhoTL(atlas::FieldSet & fields);
 ///                       ( exner        theta_vd  )
 ///          theta_vd and theta_vd' needs to be vertically interpolated
 ///          onto the rho_grid.
-void thetavExner2RhoAD(atlas::FieldSet & fields);
+void thetavExner2RhoAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds);
+
+/// \details This calculates air temperature increments from "exner" and "theta"
+void evalAirTemperatureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds);
+
+/// \details This calculates the adjoint of the transform to air temperature increments.
+void evalAirTemperatureAD(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details Calculate qT increment from the sum of q, qcl and qcf increments
-void qqclqcf2qtTL(atlas::FieldSet & incFields);
+void qqclqcf2qtTL(atlas::FieldSet & incFields, const atlas::FieldSet &);
 
 /// \details This is the adjoint of qqclqcf2qtTL
-void qqclqcf2qtAD(atlas::FieldSet & hatFields);
+void qqclqcf2qtAD(atlas::FieldSet & hatFields, const atlas::FieldSet &);
 
 /// \details This is the moisture incrementing operator (MIO) that determines the cloud condensate
 ///          increments from increments in total water and temperature
-void qtTemperature2qqclqcfTL(const atlas::FieldSet & stateFields,
-                        const atlas::FieldSet & ceffFieldSet,
-                        atlas::FieldSet & incFields);
+void qtTemperature2qqclqcfTL(atlas::FieldSet & incFlds,
+                             const atlas::FieldSet & augStateFlds);
 
 /// \details This is the adjoint of the MIO
-void qtTemperature2qqclqcfAD(const atlas::FieldSet & stateFields,
-                       const atlas::FieldSet & ceffFieldSet,
-                       atlas::FieldSet & hatFields);
+void qtTemperature2qqclqcfAD(atlas::FieldSet & hatFlds,
+                             const atlas::FieldSet & augStateFlds);
 }  // namespace mo
