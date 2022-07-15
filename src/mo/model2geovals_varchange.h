@@ -131,7 +131,7 @@ bool evalAirTemperature(atlas::FieldSet & fields);
 
 
 /// \brief function to evaluate the 'air_pressure_levels' from
-/// 'exner_levels_minus_one', 'theta' , 'height_levels' fields
+/// 'exner_levels_minus_one', 'potential_temperature', 'height_levels' fields
 /// where ...
 ///   'air_pressure_levels' is the same as 'air_pressure_levels_minus_one'
 /// except for the topmost level where the level is assumed to be in

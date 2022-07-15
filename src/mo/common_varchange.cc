@@ -150,6 +150,7 @@ bool evalSatSpecificHumidity(atlas::FieldSet & fields)
           (std::max(pbarView(i, j), svpView(i, j)) -
           (1.0 - constants::rd_over_rv) * svpView(i, j));
   };
+
   auto fspace = fields["qsat"].functionspace();
 
   functions::parallelFor(fspace, evaluateQsat, conf);

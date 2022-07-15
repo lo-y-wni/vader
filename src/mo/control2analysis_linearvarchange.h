@@ -34,24 +34,24 @@ void hexner2ThetavTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augState
 void hexner2ThetavAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details Tangent linear approximation to create the scaled dry
-///          density using exner and the dry virtual temperature
+///          density using exner and the temperature
 ///
-///          rho'_d = rho ( exner'       theta_vd' )
+///          rho'_d = rho ( exner'       potential_temperature' )
 ///                       (-------   -   --------- )
-///                       ( exner        theta_vd  )
-///          theta_vd and theta_vd' needs to be vertically interpolated
+///                       ( exner        potential_temperature )
+///          potential_temperature and potential_temperature' needs to be vertically interpolated
 ///          onto the rho_grid.
-void thetavExner2RhoTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds);
+void evalDryAirDensityTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details Adjoint of Tangent linear approximation to create the scaled dry
-///          density using exner and the dry virtual temperature
+///          density using exner and the temperature
 ///
-///          rho'_d = rho ( exner'       theta_vd' )
+///          rho'_d = rho ( exner'       potential_temperature' )
 ///                       (-------   -   --------- )
-///                       ( exner        theta_vd  )
-///          theta_vd and theta_vd' needs to be vertically interpolated
+///                       ( exner        potential_temperature  )
+///          potential_temperature and potential_temperature' needs to be vertically interpolated
 ///          onto the rho_grid.
-void thetavExner2RhoAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds);
+void evalDryAirDensityAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds);
 
 /// \details This calculates air temperature increments from "exner" and "theta"
 void evalAirTemperatureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds);

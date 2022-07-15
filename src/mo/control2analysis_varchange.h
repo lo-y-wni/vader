@@ -9,6 +9,8 @@
 
 #include "atlas/field/FieldSet.h"
 
+namespace mo {
+
 /// \details Transformation from virtual potential temperature (thetav) to
 ///          hydrostatically-balanced exner hexner
 ///          Uses pressure level 0 and not psurf.
@@ -18,12 +20,13 @@ bool thetavP2Hexner(atlas::FieldSet & fields);
 ///          Note that we need to revisit this for the top level for thetav.
 void hexner2PThetav(atlas::FieldSet & fields);
 
+/// \details Calculate the virtual potential temperature
+///          from the specific humidity and the potential temperature.
+void evalVirtualPotentialTemperature(atlas::FieldSet & fields);
 
-/// \details This calculates virtual air temperature increments.
-///          We store this as "air_temperature"
-bool evalAirTemperatureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & stateFlds);
+/// \details Calculate the dry air density
+///          from the air_pressure_levels_minus_one,
+///          air_temperature (which needs to be interpolated).
+void evalDryAirDensity(atlas::FieldSet & fields);
 
-
-/// \details This calculates the adjont of the transform to virtual air temperature increments.
-///          We store this as "air_temperature"
-bool evalAirTemperatureAD(atlas::FieldSet & incFlds, const atlas::FieldSet & stateFlds);
+}  // namespace mo

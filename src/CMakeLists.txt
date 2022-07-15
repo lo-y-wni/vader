@@ -18,6 +18,8 @@ if ( ENABLE_VADER_MO )
 list( APPEND vader_src_files
 mo/common_varchange.h
 mo/common_varchange.cc
+mo/common_linearvarchange.h
+mo/common_linearvarchange.cc
 mo/constants.h
 mo/functions.h
 mo/functions.cc

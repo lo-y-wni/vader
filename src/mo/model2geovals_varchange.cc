@@ -220,7 +220,7 @@ bool evalAirTemperature(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalAirTemperature()] starting ..." << std::endl;
 
-  const auto ds_theta  = make_view<const double, 2>(fields["theta"]);
+  const auto ds_theta  = make_view<const double, 2>(fields["potential_temperature"]);
   const auto ds_exner = make_view<const double, 2>(fields["exner"]);
   auto ds_atemp = make_view<double, 2>(fields["air_temperature"]);
 
@@ -246,7 +246,7 @@ bool evalAirPressureLevels(atlas::FieldSet & fields)
 
   const auto ds_elmo = make_view<const double, 2>(fields["exner_levels_minus_one"]);
   const auto ds_plmo = make_view<const double, 2>(fields["air_pressure_levels_minus_one"]);
-  const auto ds_t = make_view<const double, 2>(fields["theta"]);
+  const auto ds_t = make_view<const double, 2>(fields["potential_temperature"]);
   const auto ds_hl = make_view<const double, 2>(fields["height_levels"]);
   auto ds_pl = make_view<double, 2>(fields["air_pressure_levels"]);
 
