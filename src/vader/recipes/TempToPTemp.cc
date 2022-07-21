@@ -95,7 +95,7 @@ bool TempToPTemp::execute(atlas::FieldSet & afieldset)
     std::endl;
 
     auto temperature_view = atlas::array::make_view<double, 2>(temperature);
-    auto surface_pressure_view = atlas::array::make_view<double, 1>(surface_pressure);
+    auto surface_pressure_view = atlas::array::make_view<double, 2>(surface_pressure);
     auto potential_temperature_view = atlas::array::make_view<double, 2>(potential_temperature);
 
     size_t grid_size = surface_pressure.size();
@@ -104,7 +104,7 @@ bool TempToPTemp::execute(atlas::FieldSet & afieldset)
     for (int level = 0; level < nlevels; ++level) {
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         potential_temperature_view(jnode, level) =
-            temperature_view(jnode, level) * pow(p0_ / surface_pressure_view(jnode), kappa_);
+            temperature_view(jnode, level) * pow(p0_ / surface_pressure_view(jnode, 0), kappa_);
       }
     }
 
