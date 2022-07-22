@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "atlas/field/FieldSet.h"
@@ -57,9 +58,12 @@ class Vader {
     void createCookbook(std::unordered_map<std::string, std::vector<std::string>>,
                         const std::vector<RecipeParametersWrapper> & allRecpParamWraps =
                               std::vector<RecipeParametersWrapper>());
-    bool getVariable(atlas::FieldSet & afieldset,
-                     oops::Variables & neededVars,
-                     const std::string targetVariable) const;
+    bool planVariable(atlas::FieldSet & afieldset,
+                      oops::Variables & neededVars,
+                      const std::string targetVariable,
+                      std::vector<std::pair<std::string, std::string>> & plan) const;
+    void executePlanNL(atlas::FieldSet & afieldset,
+                       const std::vector<std::pair<std::string, std::string>> & mealPlan) const;
 };
 
 }  // namespace vader

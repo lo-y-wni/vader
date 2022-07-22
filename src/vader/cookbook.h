@@ -34,7 +34,8 @@ std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookb
         // Value: a vector of recipe names that will be searched, in order,
         //        by Vader for viability
         {VV_PT, {TempToPTemp::Name}},
-        {VV_DELP, {PressureToDelP::Name}}};
+        // TODO(vahl) get PressureToDelP recipe working
+        /*{VV_DELP, {PressureToDelP::Name}}*/};
 }
 
 }  // namespace vader
