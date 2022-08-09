@@ -100,15 +100,16 @@ Vader::Vader(const VaderParameters & parameters) {
 *
 * \param[in,out] afieldset This is the FieldSet described above
 * \param[in,out] neededVars Names of unpopulated Fields in afieldset
+* \returns List of variables VADER was able to populate
 *
 */
-void Vader::changeVar(atlas::FieldSet & afieldset,
-                      oops::Variables & neededVars) const {
+oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
+                                 oops::Variables & neededVars) const {
     util::Timer timer(classname(), "changeVar");
     oops::Log::trace() << "entering Vader::changeVar " << std::endl;
     oops::Log::debug() << "neededVars passed to Vader::changeVar: " << neededVars << std::endl;
 
-    oops::Variables ingredients{};
+    oops::Variables varsProduced(neededVars);
 
     auto fieldSetFieldNames = afieldset.field_names();
     // Loop through all the requested fields in neededVars
@@ -127,7 +128,9 @@ void Vader::changeVar(atlas::FieldSet & afieldset,
 
     oops::Log::debug() << "neededVars remaining after Vader::changeVar: " << neededVars
         << std::endl;
-    oops::Log::trace() << "leaving Vader::changeVar: " << std::endl;
+    varsProduced -= neededVars;
+    oops::Log::trace() << "leaving Vader::changeVar" << std::endl;
+    return varsProduced;
 }
 // ------------------------------------------------------------------------------------------------
 /*! \brief Plan Variable

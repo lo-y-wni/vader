@@ -47,7 +47,7 @@ class Vader {
     ~Vader();
 
     /// Calculates as many variables in the list as possible
-    void changeVar(atlas::FieldSet &, oops::Variables &) const;
+    oops::Variables changeVar(atlas::FieldSet &, oops::Variables &) const;
 
  private:
     std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>>
