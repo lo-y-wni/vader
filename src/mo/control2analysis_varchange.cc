@@ -79,11 +79,11 @@ void evalDryAirDensity(atlas::FieldSet & fields) {
 
   const auto tView = make_view<const double, 2>(fields["air_temperature"]);
   const auto pView = make_view<const double, 2>(fields["air_pressure_levels_minus_one"]);
-  auto rhoView = make_view<double, 2>(fields["dry_air_density"]);
+  auto rhoView = make_view<double, 2>(fields["dry_air_density_levels_minus_one"]);
 
-  for (idx_t jn = 0; jn < fields["dry_air_density"].shape(0); ++jn) {
+  for (idx_t jn = 0; jn < fields["dry_air_density_levels_minus_one"].shape(0); ++jn) {
     rhoView(jn, 0) = pView(jn, 0) / (constants::rd * tView(jn, 0));
-    for (idx_t jl = 1; jl < fields["dry_air_density"].levels(); ++jl) {
+    for (idx_t jl = 1; jl < fields["dry_air_density_levels_minus_one"].levels(); ++jl) {
       rhoView(jn, jl) = pView(jn, jl) * (hView(jn, jl) - hView(jn, jl-1)) /
         (constants::rd * (
         (hView(jn, jl) - hlView(jn, jl)) * tView(jn, jl-1) +

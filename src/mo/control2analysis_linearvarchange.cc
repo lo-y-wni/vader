@@ -112,13 +112,13 @@ void evalDryAirDensityTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augS
   const auto hView = make_view<const double, 2>(augStateFlds["height"]);
   const auto exnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
   const auto thetaView = make_view<const double, 2>(augStateFlds["potential_temperature"]);
-  const auto rhoView = make_view<const double, 2>(augStateFlds["air_density_levels_minus_one"]);
+  const auto rhoView = make_view<const double, 2>(augStateFlds["dry_air_density_levels_minus_one"]);
   const auto exnerIncView = make_view<const double, 2>(incFlds["exner_levels_minus_one"]);
   const auto thetaIncView = make_view<const double, 2>(incFlds["potential_temperature"]);
-  auto rhoIncView = make_view<double, 2>(incFlds["air_density_levels_minus_one"]);
+  auto rhoIncView = make_view<double, 2>(incFlds["dry_air_density_levels_minus_one"]);
 
   for (atlas::idx_t jn = 0; jn < rhoIncView.shape(0); ++jn) {
-    for (atlas::idx_t jl = 1; jl < incFlds["air_density_levels_minus_one"].levels(); ++jl) {
+    for (atlas::idx_t jl = 1; jl < incFlds["dry_air_density_levels_minus_one"].levels(); ++jl) {
       rhoIncView(jn, jl) = rhoView(jn, jl) * (
         exnerIncView(jn, jl) / exnerView(jn, jl) -
         (((hlView(jn, jl) - hView(jn, jl-1)) * thetaIncView(jn, jl) +
@@ -138,10 +138,10 @@ void evalDryAirDensityAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augS
   const auto hView = make_view<const double, 2>(augStateFlds["height"]);
   const auto exnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
   const auto thetaView = make_view<const double, 2>(augStateFlds["potential_temperature"]);
-  const auto rhoView = make_view<const double, 2>(augStateFlds["air_density_levels_minus_one"]);
+  const auto rhoView = make_view<const double, 2>(augStateFlds["dry_air_density_levels_minus_one"]);
   auto exnerHatView = make_view<double, 2>(hatFlds["exner_levels_minus_one"]);
   auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
-  auto rhoHatView = make_view<double, 2>(hatFlds["air_density_levels_minus_one"]);
+  auto rhoHatView = make_view<double, 2>(hatFlds["dry_air_density_levels_minus_one"]);
 
   for (atlas::idx_t jn = 0; jn < rhoHatView.shape(0); ++jn) {
     exnerHatView(jn, 0) += rhoView(jn, 0) * rhoHatView(jn, 0) /
@@ -150,7 +150,7 @@ void evalDryAirDensityAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augS
       thetaView(jn, 0);
     rhoHatView(jn, 0) = 0.0;
 
-    for (atlas::idx_t jl = hatFlds["air_density_levels_minus_one"].levels()-1; jl >= 1; --jl) {
+    for (atlas::idx_t jl = hatFlds["dry_air_density_levels_minus_one"].levels()-1; jl >= 1; --jl) {
       exnerHatView(jn, jl) += rhoView(jn, jl) * rhoHatView(jn, jl) /
         exnerView(jn, jl);
       thetaHatView(jn, jl) -= rhoView(jn, jl) * rhoHatView(jn, jl) *
