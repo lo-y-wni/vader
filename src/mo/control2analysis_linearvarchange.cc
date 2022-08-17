@@ -181,7 +181,15 @@ void evalAirTemperatureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & aug
   atlas::idx_t lvlsm1 = lvls - 1;
   double exnerTopVal;
   double exnerTopIncVal;
+
+  // Active code
   for (atlas::idx_t jn = 0; jn < tIncView.shape(0); ++jn) {
+    // Passive code: Value above model top is assumed to be in hydrostatic balance.
+    exnerTopVal = exnerLevelsView(jn, lvlsm1) -
+      (constants::grav * (hlView(jn, lvls) - hlView(jn, lvlsm1))) /
+      (constants::cp * thetaView(jn, lvlsm1));
+
+    // Active code;
     for (atlas::idx_t jl= 0; jl < lvls - 1; ++jl) {
        tIncView(jn, jl) = (
          ( (hView(jn, jl) - hlView(jn, jl)) * exnerLevelsView(jn, jl + 1) +
@@ -189,14 +197,9 @@ void evalAirTemperatureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & aug
            thetaIncView(jn, jl) +
          ( (hView(jn, jl) - hlView(jn, jl)) * exnerLevelsIncView(jn, jl + 1) +
            (hlView(jn, jl+1)  - hView(jn, jl)) * exnerLevelsIncView(jn, jl) ) *
-           thetaView(jn, jl) ) /
+         thetaView(jn, jl) ) /
          (hlView(jn, jl+1) - hlView(jn, jl));
     }
-
-    // Value above model top is assumed to be in hydrostatic balance.
-    exnerTopVal = exnerLevelsView(jn, lvlsm1) -
-      (constants::grav * (hlView(jn, lvls) - hlView(jn, lvlsm1))) /
-      (constants::cp * thetaView(jn, lvlsm1));
 
     exnerTopIncVal = exnerLevelsIncView(jn, lvlsm1) +
       thetaIncView(jn, lvlsm1) * (exnerLevelsView(jn, lvlsm1) - exnerTopVal) /
@@ -230,30 +233,33 @@ void evalAirTemperatureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & aug
   double exnerTopHatVal(0);
 
   for (atlas::idx_t jn = 0; jn < tHatView.shape(0); ++jn) {
-    // Value above model top is assumed to be in hydrostatic balance.
-
+    // Passive code: Value above model top is assumed to be in hydrostatic balance.
     exnerTopVal = exnerLevelsView(jn, lvlsm1) -
       (constants::grav * (hlView(jn, lvls) - hlView(jn, lvlsm1))) /
       (constants::cp * thetaView(jn, lvlsm1));
 
+    // Active code
     thetaHatView(jn, lvlsm1) += ( (hView(jn, lvlsm1) - hlView(jn, lvlsm1)) * exnerTopVal +
       (hlView(jn, lvls)  - hView(jn, lvlsm1)) * exnerLevelsView(jn, lvlsm1) ) *
       tHatView(jn, lvlsm1) /
       (hlView(jn, lvls) - hlView(jn, lvlsm1));
 
     exnerTopHatVal = (hView(jn, lvlsm1) - hlView(jn, lvlsm1)) *
-      tHatView(jn, lvlsm1) /
+      tHatView(jn, lvlsm1) * thetaView(jn, lvlsm1) /
       (hlView(jn, lvls) - hlView(jn, lvlsm1));
 
     exnerLevelsHatView(jn, lvlsm1) += (hlView(jn, lvls)  - hView(jn, lvlsm1)) *
-      tHatView(jn, lvlsm1) /
+      tHatView(jn, lvlsm1) * thetaView(jn, lvlsm1) /
       (hlView(jn, lvls) - hlView(jn, lvlsm1));
 
     tHatView(jn, lvlsm1) = 0.0;
 
-    tHatView(jn, lvlsm1) = (hView(jn, lvlsm1) - hlView(jn, lvlsm1)) *
-      exnerTopHatVal /
-      (hlView(jn, lvls) - hlView(jn, lvlsm1));
+    exnerLevelsHatView(jn, lvlsm1) += exnerTopHatVal;
+    thetaHatView(jn, lvlsm1) += exnerTopHatVal * (exnerLevelsView(jn, lvlsm1) - exnerTopVal) /
+        thetaView(jn, lvlsm1);
+    exnerTopHatVal = 0.0;
+
+
 
     for (atlas::idx_t jl = lvls - 2; jl >= 0; --jl) {
       thetaHatView(jn, jl) += (
@@ -263,11 +269,11 @@ void evalAirTemperatureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & aug
         (hlView(jn, jl + 1) - hlView(jn, jl));
 
       exnerLevelsHatView(jn, jl + 1) += (hView(jn, jl) - hlView(jn, jl)) *
-        tHatView(jn, jl) /
+        tHatView(jn, jl) * thetaView(jn, jl) /
         (hlView(jn, jl + 1) - hlView(jn, jl));
 
       exnerLevelsHatView(jn, jl) += (hlView(jn, jl + 1)  - hView(jn, jl)) *
-        tHatView(jn, jl) /
+        tHatView(jn, jl) * thetaView(jn, jl) /
         (hlView(jn, jl + 1) - hlView(jn, jl));
 
       tHatView(jn, jl) = 0.0;
