@@ -73,4 +73,39 @@ void qtTemperature2qqclqcfTL(atlas::FieldSet & incFlds,
 /// \details This is the adjoint of the MIO
 void qtTemperature2qqclqcfAD(atlas::FieldSet & hatFlds,
                              const atlas::FieldSet & augStateFlds);
+
+/// \details This calculates the vertically-regressed geostrophic pressure increment field
+///          in grid point space and adds it to the unbalanced pressure increment field to give
+///          hydrostatic balance increments
+void evalHydrostaticPressureTL(atlas::FieldSet & incFlds,
+                               const atlas::FieldSet & augStateFlds);
+
+/// \details This is the adjoint of the calculation of hydrostatic balance increment fields
+void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
+                               const atlas::FieldSet & augStateFlds);
+
+/// \details This calculates the hydrostatic exner field from the hydrostatic pressure
+void evalHydrostaticExnerTL(atlas::FieldSet & incFlds,
+                            const atlas::FieldSet & augStateFlds);
+
+/// \details This is the adjoint of the calculation of hydrostatic exner increment fields
+void evalHydrostaticExnerAD(atlas::FieldSet & hatFlds,
+                            const atlas::FieldSet & augStateFlds);
+
+/// \details This is calculates the moisture control variable and virtual potential temperature
+///          increment fields
+void evalMuThetavTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augState);
+
+/// \details This is the adjoint of the calculation for the moisture control variable
+///          and virtual potential temperature increments fields.
+void evalMuThetavAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState);
+
+/// \details This calculates the total water (qt) and potential tempetature (theta)
+///          increment fields.
+void evalQtThetaTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augState);
+
+/// \details This is the adjoint of the calculation to create the total water (qt)
+///          and potential tempetature (theta) increment fields.
+void evalQtThetaAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState);
+
 }  // namespace mo

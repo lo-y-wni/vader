@@ -70,13 +70,29 @@ void evalVirtualPotentialTemperature(atlas::FieldSet & fields) {
   functions::parallelFor(fspace, evaluateVTheta, conf);
 }
 
+
+/// \details Calculate qT increment from the sum of q, qcl and qcf increments
+void qqclqcf2qt(atlas::FieldSet & fields) {
+  const auto qIncView = make_view<const double, 2>(fields["specific_humidity"]);
+  const auto qclIncView = make_view<const double, 2>
+                    (fields["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
+  const auto qcfIncView = make_view<const double, 2>
+                    (fields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
+  auto qtIncView = make_view<double, 2>(fields["qt"]);
+
+  for (atlas::idx_t jn = 0; jn < fields["specific_humidity"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < fields["specific_humidity"].levels(); ++jl) {
+      qtIncView(jn, jl) = qIncView(jn, jl) + qclIncView(jn, jl) + qcfIncView(jn, jl);
+    }
+  }
+}
+
 /// \details Calculate the dry air density
 ///          from the air_pressure_levels_minus_one,
 ///          air_temperature (which needs to be interpolated).
 void evalDryAirDensity(atlas::FieldSet & fields) {
   const auto hlView = make_view<const double, 2>(fields["height_levels"]);
   const auto hView = make_view<const double, 2>(fields["height"]);
-
   const auto tView = make_view<const double, 2>(fields["air_temperature"]);
   const auto pView = make_view<const double, 2>(fields["air_pressure_levels_minus_one"]);
   auto rhoView = make_view<double, 2>(fields["dry_air_density_levels_minus_one"]);
@@ -88,6 +104,76 @@ void evalDryAirDensity(atlas::FieldSet & fields) {
         (constants::rd * (
         (hView(jn, jl) - hlView(jn, jl)) * tView(jn, jl-1) +
         (hlView(jn, jl) - hView(jn, jl-1)) * tView(jn, jl)));
+    }
+  }
+}
+
+/// \details Calculate exner pressure levels
+///          from air_pressure_levels_minus_one and using hydrostatic balance relation
+///          for topmost level
+void evalExnerPressureLevels(atlas::FieldSet & fields) {
+  oops::Log::trace() << "[evalAirPressureLevels()] starting ..." << std::endl;
+
+  const auto exnerMinusOneView = make_view<const double, 2>(fields["exner_levels_minus_one"]);
+  // Note that it is unclear whether this should be virtual_potential_temperature
+  // or potential_temperature in this case. Either way the difference will be tiny since
+  // the amount of moisture at a model top is tiny.
+  const auto vthetaView = make_view<const double, 2>(fields["virtual_potential_temperature"]);
+  const auto hlView = make_view<const double, 2>(fields["height_levels"]);
+  auto exnerView = make_view<double, 2>(fields["exner_pressure_levels"]);
+
+  idx_t levels(fields["exner_pressure_levels"].levels());
+  for (idx_t jn = 0; jn < fields["exner_pressure_levels"].shape(0); ++jn) {
+    for (idx_t jl = 1; jl < levels - 1; ++jl) {
+      exnerView(jn, jl) = exnerMinusOneView(jn, jl);
+    }
+
+    exnerView(jn, levels - 1) = exnerView(jn, levels - 2) -
+      (constants::grav * (hlView(jn, levels - 1) - hlView(jn, levels - 2))) /
+      (constants::cp * vthetaView(jn, levels - 2));
+
+    exnerView(jn, levels - 1) = exnerView(jn, levels-1) > 0.0 ?
+      exnerView(jn, levels - 1) : constants::deps;
+  }
+}
+
+
+void evalMoistureControlDependencies(atlas::FieldSet & fields) {
+  const auto qtView = make_view<const double, 2>(fields["qt"]);
+  const auto qView = make_view<const double, 2>(fields["specific_humidity"]);
+  const auto thetaView = make_view<const double, 2>(fields["potential_temperature"]);
+  const auto exnerView = make_view<const double, 2>(fields["exner"]);
+  const auto dlsvpdTView = make_view<const double, 2>(fields["dlsvpdT"]);
+  const auto qsatView = make_view<const double, 2>(fields["qsat"]);
+  const auto muAView = make_view<const double, 2>(fields["muA"]);
+  const auto muH1View = make_view<const double, 2>(fields["muH1"]);
+
+  // this is effectively the (2x2) matrix = A
+  //  (mu')       = A (qt')     where A is
+  //  (theta_v')      (theta')
+  //
+  //  ( muA/qsat    - (muA/qsat) muH1 qT exner_bar dlsvpdT )
+  //  (                                                 )
+  //  (c_v theta q     (1+ cv) q                        )
+  auto muRow1Column1View = make_view<double, 2>(fields["muRow1Column1"]);
+  auto muRow1Column2View = make_view<double, 2>(fields["muRow1Column2"]);
+  auto muRow2Column1View = make_view<double, 2>(fields["muRow2Column1"]);
+  auto muRow2Column2View = make_view<double, 2>(fields["muRow2Column2"]);
+  auto muRecipDeterminantView = make_view<double, 2>(fields["muRecipDeterminant"]);
+
+  // the comments below are there to allow checking with the VAR code.
+  for (atlas::idx_t jn = 0; jn < fields["theta"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < fields["theta"].levels(); ++jl) {
+      muRow1Column1View(jn, jl) = muAView(jn, jl) / qsatView(jn, jl);  // beta2 * muA
+      muRow1Column2View(jn, jl) = -  qtView(jn, jl)  * muH1View(jn, jl)
+        * exnerView(jn, jl) * dlsvpdTView(jn, jl) * muRow1Column1View(jn, jl);
+      // alpha2 * muA
+      muRow2Column1View(jn, jl) = constants::c_virtual * thetaView(jn, jl);   // beta1
+      muRow2Column2View(jn, jl) = 1.0 + constants::c_virtual * qView(jn, jl);  // alpha1
+      muRecipDeterminantView(jn, jl) = 1.0 /(
+        muRow2Column2View(jn, jl) * muRow1Column1View(jn, jl)
+        - muRow1Column2View(jn, jl) * muRow2Column1View(jn, jl));
+           // 1/( alpha1 * beta2 * muA - alpha2 * muA * beta1)
     }
   }
 }

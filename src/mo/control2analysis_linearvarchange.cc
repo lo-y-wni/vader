@@ -10,6 +10,7 @@
 
 #include "mo/constants.h"
 #include "mo/control2analysis_linearvarchange.h"
+#include "mo/control2analysis_varchange.h"
 
 #include "atlas/array/MakeView.h"
 
@@ -283,18 +284,7 @@ void evalAirTemperatureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & aug
 
 
 void qqclqcf2qtTL(atlas::FieldSet & incFields, const atlas::FieldSet &) {
-  const auto qIncView = make_view<const double, 2>(incFields["specific_humidity"]);
-  const auto qclIncView = make_view<const double, 2>
-                    (incFields["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
-  const auto qcfIncView = make_view<const double, 2>
-                    (incFields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
-  auto qtIncView = make_view<double, 2>(incFields["qt"]);
-
-  for (atlas::idx_t jn = 0; jn < incFields["specific_humidity"].shape(0); ++jn) {
-    for (atlas::idx_t jl = 0; jl < incFields["specific_humidity"].levels(); ++jl) {
-      qtIncView(jn, jl) = qIncView(jn, jl) + qclIncView(jn, jl) + qcfIncView(jn, jl);
-    }
-  }
+  qqclqcf2qt(incFields);
 }
 
 void qqclqcf2qtAD(atlas::FieldSet & hatFields, const atlas::FieldSet &) {
@@ -372,6 +362,247 @@ void qtTemperature2qqclqcfAD(atlas::FieldSet & hatFlds,
       qHatView(jn, jl) = 0.0;
       qclHatView(jn, jl) = 0.0;
       qcfHatView(jn, jl) = 0.0;
+    }
+  }
+}
+
+
+void evalHydrostaticPressureTL(atlas::FieldSet & incFlds,
+                               const atlas::FieldSet & augStateFlds) {
+  const auto gPIncView = make_view<const double, 2>(
+    incFlds["geostrophic_pressure_levels_minus_one"]);
+  const auto uPIncView = make_view<const double, 2>(
+    incFlds["unbalanced_pressure_levels_minus_one"]);
+
+  const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
+  // First index of interpWeightView is horizontal index, the second is bin index here
+  const auto interpWeightView = make_view<const double, 2>(augStateFlds["interpolation_weights"]);
+
+  // Bins Vertical regression matrix stored in one field
+  // B = (vertical regression matrix bin_0)
+  //     (vertical regression matrix bin_1)
+  //     (          ...                   )
+  //     (vertical regression matrix bin_m)
+  // Since each matrix is square we can easily infer the bin index from the row index
+  // First index of vertRegView is bin_index * number of levels + level index,
+  //     the second is number of levels associated with matrix column.
+  const auto vertRegView = make_view<const double, 2>(augStateFlds["vertical_regression_matrices"]);
+
+  auto hPIncView = make_view<double, 2>(incFlds["hydrostatic_pressure_levels"]);
+
+  atlas::idx_t levels = incFlds["geostrophic_pressure_levels_minus_one"].levels();
+  atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1) / levels;
+
+  for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < levels; ++jl) {
+      hPIncView(jn, jl) = uPIncView(jn, jl);
+      for (atlas::idx_t b = 0; b < nBins; ++b) {
+        if (interpWeightView(jn , b) > __FLT_EPSILON__) {
+          for (atlas::idx_t jl2 = 0; jl2 < levels; ++jl2) {
+            hPIncView(jn, jl) += interpWeightView(jn, b) *
+              vertRegView(b * levels + jl, jl2) * gPIncView(jn, jl2);
+          }
+        }
+      }
+      hPIncView(jn, levels) =
+       hPIncView(jn, levels-1) *
+       std::pow(pView(jn, levels-1) / pView(jn, levels), constants::rd_over_cp - 1.0);
+    }
+  }
+}
+
+
+void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
+                               const atlas::FieldSet & augStateFlds) {
+  auto gpHatView = make_view<double, 2>(hatFlds["geostrophic_pressure_levels_minus_one"]);
+  auto uPHatView = make_view<double, 2>(hatFlds["unbalanced_pressure_levels_minus_one"]);
+
+  const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
+  // First index of interpWeightView is horizontal index, the second is bin index here
+  const auto interpWeightView = make_view<const double, 2>(augStateFlds["interpolation_weights"]);
+
+  // Bins Vertical regression matrix stored in one field
+  // B = (vertical regression matrix bin_0)
+  //     (vertical regression matrix bin_1)
+  //     (          ...                   )
+  //     (vertical regression matrix bin_m)
+  // Since each matrix is square we can easily infer the bin index from the row index
+  // First index of vertRegView is bin_index * number of levels + level index,
+  //     the second is level index
+  const auto vertRegView = make_view<const double, 2>(augStateFlds["vertical_regression_matrices"]);
+
+  auto hPHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
+
+  atlas::idx_t levels = hatFlds["geostrophic_pressure_levels_minus_one"].levels();
+  atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1) / levels;
+
+  for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
+    hPHatView(jn, levels - 1) =
+     hPHatView(jn, levels) *
+     std::pow(pView(jn, levels-1) / pView(jn, levels), constants::rd_over_cp - 1.0);
+    hPHatView(jn, levels) = 0.0;
+
+    for (atlas::idx_t jl = 0; jl < levels; ++jl) {
+      for (atlas::idx_t b = nBins -1; b >= 0; --b) {
+        if (interpWeightView(jn , b) > __FLT_EPSILON__) {
+          for (atlas::idx_t jl2 = levels - 1; jl2 >= 0; ++jl2) {
+            gpHatView(jn, jl) += interpWeightView(jn, b) *
+              vertRegView(b * levels + jl, jl2) * hPHatView(jn, jl2);
+          }
+        }
+      }
+      uPHatView(jn, jl) += hPHatView(jn, jl);
+      hPHatView(jn, jl) = 0.0;
+    }
+  }
+}
+
+/// \details This calculates the hydrostatic exner field from the hydrostatic pressure
+void evalHydrostaticExnerTL(atlas::FieldSet & incFlds,
+                            const atlas::FieldSet & augStateFlds) {
+  const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels_minus_one"]);
+  const auto exnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
+  const auto pIncView = make_view<const double, 2>(incFlds["hydrostatic_pressure_levels"]);
+  auto exnerIncView = make_view<double, 2>(incFlds["hydrostatic_exner_levels"]);
+
+  atlas::idx_t levels = incFlds["hydrostatic_exner_levels"];
+  for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < levels - 1; ++jl) {
+      exnerIncView(jn, jl) = pIncView(jn, jl) *
+        (constants::rd_over_cp * exnerView(jn, jl)) /
+        pView(jn, jl);
+    }
+     exnerIncView(jn,  levels - 1) = 0.0;
+  }
+  //  TO DO MAREK:
+  //  Check whether top is zero for hydrostatic_exner_levels
+}
+
+/// \details This is the adjoint of the calculation of hydrostatic exner increments
+void evalHydrostaticExnerAD(atlas::FieldSet & hatFlds,
+                            const atlas::FieldSet & augStateFlds) {
+  const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels_minus_one"]);
+  const auto exnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
+  auto pHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
+  auto exnerHatView = make_view<double, 2>(hatFlds["hydrostatic_exner_levels"]);
+
+  atlas::idx_t levels = hatFlds["hydrostatic_exner_levels"];
+  for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
+    exnerHatView(jn,  levels - 1) = 0.0;
+    for (atlas::idx_t jl = 0; jl < levels - 1; ++jl) {
+      pHatView(jn, jl) +=  exnerHatView(jn, jl) *
+        (constants::rd_over_cp * exnerView(jn, jl)) /
+        pView(jn, jl);
+      exnerHatView(jn, jl) = 0.0;
+    }
+  }
+}
+
+
+/// \details This is function calculates the linear moisture
+///          control variable (muInc and thetavInc) from (thetaInc) and (qtInc)
+///          We are ignoring the scaled pressure contribution to mu, because we have
+///          found in the past that it gives no benefit and that its contribution
+///          is small.
+void evalMuThetavTL(atlas::FieldSet & incFlds,  const atlas::FieldSet & augState) {
+  const auto muRow1Column1View = make_view<const double, 2>(augState["muRow1Column1"]);
+  const auto muRow1Column2View = make_view<const double, 2>(augState["muRow1Column2"]);
+  const auto muRow2Column1View = make_view<const double, 2>(augState["muRow2Column1"]);
+  const auto muRow2Column2View = make_view<const double, 2>(augState["muRow2Column2"]);
+  const auto thetaIncView = make_view<const double, 2>(incFlds["potential_temperature"]);
+  const auto qtIncView = make_view<const double, 2>(incFlds["qt"]);
+  auto muIncView = make_view<double, 2>(incFlds["mu"]);
+  auto thetavIncView = make_view<double, 2>(incFlds["virtual_potential_temperature"]);
+
+  for (atlas::idx_t jn = 0; jn < incFlds["mu"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < incFlds["mu"].levels(); ++jl) {
+      muIncView(jn, jl) = muRow1Column1View(jn, jl)  * qtIncView(jn, jl)
+                        + muRow1Column2View(jn, jl)  * thetaIncView(jn, jl);
+      thetavIncView(jn, jl) = muRow2Column1View(jn, jl)  * qtIncView(jn, jl)
+                            + muRow2Column2View(jn, jl)  * thetaIncView(jn, jl);
+    }
+  }
+}
+
+
+void evalMuThetavAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState) {
+  const auto muRow1Column1View = make_view<const double, 2>(augState["muRow1Column1"]);
+  const auto muRow1Column2View = make_view<const double, 2>(augState["muRow1Column2"]);
+  const auto muRow2Column1View = make_view<const double, 2>(augState["muRow2Column1"]);
+  const auto muRow2Column2View = make_view<const double, 2>(augState["muRow2Column2"]);
+  auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
+  auto qtHatView = make_view<double, 2>(hatFlds["qt"]);
+  auto muHatView = make_view<double, 2>(hatFlds["mu"]);
+  auto thetavHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
+
+  for (atlas::idx_t jn = 0; jn < hatFlds["mu"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < hatFlds["mu"].levels(); ++jl) {
+      thetaHatView(jn, jl) += muRow2Column2View(jn, jl) * thetavHatView(jn, jl);
+      qtHatView(jn, jl) += muRow2Column1View(jn, jl) * thetavHatView(jn, jl);
+      thetaHatView(jn, jl) += muRow1Column2View(jn, jl) * muHatView(jn, jl);
+      qtHatView(jn, jl) += muRow1Column1View(jn, jl) * muHatView(jn, jl);
+      thetavHatView(jn, jl) = 0.0;
+      muHatView(jn, jl) = 0.0;
+    }
+  }
+}
+
+
+void evalQtThetaTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augState) {
+  // Using Cramer's rule to calculate inverse.
+  const auto muRecipDeterView = make_view<const double, 2>(augState["muRecipDeterminant"]);
+  const auto muRow1Column1View = make_view<const double, 2>(augState["muRow1Column1"]);
+  const auto muRow1Column2View = make_view<const double, 2>(augState["muRow1Column2"]);
+  const auto muRow2Column1View = make_view<const double, 2>(augState["muRow2Column1"]);
+  const auto muRow2Column2View  = make_view<const double, 2>(augState["muRow2Column2"]);
+  const auto muIncView = make_view<const double, 2>(incFlds["mu"]);
+  const auto thetavIncView = make_view<const double, 2>(incFlds["virtual_potential_temperature"]);
+  auto qtIncView = make_view<double, 2>(incFlds["qt"]);
+  auto thetaIncView = make_view<double, 2>(incFlds["potential_temperature"]);
+
+  for (atlas::idx_t jn = 0; jn < incFlds["mu"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < incFlds["mu"].levels(); ++jl) {
+      // VAR equivalent in Var_UpPFtheta_qT.f90 for thetaIncView
+      // (beta2 * muA * theta_v' +   beta1 * mu') /
+      // (alpha1 * beta2 * muA - alpha2 * muA * beta1)
+      thetaIncView(jn, jl) =  muRecipDeterView(jn, jl) * (
+                             muRow1Column1View(jn, jl) * thetavIncView(jn, jl)
+                           - muRow2Column1View(jn, jl) * muIncView(jn, jl) );
+
+      // VAR equivalent in Var_UpPFtheta_qT.f90 for qtIncView
+      // (alpha1 * mu_v' -   alpha2 * muA * thetav') /
+      // (alpha1 * beta2 * muA - alpha2 * muA * beta1)
+      qtIncView(jn, jl) =  muRecipDeterView(jn, jl) * (
+                           muRow2Column2View(jn, jl) * muIncView(jn, jl) -
+                           muRow1Column2View(jn, jl) * thetavIncView(jn, jl) );
+    }
+  }
+}
+
+
+void evalQtThetaAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState) {
+  const auto muRecipDeterView = make_view<const double, 2>(augState["muRecipDeterminant"]);
+  const auto muRow1Column1View = make_view<const double, 2>(augState["muRow1Column1"]);
+  const auto muRow1Column2View = make_view<const double, 2>(augState["muRow1Column2"]);
+  const auto muRow2Column1View = make_view<const double, 2>(augState["muRow2Column1"]);
+  const auto muRow2Column2View  = make_view<const double, 2>(augState["muRow2Column2"]);
+  auto qtHatView = make_view<double, 2>(hatFlds["qt"]);
+  auto muHatView = make_view<double, 2>(hatFlds["mu"]);
+  auto thetavHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
+  auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
+
+  for (atlas::idx_t jn = 0; jn < hatFlds["mu"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < hatFlds["mu"].levels(); ++jl) {
+      thetavHatView(jn, jl) += muRecipDeterView(jn, jl) *
+                               muRow1Column1View(jn, jl) * thetaHatView(jn, jl);
+      muHatView(jn, jl) -= muRecipDeterView(jn, jl) *
+                           muRow2Column1View(jn, jl) * thetaHatView(jn, jl);
+      thetavHatView(jn, jl) -= muRecipDeterView(jn, jl) *
+                               muRow1Column2View(jn, jl) * qtHatView(jn, jl);
+      muHatView(jn, jl) += muRecipDeterView(jn, jl) *
+                           muRow2Column2View(jn, jl) * qtHatView(jn, jl);
+      thetaHatView(jn, jl) = 0.0;
+      qtHatView(jn, jl) = 0.0;
     }
   }
 }

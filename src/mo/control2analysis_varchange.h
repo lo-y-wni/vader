@@ -24,9 +24,19 @@ void hexner2PThetav(atlas::FieldSet & fields);
 ///          from the specific humidity and the potential temperature.
 void evalVirtualPotentialTemperature(atlas::FieldSet & fields);
 
+/// \details Calculate qT increment from the sum of q, qcl and qcf increments
+void qqclqcf2qt(atlas::FieldSet & fields);
+
 /// \details Calculate the dry air density
 ///          from the air_pressure_levels_minus_one,
 ///          air_temperature (which needs to be interpolated).
 void evalDryAirDensity(atlas::FieldSet & fields);
+
+/// \details Calculate exner pressure levels
+void evalExnerPressureLevels(atlas::FieldSet & fields);
+
+/// \details Calculate the moisture control variable dependencies
+///          (excluding the fields derived from covariance file.)
+void evalMoistureControlDependencies(atlas::FieldSet & fields);
 
 }  // namespace mo

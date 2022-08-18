@@ -32,6 +32,9 @@ namespace constants {
   static constexpr std::size_t mioLevs = 40;
   static constexpr std::size_t mioLookUpLength = mioLevs * mioBins;
   static constexpr std::double_t rHTBin = 5.0;
+  static constexpr std::double_t MinRhRef = 0.0;
+  static constexpr std::double_t MaxRhRef = 150.0;
+
   // tolerance for avoiding division by zero in getMIOFields
   static constexpr std::double_t tol = 1.0e-5;
 
