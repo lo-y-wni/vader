@@ -162,8 +162,8 @@ void evalMoistureControlDependencies(atlas::FieldSet & fields) {
   auto muRecipDeterminantView = make_view<double, 2>(fields["muRecipDeterminant"]);
 
   // the comments below are there to allow checking with the VAR code.
-  for (atlas::idx_t jn = 0; jn < fields["theta"].shape(0); ++jn) {
-    for (atlas::idx_t jl = 0; jl < fields["theta"].levels(); ++jl) {
+  for (atlas::idx_t jn = 0; jn < fields["potential_temperature"].shape(0); ++jn) {
+    for (atlas::idx_t jl = 0; jl < fields["potential_temperature"].levels(); ++jl) {
       muRow1Column1View(jn, jl) = muAView(jn, jl) / qsatView(jn, jl);  // beta2 * muA
       muRow1Column2View(jn, jl) = -  qtView(jn, jl)  * muH1View(jn, jl)
         * exnerView(jn, jl) * dlsvpdTView(jn, jl) * muRow1Column1View(jn, jl);
