@@ -130,16 +130,6 @@ bool evalMassRain(atlas::FieldSet & fields);
 bool evalAirTemperature(atlas::FieldSet & fields);
 
 
-/// \brief function to evaluate the 'air_pressure_levels' from
-/// 'exner_levels_minus_one', 'potential_temperature', 'height_levels' fields
-/// where ...
-///   'air_pressure_levels' is the same as 'air_pressure_levels_minus_one'
-/// except for the topmost level where the level is assumed to be in
-/// hydrostatic balance (and capped to be >0).
-///
-bool evalAirPressureLevels(atlas::FieldSet & fields);
-
-
 /// \brief function to evaluate the 'specific humidity at two meters above surface':
 ///   q2m = rh * qsat
 /// where ...

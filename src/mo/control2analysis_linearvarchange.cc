@@ -23,7 +23,7 @@ void thetavP2HexnerTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStat
   const auto thetavView = make_view<const double, 2>(
     augStateFlds["virtual_potential_temperature"]);
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels_minus_one"]);
-  const auto hexnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
+  const auto hexnerView = make_view<const double, 2>(augStateFlds["hydrostatic_exner_levels"]);
   const auto thetavIncView = make_view<const double, 2>(incFlds["virtual_potential_temperature"]);
   const auto pIncView = make_view<const double, 2>(incFlds["air_pressure_levels_minus_one"]);
   auto hexnerIncView = make_view<double, 2>(incFlds["hydrostatic_exner_levels"]);
@@ -46,7 +46,7 @@ void thetavP2HexnerAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStat
   const auto thetavView = make_view<const double, 2>(
     augStateFlds["virtual_potential_temperature"]);
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels_minus_one"]);
-  const auto hexnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
+  const auto hexnerView = make_view<const double, 2>(augStateFlds["hydrostatic_exner_levels"]);
   auto thetavHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
   auto pHatView = make_view<double, 2>(hatFlds["air_pressure_levels_minus_one"]);
   auto hexnerHatView = make_view<double, 2>(hatFlds["hydrostatic_exner_levels"]);
@@ -75,12 +75,13 @@ void hexner2ThetavTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augState
   const auto hexnerIncView = make_view<const double, 2>(incFlds["hydrostatic_exner_levels"]);
   auto thetavIncView = make_view<double, 2>(incFlds["virtual_potential_temperature"]);
 
+  atlas::idx_t levels = incFlds["virtual_potential_temperature"].levels();
   for (atlas::idx_t jn = 0; jn < incFlds["virtual_potential_temperature"].shape(0); ++jn) {
-    for (atlas::idx_t jl = 0; jl < incFlds["virtual_potential_temperature"].levels()-1; ++jl) {
+    for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       thetavIncView(jn, jl) =
         (hexnerIncView(jn, jl+1) - hexnerIncView(jn, jl)) *
-            (constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
-            (constants::grav * (hlView(jn, jl) - hlView(jn, jl)));
+        (constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
+        (constants::grav * (hlView(jn, jl+1) - hlView(jn, jl)));
     }
   }
 }
@@ -92,17 +93,14 @@ void hexner2ThetavAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState
   auto hexnerHatView = make_view<double, 2>(hatFlds["hydrostatic_exner_levels"]);
 
   atlas::idx_t levelsm1 = hatFlds["virtual_potential_temperature"].levels()-1;
-  atlas::idx_t levelsm2 = hatFlds["virtual_potential_temperature"].levels()-2;
   for (atlas::idx_t jn = 0; jn < hatFlds["virtual_potential_temperature"].shape(0); ++jn) {
-    thetavHatView(jn, levelsm1) = 0.0;
-
-    for (atlas::idx_t jl = levelsm2; jl > -1; --jl) {
-      hexnerHatView(jn, jl) =  hexnerHatView(jn, jl) + thetavHatView(jn, jl) *
+    for (atlas::idx_t jl = levelsm1; jl > -1; --jl) {
+      hexnerHatView(jn, jl+1) += thetavHatView(jn, jl) *
         (constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
-        (constants::grav * (hlView(jn, jl) - hlView(jn, jl)) );
-      hexnerHatView(jn, jl) = hexnerHatView(jn, jl) - thetavHatView(jn, jl) *
+        (constants::grav * (hlView(jn, jl+1) - hlView(jn, jl)) );
+      hexnerHatView(jn, jl) -= thetavHatView(jn, jl) *
         (constants::cp * thetavView(jn, jl) * thetavView(jn, jl)) /
-        (constants::grav * (hlView(jn, jl) - hlView(jn, jl)));
+        (constants::grav * (hlView(jn, jl+1) - hlView(jn, jl)));
       thetavHatView(jn, jl) = 0.0;
     }
   }
@@ -391,23 +389,25 @@ void evalHydrostaticPressureTL(atlas::FieldSet & incFlds,
   auto hPIncView = make_view<double, 2>(incFlds["hydrostatic_pressure_levels"]);
 
   atlas::idx_t levels = incFlds["geostrophic_pressure_levels_minus_one"].levels();
-  atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1) / levels;
+  atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
-    for (atlas::idx_t jl = 0; jl < levels; ++jl) {
-      hPIncView(jn, jl) = uPIncView(jn, jl);
-      for (atlas::idx_t b = 0; b < nBins; ++b) {
-        if (interpWeightView(jn , b) > __FLT_EPSILON__) {
+    for (atlas::idx_t b = 0; b < nBins; ++b) {
+      if (interpWeightView(jn , b) > __FLT_EPSILON__) {
+        for (atlas::idx_t jl = 0; jl < levels; ++jl) {
+          hPIncView(jn, jl) = uPIncView(jn, jl);
           for (atlas::idx_t jl2 = 0; jl2 < levels; ++jl2) {
-            hPIncView(jn, jl) += interpWeightView(jn, b) *
-              vertRegView(b * levels + jl, jl2) * gPIncView(jn, jl2);
+            hPIncView(jn, jl) +=
+                                 interpWeightView(jn, b) *
+                                 vertRegView(b * levels + jl, jl2) *
+                                 gPIncView(jn, jl2);
           }
         }
       }
-      hPIncView(jn, levels) =
-       hPIncView(jn, levels-1) *
-       std::pow(pView(jn, levels-1) / pView(jn, levels), constants::rd_over_cp - 1.0);
     }
+    hPIncView(jn, levels) =
+      hPIncView(jn, levels-1) *
+      std::pow(pView(jn, levels-1) / pView(jn, levels), constants::rd_over_cp - 1.0);
   }
 }
 
@@ -434,25 +434,27 @@ void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
   auto hPHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
 
   atlas::idx_t levels = hatFlds["geostrophic_pressure_levels_minus_one"].levels();
-  atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1) / levels;
+  atlas::idx_t nBins = augStateFlds["vertical_regression_matrices"].shape(0) / levels;
 
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
-    hPHatView(jn, levels - 1) =
+    hPHatView(jn, levels - 1) +=
      hPHatView(jn, levels) *
      std::pow(pView(jn, levels-1) / pView(jn, levels), constants::rd_over_cp - 1.0);
     hPHatView(jn, levels) = 0.0;
 
-    for (atlas::idx_t jl = 0; jl < levels; ++jl) {
-      for (atlas::idx_t b = nBins -1; b >= 0; --b) {
-        if (interpWeightView(jn , b) > __FLT_EPSILON__) {
-          for (atlas::idx_t jl2 = levels - 1; jl2 >= 0; ++jl2) {
-            gpHatView(jn, jl) += interpWeightView(jn, b) *
-              vertRegView(b * levels + jl, jl2) * hPHatView(jn, jl2);
+    for (atlas::idx_t b = nBins -1; b >= 0; --b) {
+      if (interpWeightView(jn , b) > __FLT_EPSILON__) {
+        for (atlas::idx_t jl = levels - 1; jl >= 0; --jl) {
+          for (atlas::idx_t jl2 = levels - 1; jl2 >= 0; --jl2) {
+            gpHatView(jn, jl2) +=
+                                  interpWeightView(jn, b) *
+                                  vertRegView(b * levels + jl, jl2) *
+                                  hPHatView(jn, jl);
           }
+          uPHatView(jn, jl) += hPHatView(jn, jl);
+          hPHatView(jn, jl) = 0.0;
         }
       }
-      uPHatView(jn, jl) += hPHatView(jn, jl);
-      hPHatView(jn, jl) = 0.0;
     }
   }
 }
@@ -460,37 +462,33 @@ void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
 /// \details This calculates the hydrostatic exner field from the hydrostatic pressure
 void evalHydrostaticExnerTL(atlas::FieldSet & incFlds,
                             const atlas::FieldSet & augStateFlds) {
-  const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels_minus_one"]);
-  const auto exnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
+  const auto pView = make_view<const double, 2>(augStateFlds["hydrostatic_pressure_levels"]);
+  const auto exnerView = make_view<const double, 2>(augStateFlds["hydrostatic_exner_levels"]);
   const auto pIncView = make_view<const double, 2>(incFlds["hydrostatic_pressure_levels"]);
   auto exnerIncView = make_view<double, 2>(incFlds["hydrostatic_exner_levels"]);
 
-  atlas::idx_t levels = incFlds["hydrostatic_exner_levels"];
+  atlas::idx_t levels = incFlds["hydrostatic_exner_levels"].levels();
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
-    for (atlas::idx_t jl = 0; jl < levels - 1; ++jl) {
+    for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       exnerIncView(jn, jl) = pIncView(jn, jl) *
         (constants::rd_over_cp * exnerView(jn, jl)) /
         pView(jn, jl);
     }
-     exnerIncView(jn,  levels - 1) = 0.0;
   }
-  //  TO DO MAREK:
-  //  Check whether top is zero for hydrostatic_exner_levels
 }
 
 /// \details This is the adjoint of the calculation of hydrostatic exner increments
 void evalHydrostaticExnerAD(atlas::FieldSet & hatFlds,
                             const atlas::FieldSet & augStateFlds) {
-  const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels_minus_one"]);
-  const auto exnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
+  const auto pView = make_view<const double, 2>(augStateFlds["hydrostatic_pressure_levels"]);
+  const auto exnerView = make_view<const double, 2>(augStateFlds["hydrostatic_exner_levels"]);
   auto pHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
   auto exnerHatView = make_view<double, 2>(hatFlds["hydrostatic_exner_levels"]);
 
-  atlas::idx_t levels = hatFlds["hydrostatic_exner_levels"];
+  atlas::idx_t levels = hatFlds["hydrostatic_exner_levels"].levels();
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
-    exnerHatView(jn,  levels - 1) = 0.0;
-    for (atlas::idx_t jl = 0; jl < levels - 1; ++jl) {
-      pHatView(jn, jl) +=  exnerHatView(jn, jl) *
+    for (atlas::idx_t jl = 0; jl < levels; ++jl) {
+      pHatView(jn, jl) += exnerHatView(jn, jl) *
         (constants::rd_over_cp * exnerView(jn, jl)) /
         pView(jn, jl);
       exnerHatView(jn, jl) = 0.0;
