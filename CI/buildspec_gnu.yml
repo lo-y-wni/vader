@@ -97,19 +97,19 @@ phases:
       - echo $BUILD_STATUS
 
      # configure and build
-      - su - jedi -c "cd /home/jedi
+      - su - nonroot -c "cd /home/nonroot
         && echo $CC
         && echo $CXX
         && echo $FC
-        && CC=mpicc CXX=mpicxx FC=mpifort ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DENABLE_GPROF=ON /jcsda/vader-bundle/"
+        && CC=mpicc CXX=mpicxx FC=mpifort ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_SYSTEM_NAME=GNUContainer -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DENABLE_GPROF=ON /jcsda/vader-bundle/"
 
-      - su - jedi -c "cd /home/jedi/vader
+      - su - nonroot -c "cd /home/nonroot/vader
         && echo $CC
         && echo $CXX
         && echo $FC
         && cp ../DartConfiguration.tcl .
         && sed -i 's/vader-bundle/vader-bundle\/vader/' DartConfiguration.tcl
-        && sed -i 's/jedi/jedi\/vader/' DartConfiguration.tcl
+        && sed -i 's/nonroot/nonroot\/vader/' DartConfiguration.tcl
         && cat DartConfiguration.tcl
         && make -j4"
 
@@ -120,17 +120,14 @@ phases:
       - echo $BUILD_STATUS
 
       # run ctest
-      - su - jedi -c "CC=mpicc CXX=mpicxx FC=mpifort
-        && export PATH=/usr/local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-        && export LD_LIBRARY_PATH=/usr/local/lib:/jedi/home/lib
-        && export PYTHONPATH=/usr/local/lib:/usr/local/lib/python3.8/site-packages:$PYTHONPATH
-        && cd /home/jedi/vader
+      - su - nonroot -c "CC=mpicc CXX=mpicxx FC=mpifort
+        && cd /home/nonroot/vader
         && ctest -C RelWithDebInfo -D ExperimentalTest"
 
     finally:
       # upload ctest report to CDASH
-      - su - jedi -c "CC=mpicc CXX=mpicxx FC=mpifort
-        && cd /home/jedi/vader
+      - su - nonroot -c "CC=mpicc CXX=mpicxx FC=mpifort
+        && cd /home/nonroot/vader
         && ctest -C RelWithDebInfo -D ExperimentalSubmit -M Continuous -- --track Continuous --group Continuous"
 
   post_build:
@@ -142,14 +139,14 @@ phases:
       # upload find cdash url and upload it as CodeBuild artifact to S3
       - if [ "$BUILD_STATUS" = "1" ];
         then echo "Build & tests passed, find cdash url";
-        url=$(bash /jcsda/vader-bundle/vader/CI/cdash-url.sh /home/jedi/vader/Testing $CDASH_URL);
+        url=$(bash /jcsda/vader-bundle/vader/CI/cdash-url.sh /home/nonroot/vader/Testing $CDASH_URL);
         echo $url;
         echo ${url} > /jcsda/artifacts/cdash-url.txt;
         cat /jcsda/artifacts/cdash-url.txt;
         else echo "Build failed";
         fi
 
-      - cd /home/jedi/vader
+      - cd /home/nonroot/vader
       - bash /jcsda/vader-bundle/vader/CI/codecov_script.sh
 
 artifacts:
