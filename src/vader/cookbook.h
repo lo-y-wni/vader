@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_VADER_COOKBOOK_H_
-#define SRC_VADER_COOKBOOK_H_
+#pragma once
 
 #include <string>
 #include <unordered_map>
@@ -19,6 +18,7 @@
 // Recipe headers
 #include "recipes/PressureToDelP.h"
 #include "recipes/TempToPTemp.h"
+#include "recipes/TempToVTemp.h"
 
 namespace vader
 {
@@ -34,10 +34,9 @@ std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookb
         // Value: a vector of recipe names that will be searched, in order,
         //        by Vader for viability
         {VV_PT, {TempToPTemp::Name}},
+        {VV_TV, {TempToVTemp::Name}}
         // TODO(vahl) get PressureToDelP recipe working
         /*{VV_DELP, {PressureToDelP::Name}}*/};
 }
 
 }  // namespace vader
-
-#endif  // SRC_VADER_COOKBOOK_H_

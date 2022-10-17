@@ -27,6 +27,11 @@ std::vector<std::string> Recipe::ingredients() const
     return recipe_->ingredients();
 }
 // ------------------------------------------------------------------------------------------------
+bool Recipe::hasTLAD() const
+{
+    return recipe_->hasTLAD();
+}
+// ------------------------------------------------------------------------------------------------
 bool Recipe::requiresSetup() const
 {
     return recipe_->requiresSetup();
@@ -37,9 +42,19 @@ bool Recipe::setup(atlas::FieldSet & afieldset)
     return recipe_->setup(afieldset);
 }
 // ------------------------------------------------------------------------------------------------
-bool Recipe::execute(atlas::FieldSet & afieldset)
+bool Recipe::executeNL(atlas::FieldSet & afieldset)
 {
-    return recipe_->execute(afieldset);
+    return recipe_->executeNL(afieldset);
+}
+// ------------------------------------------------------------------------------------------------
+bool Recipe::executeTL(atlas::FieldSet & afieldsetTL, const atlas::FieldSet & afieldsetTraj)
+{
+    return recipe_->executeTL(afieldsetTL, afieldsetTraj);
+}
+// ------------------------------------------------------------------------------------------------
+bool Recipe::executeAD(atlas::FieldSet & afieldsetAD, const atlas::FieldSet & afieldsetTraj)
+{
+    return recipe_->executeAD(afieldsetAD, afieldsetTraj);
 }
 // ------------------------------------------------------------------------------------------------
 void Recipe::print(std::ostream &os) const

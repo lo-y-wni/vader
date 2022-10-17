@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_VADER_RECIPE_H_
-#define SRC_VADER_RECIPE_H_
+#pragma once
 
 #include <memory>
 #include <string>
@@ -33,8 +32,11 @@ class Recipe  : public util::Printable,
     std::string name() const;
     std::vector<std::string> ingredients() const;
     bool requiresSetup() const;
+    bool hasTLAD() const;
     bool setup(atlas::FieldSet &);
-    bool execute(atlas::FieldSet &);
+    bool executeNL(atlas::FieldSet &);
+    bool executeTL(atlas::FieldSet &, const atlas::FieldSet &);
+    bool executeAD(atlas::FieldSet &, const atlas::FieldSet &);
 
  private:
     void print(std::ostream &) const;
@@ -42,5 +44,3 @@ class Recipe  : public util::Printable,
 };
 
 }  // namespace vader
-
-#endif  // SRC_VADER_RECIPE_H_

@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_VADER_VADERPARAMETERS_H_
-#define SRC_VADER_VADERPARAMETERS_H_
+#pragma once
 
 #include <vector>
 
@@ -35,5 +34,3 @@ class VaderParameters : public oops::Parameters {
 };
 
 }  // namespace vader
-
-#endif  // SRC_VADER_VADERPARAMETERS_H_

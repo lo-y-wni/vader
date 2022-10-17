@@ -45,7 +45,7 @@ std::vector<std::string> PressureToDelP::ingredients() const
     return PressureToDelP::Ingredients;
 }
 
-bool PressureToDelP::execute(atlas::FieldSet & afieldset)
+bool PressureToDelP::executeNL(atlas::FieldSet & afieldset)
 {
     bool delp_filled = false;
 

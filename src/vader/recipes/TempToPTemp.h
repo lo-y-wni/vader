@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_VADER_RECIPES_TEMPTOPTEMP_H_
-#define SRC_VADER_RECIPES_TEMPTOPTEMP_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -51,7 +50,7 @@ class TempToPTemp : public RecipeBase {
     // Recipe base class overrides
     std::string name() const override;
     std::vector<std::string> ingredients() const override;
-    bool execute(atlas::FieldSet &) override;
+    bool executeNL(atlas::FieldSet &) override;
 
  private:
     double p0_;
@@ -59,5 +58,3 @@ class TempToPTemp : public RecipeBase {
 };
 
 }  // namespace vader
-
-#endif  // SRC_VADER_RECIPES_TEMPTOPTEMP_H_

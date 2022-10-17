@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_VADER_VADERVARIABLES_H_
-#define SRC_VADER_VADERVARIABLES_H_
+#pragma once
 
 #include <string>
 
@@ -138,5 +137,3 @@ const char VV_EXT3[] = "volume_extinction_in_air_due_to_aerosol_particles_lambda
 const char VV_AIRDENS[] = "moist_air_density";
 
 }  // namespace vader
-
-#endif  // SRC_VADER_VADERVARIABLES_H_

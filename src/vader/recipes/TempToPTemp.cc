@@ -59,11 +59,11 @@ std::vector<std::string> TempToPTemp::ingredients() const
     return TempToPTemp::Ingredients;
 }
 
-bool TempToPTemp::execute(atlas::FieldSet & afieldset)
+bool TempToPTemp::executeNL(atlas::FieldSet & afieldset)
 {
     bool potential_temperature_filled = false;
 
-    oops::Log::trace() << "entering TempToPTemp::execute function"
+    oops::Log::trace() << "entering TempToPTemp::executeNL function"
         << std::endl;
 
     atlas::Field temperature = afieldset.field(VV_TS);
@@ -110,7 +110,7 @@ bool TempToPTemp::execute(atlas::FieldSet & afieldset)
 
     potential_temperature_filled = true;
 
-    oops::Log::trace() << "leaving TempToPTemp::execute function" << std::endl;
+    oops::Log::trace() << "leaving TempToPTemp::executeNL function" << std::endl;
 
     return potential_temperature_filled;
 }

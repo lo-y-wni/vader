@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_VADER_RECIPES_PRESSURETODELP_H_
-#define SRC_VADER_RECIPES_PRESSURETODELP_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -43,10 +42,8 @@ class PressureToDelP : public RecipeBase
 
     std::string name() const override;
     std::vector<std::string> ingredients() const override;
-    bool execute(atlas::FieldSet &) override;
+    bool executeNL(atlas::FieldSet &) override;
 
  private:
 };
 }  // namespace vader
-
-#endif  // SRC_VADER_RECIPES_PRESSURETODELP_H_

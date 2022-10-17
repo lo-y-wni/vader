@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_VADER_VADER_H_
-#define SRC_VADER_VADER_H_
+#pragma once
 
 #include <memory>
 #include <string>
@@ -48,24 +47,31 @@ class Vader {
 
     /// Calculates as many variables in the list as possible
     oops::Variables changeVar(atlas::FieldSet &, oops::Variables &) const;
+    oops::Variables changeVarTraj(atlas::FieldSet &, oops::Variables &);
+    oops::Variables changeVarTL(atlas::FieldSet &, oops::Variables &) const;
+    oops::Variables changeVarAD(atlas::FieldSet &, oops::Variables &) const;
 
  private:
-    std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>>
-        cookbook_;
+    std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;
+    std::vector<std::pair<std::string, std::string>> recipeExecutionPlan_;
+    atlas::FieldSet trajectory_;
     std::unordered_map<std::string, std::vector<std::string>>
         getDefaultCookbookDef();
 
     void createCookbook(std::unordered_map<std::string, std::vector<std::string>>,
                         const std::vector<RecipeParametersWrapper> & allRecpParamWraps =
                               std::vector<RecipeParametersWrapper>());
-    bool planVariable(atlas::FieldSet & afieldset,
-                      oops::Variables & neededVars,
-                      const std::string targetVariable,
-                      std::vector<std::pair<std::string, std::string>> & plan) const;
-    void executePlanNL(atlas::FieldSet & afieldset,
-                       const std::vector<std::pair<std::string, std::string>> & mealPlan) const;
+    bool planVariable(atlas::FieldSet &,
+                      oops::Variables &,
+                      const std::string,
+                      bool,
+                      std::vector<std::pair<std::string, std::string>> &) const;
+    void executePlanNL(atlas::FieldSet &,
+                       const std::vector<std::pair<std::string, std::string>> &) const;
+    void executePlanTL(atlas::FieldSet &,
+                       const std::vector<std::pair<std::string, std::string>> &) const;
+    void executePlanAD(atlas::FieldSet &,
+                       const std::vector<std::pair<std::string, std::string>> &) const;
 };
 
 }  // namespace vader
-
-#endif  // SRC_VADER_VADER_H_

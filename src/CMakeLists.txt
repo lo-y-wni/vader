@@ -9,10 +9,12 @@ vader/RecipeBase.cc
 vader/cookbook.h
 vader/vader.cc
 vader/VaderParameters.h
-vader/recipes/TempToPTemp.h
-vader/recipes/TempToPTemp.cc
 vader/recipes/PressureToDelP.h
 vader/recipes/PressureToDelP.cc
+vader/recipes/TempToPTemp.h
+vader/recipes/TempToPTemp.cc
+vader/recipes/TempToVTemp.h
+vader/recipes/TempToVTemp.cc
 )
 if ( ENABLE_VADER_MO )
 list( APPEND vader_src_files
