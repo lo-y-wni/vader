@@ -23,4 +23,12 @@ void evalAirPressureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augSta
 ///          on pressure (half) levels.
 void evalAirPressureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds);
 
+/// \details This calculates the wind increment at 10 m from the atmospheric
+///          wind increment at the lowest level
+void evalSurfWindTL(atlas::FieldSet & incFlds);
+
+/// \details This calculates the adjoint of the wind increment at 10 m from the adjoint
+///          of the atmospheric wind at the lowest level
+void evalSurfWindAD(atlas::FieldSet & hatFlds);
+
 }  // namespace mo

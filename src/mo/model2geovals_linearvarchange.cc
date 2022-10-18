@@ -11,6 +11,8 @@
 #include "mo/constants.h"
 #include "mo/model2geovals_linearvarchange.h"
 
+#include "oops/util/Logger.h"
+
 using atlas::array::make_view;
 
 
@@ -56,6 +58,32 @@ void evalAirPressureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augSta
       pHatView(jn, jl+1) += alpha_jl * pbarHatView(jn, jl);
       pbarHatView(jn, jl) = 0.0;
     }
+  }
+}
+
+void evalSurfWindTL(atlas::FieldSet & incFlds) {
+  const auto uIncView = make_view<double, 2>(incFlds["eastward_wind"]);
+  const auto vIncView = make_view<double, 2>(incFlds["northward_wind"]);
+  auto u10mIncView = make_view<double, 2>(incFlds["uwind_at_10m"]);
+  auto v10mIncView = make_view<double, 2>(incFlds["vwind_at_10m"]);
+
+  for (atlas::idx_t jn = 0; jn < u10mIncView.shape(0); ++jn) {
+      u10mIncView(jn, 0) = uIncView(jn, 0);
+      v10mIncView(jn, 0) = vIncView(jn, 0);
+  }
+}
+
+void evalSurfWindAD(atlas::FieldSet & hatFlds) {
+  auto uHatView = make_view<double, 2>(hatFlds["eastward_wind"]);
+  auto vHatView = make_view<double, 2>(hatFlds["northward_wind"]);
+  auto u10mHatView = make_view<double, 2>(hatFlds["uwind_at_10m"]);
+  auto v10mHatView = make_view<double, 2>(hatFlds["vwind_at_10m"]);
+
+  for (atlas::idx_t jn = 0; jn < u10mHatView.shape(0); ++jn) {
+      uHatView(jn, 0) += u10mHatView(jn, 0);
+      vHatView(jn, 0) += v10mHatView(jn, 0);
+      u10mHatView(jn, 0) = 0.0;
+      v10mHatView(jn, 0) = 0.0;
   }
 }
 
