@@ -45,6 +45,11 @@ std::string TempToVTemp::name() const
     return TempToVTemp::Name;
 }
 
+std::string TempToVTemp::product() const
+{
+    return "virtual_temperature";
+}
+
 std::vector<std::string> TempToVTemp::ingredients() const
 {
     return TempToVTemp::Ingredients;

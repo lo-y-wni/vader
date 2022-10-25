@@ -54,6 +54,11 @@ std::string TempToPTemp::name() const
     return TempToPTemp::Name;
 }
 
+std::string TempToPTemp::product() const
+{
+    return "potential_temperature";
+}
+
 std::vector<std::string> TempToPTemp::ingredients() const
 {
     return TempToPTemp::Ingredients;

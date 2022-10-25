@@ -41,6 +41,7 @@ class PressureToDelP : public RecipeBase
     explicit PressureToDelP(const Parameters_ &);
 
     std::string name() const override;
+    std::string product() const override;
     std::vector<std::string> ingredients() const override;
     bool executeNL(atlas::FieldSet &) override;
 

@@ -30,6 +30,7 @@ class Recipe  : public util::Printable,
     Recipe(const std::string, const Parameters_ &);
 
     std::string name() const;
+    std::string product() const;
     std::vector<std::string> ingredients() const;
     bool requiresSetup() const;
     bool hasTLAD() const;

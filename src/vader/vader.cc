@@ -116,7 +116,7 @@ oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
     // Since neededVars can be modified by planVariable and planVariable calls
     // itself recursively, we make a copy of the list here before we start.
     std::vector<std::string> targetVariables{neededVars.variables()};
-    std::vector<std::pair<std::string, std::string>> plan;
+    std::vector<std::pair<std::string, const std::unique_ptr<RecipeBase> &>> plan;
     bool recipesNeedTLAD = false;  // It's OK here to plan recipes with no TL/AD methods
 
     for (auto targetVariable : targetVariables) {
@@ -263,7 +263,8 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
                          oops::Variables & neededVars,
                          const std::string targetVariable,
                          const bool needsTLAD,
-                         std::vector<std::pair<std::string, std::string>> & plan) const {
+                         std::vector<std::pair<std::string,
+                                              const std::unique_ptr<RecipeBase> &>> & plan) const {
     bool variablePlanned = false;
 
     oops::Log::trace() << "entering Vader::planVariable for variable: " << targetVariable <<
@@ -333,8 +334,8 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
                 oops::Log::debug() <<
                     "All ingredients are in the fieldset. Adding recipe to recipeExecutionPlan." <<
                     std::endl;
-                plan.push_back(std::pair<std::string, std::string> ({targetVariable,
-                                                                    recipe->name()}));
+                plan.push_back(std::pair<std::string, const std::unique_ptr<RecipeBase> &>
+                                                                    ({targetVariable, recipe}));
                 variablePlanned = true;
                 neededVars -= targetVariable;
                 break;  // Found a viable recipe. Don't need to check any other potential recipes.
@@ -363,26 +364,22 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
 *
 */
 void Vader::executePlanNL(atlas::FieldSet & afieldset,
-            const std::vector<std::pair<std::string, std::string>> & recipeExecutionPlan) const {
+            const std::vector<std::pair<std::string,
+                              const std::unique_ptr<RecipeBase> &>> & recipeExecutionPlan) const {
     oops::Log::trace() << "entering Vader::executePlanNL" <<  std::endl;
     // We must get the recipes specified in the recipeExecutionPlan out of the cookbook,
     // where they live
     for (auto varPlan : recipeExecutionPlan) {
         oops::Log::debug() << "Attempting to calculate variable " << varPlan.first <<
-            " using recipe with name: " << varPlan.second << std::endl;
+            " using recipe with name: " << varPlan.second->name() << std::endl;
         ASSERT(afieldset.has(varPlan.first));
-        auto recipeList = cookbook_.find(varPlan.first);
-        size_t recipeIndex = 0;
-        while (recipeIndex < recipeList->second.size() &&
-               recipeList->second[recipeIndex]->name() != varPlan.second) recipeIndex++;
-        ASSERT(recipeIndex < recipeList->second.size());
-        for (auto ingredient :  recipeList->second[recipeIndex]->ingredients()) {
+        for (auto ingredient :  varPlan.second->ingredients()) {
             ASSERT(afieldset.has(ingredient));
         }
-        if (recipeList->second[recipeIndex]->requiresSetup()) {
-            recipeList->second[recipeIndex]->setup(afieldset);
+        if (varPlan.second->requiresSetup()) {
+            varPlan.second->setup(afieldset);
         }
-        const bool recipeSuccess = recipeList->second[recipeIndex]->executeNL(afieldset);
+        const bool recipeSuccess = varPlan.second->executeNL(afieldset);
         ASSERT(recipeSuccess);  // At least for now, we'll require the execution to be successful
     }
     oops::Log::trace() << "leaving Vader::executePlanNL" <<  std::endl;
@@ -399,27 +396,23 @@ void Vader::executePlanNL(atlas::FieldSet & afieldset,
 *
 */
 void Vader::executePlanTL(atlas::FieldSet & afieldset,
-            const std::vector<std::pair<std::string, std::string>> & recipeExecutionPlan) const {
+            const std::vector<std::pair<std::string,
+                              const std::unique_ptr<RecipeBase> &>> & recipeExecutionPlan) const {
     oops::Log::trace() << "entering Vader::executePlanTL" <<  std::endl;
     // We must get the recipes specified in the recipeExecutionPlan out of the cookbook,
     // where they live
     for (auto varPlan : recipeExecutionPlan) {
         oops::Log::debug() << "Attempting to calculate variable " << varPlan.first <<
-            " using recipe with name: " << varPlan.second << std::endl;
+            " using recipe with name: " << varPlan.second->name() << std::endl;
         ASSERT(afieldset.has(varPlan.first));
-        auto recipeList = cookbook_.find(varPlan.first);
-        size_t recipeIndex = 0;
-        while (recipeIndex < recipeList->second.size() &&
-               recipeList->second[recipeIndex]->name() != varPlan.second) recipeIndex++;
-        ASSERT(recipeIndex < recipeList->second.size());
-        for (auto ingredient :  recipeList->second[recipeIndex]->ingredients()) {
+        for (auto ingredient :  varPlan.second->ingredients()) {
             ASSERT(afieldset.has(ingredient));
         }
-        if (recipeList->second[recipeIndex]->requiresSetup()) {
-            recipeList->second[recipeIndex]->setup(afieldset);
+        if (varPlan.second->requiresSetup()) {
+            varPlan.second->setup(afieldset);
         }
         const bool recipeSuccess =
-            recipeList->second[recipeIndex]->executeTL(afieldset, trajectory_);
+            varPlan.second->executeTL(afieldset, trajectory_);
         ASSERT(recipeSuccess);  // At least for now, we'll require the execution to be successful
     }
     oops::Log::trace() << "leaving Vader::executePlanTL" <<  std::endl;
@@ -436,7 +429,8 @@ void Vader::executePlanTL(atlas::FieldSet & afieldset,
 *
 */
 void Vader::executePlanAD(atlas::FieldSet & afieldset,
-            const std::vector<std::pair<std::string, std::string>> & recipeExecutionPlan) const {
+            const std::vector<std::pair<std::string,
+                              const std::unique_ptr<RecipeBase> &>> & recipeExecutionPlan) const {
     oops::Log::trace() << "entering Vader::executePlanAD" <<  std::endl;
     // We must get the recipes specified in the recipeExecutionPlan out of the cookbook,
     // where they live
@@ -444,22 +438,17 @@ void Vader::executePlanAD(atlas::FieldSet & afieldset,
     for (auto varPlanIt = recipeExecutionPlan.rbegin();
          varPlanIt != recipeExecutionPlan.rend();
          ++varPlanIt) {
-        oops::Log::debug()  << "Performing adjoint of recipe with name: " << varPlanIt->second
-            << std::endl;
+        oops::Log::debug()  << "Performing adjoint of recipe with name: " <<
+            varPlanIt->second->name() << std::endl;
         ASSERT(afieldset.has(varPlanIt->first));
-        auto recipeList = cookbook_.find(varPlanIt->first);
-        size_t recipeIndex = 0;
-        while (recipeIndex < recipeList->second.size() &&
-               recipeList->second[recipeIndex]->name() != varPlanIt->second) recipeIndex++;
-        ASSERT(recipeIndex < recipeList->second.size());
-        for (auto ingredient :  recipeList->second[recipeIndex]->ingredients()) {
+        for (auto ingredient :  varPlanIt->second->ingredients()) {
             ASSERT(afieldset.has(ingredient));
         }
-        if (recipeList->second[recipeIndex]->requiresSetup()) {
-            recipeList->second[recipeIndex]->setup(afieldset);
+        if (varPlanIt->second->requiresSetup()) {
+            varPlanIt->second->setup(afieldset);
         }
         const bool recipeSuccess =
-            recipeList->second[recipeIndex]->executeAD(afieldset, trajectory_);
+            varPlanIt->second->executeAD(afieldset, trajectory_);
         ASSERT(recipeSuccess);  // At least for now, we'll require the execution to be successful
     }
     oops::Log::trace() << "leaving Vader::executePlanAD" <<  std::endl;

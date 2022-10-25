@@ -22,6 +22,11 @@ std::string Recipe::name() const
     return recipe_->name();
 }
 // ------------------------------------------------------------------------------------------------
+std::string Recipe::product() const
+{
+    return recipe_->product();
+}
+// ------------------------------------------------------------------------------------------------
 std::vector<std::string> Recipe::ingredients() const
 {
     return recipe_->ingredients();

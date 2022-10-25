@@ -49,6 +49,7 @@ class TempToPTemp : public RecipeBase {
 
     // Recipe base class overrides
     std::string name() const override;
+    std::string product() const override;
     std::vector<std::string> ingredients() const override;
     bool executeNL(atlas::FieldSet &) override;
 

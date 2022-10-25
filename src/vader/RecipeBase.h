@@ -54,6 +54,9 @@ class RecipeBase : public util::Printable,
 /// Name of the recipe
   virtual std::string name() const = 0;
 
+/// Variable Produced
+  virtual std::string product() const = 0;
+
 /// Ingredients (list of variables required to setup and execute recipe)
   virtual std::vector<std::string> ingredients() const = 0;
 

@@ -40,6 +40,11 @@ std::string PressureToDelP::name() const
     return PressureToDelP::Name;
 }
 
+std::string PressureToDelP::product() const
+{
+    return "air_pressure_thickness";
+}
+
 std::vector<std::string> PressureToDelP::ingredients() const
 {
     return PressureToDelP::Ingredients;

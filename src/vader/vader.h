@@ -53,7 +53,7 @@ class Vader {
 
  private:
     std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;
-    std::vector<std::pair<std::string, std::string>> recipeExecutionPlan_;
+    std::vector<std::pair<std::string, const std::unique_ptr<RecipeBase> & >> recipeExecutionPlan_;
     atlas::FieldSet trajectory_;
     std::unordered_map<std::string, std::vector<std::string>>
         getDefaultCookbookDef();
@@ -65,13 +65,17 @@ class Vader {
                       oops::Variables &,
                       const std::string,
                       bool,
-                      std::vector<std::pair<std::string, std::string>> &) const;
+                      std::vector<std::pair<std::string,
+                        const std::unique_ptr<RecipeBase> & >> &) const;
     void executePlanNL(atlas::FieldSet &,
-                       const std::vector<std::pair<std::string, std::string>> &) const;
+                       const std::vector<std::pair<std::string,
+                        const std::unique_ptr<RecipeBase> & >> &) const;
     void executePlanTL(atlas::FieldSet &,
-                       const std::vector<std::pair<std::string, std::string>> &) const;
+                       const std::vector<std::pair<std::string,
+                        const std::unique_ptr<RecipeBase> & >> &) const;
     void executePlanAD(atlas::FieldSet &,
-                       const std::vector<std::pair<std::string, std::string>> &) const;
+                       const std::vector<std::pair<std::string,
+                        const std::unique_ptr<RecipeBase> & >> &) const;
 };
 
 }  // namespace vader
