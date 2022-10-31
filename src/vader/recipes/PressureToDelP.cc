@@ -50,6 +50,16 @@ std::vector<std::string> PressureToDelP::ingredients() const
     return PressureToDelP::Ingredients;
 }
 
+size_t PressureToDelP::productLevels(const atlas::FieldSet & afieldset) const
+{
+    return afieldset.field(VV_PS).levels();
+}
+
+atlas::FunctionSpace PressureToDelP::productFunctionSpace(const atlas::FieldSet & afieldset) const
+{
+    return afieldset.field(VV_PS).functionspace();
+}
+
 bool PressureToDelP::executeNL(atlas::FieldSet & afieldset)
 {
     bool delp_filled = false;

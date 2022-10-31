@@ -14,6 +14,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "atlas/field/FieldSet.h"
+#include "atlas/functionspace/FunctionSpace.h"
 #include "oops/util/Printable.h"
 #include "vader/RecipeBase.h"
 
@@ -32,6 +33,8 @@ class Recipe  : public util::Printable,
     std::string name() const;
     std::string product() const;
     std::vector<std::string> ingredients() const;
+    size_t productLevels(const atlas::FieldSet &) const;
+    atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const;
     bool requiresSetup() const;
     bool hasTLAD() const;
     bool setup(atlas::FieldSet &);

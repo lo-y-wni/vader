@@ -14,6 +14,8 @@
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
+#include "atlas/functionspace/FunctionSpace.h"
+#include "atlas/option/Options.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
 #include "vader/cookbook.h"
@@ -168,7 +170,6 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
     }
     executePlanNL(afieldset, recipeExecutionPlan_);
     // Save the trajectory in Vader's private variable
-    // Not sure if FieldSet's have some sort of copy method? For now just do "manual" copy.
     trajectory_.clear();
     for (const auto from_Field : afieldset) {
         // Make a deep copy of each field and put it in trajectory_
@@ -272,15 +273,6 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
 
     auto fieldSetFieldNames = afieldset.field_names();
 
-    if (std::find(fieldSetFieldNames.begin(),
-        fieldSetFieldNames.end(), targetVariable) == fieldSetFieldNames.end()) {
-        oops::Log::debug() << "Field '" << targetVariable <<
-            "' is not allocated the fieldset. Vader cannot make it." << std::endl;
-        oops::Log::trace() << "leaving Vader::planVariable for variable: " <<
-            targetVariable << std::endl;
-        return false;
-    }
-
     // Since this function is called recursively, make sure targetVariable is
     // still needed
     if (!neededVars.has(targetVariable)) {
@@ -355,9 +347,11 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
 // ------------------------------------------------------------------------------------------------
 /*! \brief Execute Plan (non-linear)
 *
-* \details **executePlanNL** calls, in order, the 'execute' (non-linear) method of the
+* \details **executePlanNL** calls, in order, the 'executeNL' method of the
 * recipes specified in the recipeExecutionPlan that is passed in. (The recipeExecutionPlan is
-* created through calls to planVariable.)
+* created through calls to planVariable.) Before executing the recipe, validations
+* are performed on the passed FieldSet to ensure it has the ingredients, and the
+* product Field is created and added if not already present.
 *
 * \param[in,out] afieldset A fieldset containg both populated and unpopulated fields
 * \param[in] recipeExecutionPlan ordered list of recipes that are to be exectued
@@ -367,15 +361,29 @@ void Vader::executePlanNL(atlas::FieldSet & afieldset,
             const std::vector<std::pair<std::string,
                               const std::unique_ptr<RecipeBase> &>> & recipeExecutionPlan) const {
     oops::Log::trace() << "entering Vader::executePlanNL" <<  std::endl;
-    // We must get the recipes specified in the recipeExecutionPlan out of the cookbook,
-    // where they live
     for (auto varPlan : recipeExecutionPlan) {
         oops::Log::debug() << "Attempting to calculate variable " << varPlan.first <<
             " using recipe with name: " << varPlan.second->name() << std::endl;
-        ASSERT(afieldset.has(varPlan.first));
         for (auto ingredient :  varPlan.second->ingredients()) {
             ASSERT(afieldset.has(ingredient));
         }
+
+        if (afieldset.has(varPlan.first))
+        {
+            // Verify the number of levels in the Field is enough for the recipe
+            ASSERT(afieldset.field(varPlan.first).levels() >=
+                   varPlan.second->productLevels(afieldset));
+        } else {
+            // Create the field and put it in the FieldSet
+            atlas::Field newField =
+                varPlan.second->productFunctionSpace(afieldset).createField<double>(
+                    atlas::option::name(varPlan.first) |
+                    atlas::option::levels(varPlan.second->productLevels(afieldset)));
+            oops::Log::debug() << "Vader adding Field " << newField.name() <<
+                " to fieldset." << std::endl;
+            afieldset.add(newField);
+        }
+
         if (varPlan.second->requiresSetup()) {
             varPlan.second->setup(afieldset);
         }

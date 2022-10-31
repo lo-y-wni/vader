@@ -15,6 +15,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "atlas/field/FieldSet.h"
+#include "atlas/functionspace/FunctionSpace.h"
 #include "oops/base/Variables.h"
 #include "oops/util/AssociativeContainers.h"
 #include "oops/util/parameters/Parameters.h"
@@ -59,6 +60,12 @@ class RecipeBase : public util::Printable,
 
 /// Ingredients (list of variables required to setup and execute recipe)
   virtual std::vector<std::string> ingredients() const = 0;
+
+/// Method returning the number of levels in the variable produced
+  virtual size_t productLevels(const atlas::FieldSet &) const = 0;
+
+/// Method returning the functionspace for the variable produced
+  virtual atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const = 0;
 
 /// Flag indicating whether the recipe requires setup.
   virtual bool requiresSetup() { return false; }

@@ -64,6 +64,16 @@ std::vector<std::string> TempToPTemp::ingredients() const
     return TempToPTemp::Ingredients;
 }
 
+size_t TempToPTemp::productLevels(const atlas::FieldSet & afieldset) const
+{
+    return afieldset.field(VV_TS).levels();
+}
+
+atlas::FunctionSpace TempToPTemp::productFunctionSpace(const atlas::FieldSet & afieldset) const
+{
+    return afieldset.field(VV_TS).functionspace();
+}
+
 bool TempToPTemp::executeNL(atlas::FieldSet & afieldset)
 {
     bool potential_temperature_filled = false;

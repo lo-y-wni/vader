@@ -55,6 +55,16 @@ std::vector<std::string> TempToVTemp::ingredients() const
     return TempToVTemp::Ingredients;
 }
 
+size_t TempToVTemp::productLevels(const atlas::FieldSet & afieldset) const
+{
+    return afieldset.field(VV_TS).levels();
+}
+
+atlas::FunctionSpace TempToVTemp::productFunctionSpace(const atlas::FieldSet & afieldset) const
+{
+    return afieldset.field(VV_TS).functionspace();
+}
+
 bool TempToVTemp::executeNL(atlas::FieldSet & afieldset)
 {
     oops::Log::trace() << "entering TempToVTemp::executeNL function"

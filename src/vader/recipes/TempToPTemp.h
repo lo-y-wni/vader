@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "atlas/field/FieldSet.h"
+#include "atlas/functionspace/FunctionSpace.h"
 #include "oops/util/parameters/Parameter.h"
 #include "oops/util/parameters/RequiredParameter.h"
 #include "vader/RecipeBase.h"
@@ -51,6 +52,8 @@ class TempToPTemp : public RecipeBase {
     std::string name() const override;
     std::string product() const override;
     std::vector<std::string> ingredients() const override;
+    size_t productLevels(const atlas::FieldSet &) const override;
+    atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override;
     bool executeNL(atlas::FieldSet &) override;
 
  private:

@@ -32,6 +32,16 @@ std::vector<std::string> Recipe::ingredients() const
     return recipe_->ingredients();
 }
 // ------------------------------------------------------------------------------------------------
+size_t Recipe::productLevels(const atlas::FieldSet & afieldset) const
+{
+    return recipe_->productLevels(afieldset);
+}
+// ------------------------------------------------------------------------------------------------
+atlas::FunctionSpace Recipe::productFunctionSpace(const atlas::FieldSet & afieldset) const
+{
+    return recipe_->productFunctionSpace(afieldset);
+}
+// ------------------------------------------------------------------------------------------------
 bool Recipe::hasTLAD() const
 {
     return recipe_->hasTLAD();
