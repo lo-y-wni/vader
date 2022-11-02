@@ -10,7 +10,7 @@
 
 cmake_minimum_required( VERSION 3.12 )
 # option(VADER_BUILD_LANGUAGE_FORTRAN "Build Fortran bindings." ON)
-list( APPEND VADER_LANGUAGES CXX)
+list( APPEND VADER_LANGUAGES CXX Fortran)
 # if (VADER_BUILD_LANGUAGE_FORTRAN)
 # 	list( APPEND VADER_LANGUAGES Fortran)
 # endif()
