@@ -125,6 +125,15 @@ oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
         oops::Log::debug() <<
             "Vader::changeVar calling Vader::planVariable for: "
             << targetVariable << std::endl;
+        // Since this function is called recursively, make sure targetVariable is
+        // still needed
+        if (!neededVars.has(targetVariable)) {
+            oops::Log::debug() << targetVariable <<
+                " is no longer in the variable list neededVars." << std::endl;
+            oops::Log::trace() << "leaving Vader::planVariable for variable: "
+                << targetVariable << std::endl;
+            continue;
+        }
         planVariable(afieldset, neededVars, targetVariable, recipesNeedTLAD, plan);
     }
     executePlanNL(afieldset, plan);
@@ -166,6 +175,15 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
         oops::Log::debug() <<
             "Vader::changeVarTraj calling Vader::planVariable for: "
             << targetVariable << std::endl;
+        // Since this function is called recursively, make sure targetVariable is
+        // still needed
+        if (!neededVars.has(targetVariable)) {
+            oops::Log::debug() << targetVariable <<
+                " is no longer in the variable list neededVars." << std::endl;
+            oops::Log::trace() << "leaving Vader::planVariable for variable: "
+                << targetVariable << std::endl;
+            continue;
+        }
         planVariable(afieldset, neededVars, targetVariable, recipesNeedTLAD, recipeExecutionPlan_);
     }
     executePlanNL(afieldset, recipeExecutionPlan_);
@@ -273,16 +291,6 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
 
     auto fieldSetFieldNames = afieldset.field_names();
 
-    // Since this function is called recursively, make sure targetVariable is
-    // still needed
-    if (!neededVars.has(targetVariable)) {
-        oops::Log::debug() << targetVariable <<
-            " is no longer in the variable list neededVars." << std::endl;
-        oops::Log::trace() << "leaving Vader::planVariable for variable: "
-            << targetVariable << std::endl;
-        return true;
-    }
-
     auto recipeList = cookbook_.find(targetVariable);
 
     // If recipeList is found, recipeList->second is a vector of unique_ptr's
@@ -297,6 +305,20 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
                     "' since it does not have TL/AD methods implemented.";
                 continue;
             }
+            // Check that this recipe is not already in the plan to prevent
+            // infinite recursion.
+            bool recipeAlreadyPlanned = false;
+            for (const auto planRecipe : plan) {
+                if (planRecipe.second->name() == recipe->name()) {
+                    recipeAlreadyPlanned = true;
+                    break;
+                }
+            }
+            if (recipeAlreadyPlanned) {
+                oops::Log::debug() << "Preventing the recursion of recipe: " <<
+                    recipe->name() << std::endl;
+                continue;
+            }
             oops::Log::debug() << "Checking to see if we have ingredients for recipe: " <<
                 recipe->name() << std::endl;
             bool haveIngredient = false;
@@ -304,9 +326,6 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
                 if (ingredient == targetVariable) {
                     oops::Log::error() << "Error: Ingredient list for " <<
                         recipe->name() << " contains the target." << std::endl;
-                    // This could cause infinite recursion if we didn't check.
-                    // TODO(vahl): infinite recursion probably still possible
-                    //       with badly-constructed cookbook.
                     break;
                 }
                 haveIngredient =
@@ -315,8 +334,15 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
                 if (!haveIngredient) {
                     oops::Log::debug() << "ingredient " << ingredient <<
                         " not found. Recursively checking if Vader can make it." << std::endl;
+                    // Temporarily add the recipe under consideration to the plan to prevent
+                    // infinite recursion.
+                    plan.push_back(std::pair<std::string, const std::unique_ptr<RecipeBase> &>
+                                                                        ({targetVariable, recipe}));
                     haveIngredient = planVariable(afieldset, neededVars, ingredient,
                                                   needsTLAD, plan);
+                    // Remove the temporary inclusion of the recipe in the plan.
+                    // (It gets re-added permanently below when appropriate.)
+                    plan.pop_back();
                 }
                 oops::Log::debug() << "ingredient " << ingredient <<
                     (haveIngredient ? " is" : " is not") << " available." << std::endl;
