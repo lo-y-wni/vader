@@ -28,12 +28,6 @@ const double default_epsilon = 0.62196;
 // Register the maker
 static RecipeMaker<TempToVTemp> makerTempToVTemp_(TempToVTemp::Name);
 
-TempToVTemp::TempToVTemp() :
-     epsilon_{default_epsilon}
-{
-    oops::Log::trace() << "TempToVTemp::TempToVTemp()" << std::endl;
-}
-
 TempToVTemp::TempToVTemp(const Parameters_ &params) :
     epsilon_{params.epsilon.value()}
 {

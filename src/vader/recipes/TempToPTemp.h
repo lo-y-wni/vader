@@ -45,7 +45,6 @@ class TempToPTemp : public RecipeBase {
 
     typedef TempToPTempParameters Parameters_;
 
-    TempToPTemp();
     explicit TempToPTemp(const Parameters_ &);
 
     // Recipe base class overrides

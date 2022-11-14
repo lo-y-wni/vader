@@ -45,22 +45,6 @@ RecipeBase * RecipeFactory::create(const std::string name,
 
 // ------------------------------------------------------------------------------------------------
 
-RecipeBase * RecipeFactory::create(const std::string name) {
-  oops::Log::trace() << "RecipeFactory::create(name) starting for name: "
-    << name << std::endl;
-  typename std::map<std::string, RecipeFactory*>::iterator jloc =
-    getMakers().find(name);
-  if (jloc == getMakers().end()) {
-    oops::Log::error() << name << " does not exist in vader::RecipeFactory." << std::endl;
-    ABORT("Element does not exist in vader::RecipeFactory.");
-  }
-  RecipeBase * ptr = jloc->second->make();
-  oops::Log::trace() << "RecipeFactory::create(name) finished for name: " << name << std::endl;
-  return ptr;
-}
-
-// ------------------------------------------------------------------------------------------------
-
 std::unique_ptr<RecipeParametersBase>
 RecipeFactory::createParameters(const std::string &name) {
   typename std::map<std::string, RecipeFactory*>::iterator it =

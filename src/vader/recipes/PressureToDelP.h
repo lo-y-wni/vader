@@ -38,7 +38,6 @@ class PressureToDelP : public RecipeBase
 
     typedef PressureToDelPParameters Parameters_;
 
-    PressureToDelP();
     explicit PressureToDelP(const Parameters_ &);
 
     std::string name() const override;

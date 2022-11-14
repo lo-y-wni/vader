@@ -43,7 +43,6 @@ class TempToVTemp : public RecipeBase {
 
     typedef TempToVTempParameters Parameters_;
 
-    TempToVTemp();
     explicit TempToVTemp(const Parameters_ &);
 
     // Recipe base class overrides

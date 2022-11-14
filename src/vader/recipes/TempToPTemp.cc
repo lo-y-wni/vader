@@ -31,13 +31,6 @@ const double default_hPa_p0 = 1000.0;
 // Register the maker
 static RecipeMaker<TempToPTemp> makerTempToPTemp_(TempToPTemp::Name);
 
-TempToPTemp::TempToPTemp() :
-    p0_{p0_not_in_params},
-    kappa_{default_kappa}
-{
-    oops::Log::trace() << "TempToPTemp::TempToPTemp()" << std::endl;
-}
-
 TempToPTemp::TempToPTemp(const Parameters_ &params) :
     p0_{params.p0.value()},
     kappa_{params.kappa.value()}

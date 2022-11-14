@@ -25,11 +25,6 @@ const std::vector<std::string> PressureToDelP::Ingredients = {VV_PS};
 // Register the maker
 static RecipeMaker<PressureToDelP> makerPressureToDelP_(PressureToDelP::Name);
 
-PressureToDelP::PressureToDelP()
-{
-    oops::Log::trace() << "PressureToDelP::PressureToDelP()" << std::endl;
-}
-
 PressureToDelP::PressureToDelP(const PressureToDelPParameters &params)
 {
     oops::Log::trace() << "PressureToDelP::PressureToDelP(params)" << std::endl;

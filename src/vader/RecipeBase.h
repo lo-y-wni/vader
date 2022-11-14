@@ -91,7 +91,6 @@ class RecipeFactory {
  public:
   static RecipeBase * create(const std::string name,
                              const RecipeParametersBase &);
-  static RecipeBase * create(const std::string name);
   static std::unique_ptr<RecipeParametersBase> createParameters(const std::string &);
 
   static std::vector<std::string> getMakerNames() {
@@ -105,7 +104,6 @@ class RecipeFactory {
 
  private:
   virtual RecipeBase* make(const RecipeParametersBase &) = 0;
-  virtual RecipeBase* make() = 0;
 
   virtual std::unique_ptr<RecipeParametersBase> makeParameters() const = 0;
 
@@ -124,7 +122,6 @@ class RecipeMaker : public RecipeFactory {
         const auto &stronglyTypedParams = dynamic_cast<const Parameters_&>(params);
         return new T(stronglyTypedParams);
     }
-    RecipeBase * make() override { return new T(); }
     std::unique_ptr<RecipeParametersBase> makeParameters() const override {
         return std::make_unique<Parameters_>();
     }
