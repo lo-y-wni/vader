@@ -16,6 +16,7 @@
 #include "vader/vadervariables.h"
 
 // Recipe headers
+#include "recipes/AirTemperature.h"
 #include "recipes/PressureToDelP.h"
 #include "recipes/TempToPTemp.h"
 #include "recipes/TempToVTemp.h"
@@ -34,9 +35,12 @@ std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookb
         // Value: a vector of recipe names that will be searched, in order,
         //        by Vader for viability
         {VV_PT, {TempToPTemp::Name}},
-        {VV_TV, {TempToVTemp::Name}}
+        {VV_TV, {TempToVTemp::Name}},
+        {"air_temperature", {AirTemperature_A::Name}}
+
         // TODO(vahl) get PressureToDelP recipe working
-        /*{VV_DELP, {PressureToDelP::Name}}*/};
+        /*{VV_DELP, {PressureToDelP::Name}}*/
+    };
 }
 
 }  // namespace vader

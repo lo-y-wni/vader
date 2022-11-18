@@ -9,6 +9,8 @@ vader/RecipeBase.cc
 vader/cookbook.h
 vader/vader.cc
 vader/VaderParameters.h
+vader/recipes/AirTemperature.h
+vader/recipes/AirTemperature.cc
 vader/recipes/PressureToDelP.h
 vader/recipes/PressureToDelP.cc
 vader/recipes/TempToPTemp.h
