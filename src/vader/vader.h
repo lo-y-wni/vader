@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -33,7 +33,7 @@ namespace vader {
  *           A 'recipe' is is an object that can produce a single output
  *           variable when provided with a list of required input variables.
  *           The input variables are referred to as the 'ingredients' to the
- *           recipe. The 'cookbook' is the container (an unordered_map) that
+ *           recipe. The 'cookbook' is the container (a map) that
  *           contains the recipes to be attempted when specified output variable
  *           is desired. The cookbook can contain multiple recipes that produce
  *           the same output variable.
@@ -52,13 +52,13 @@ class Vader {
     oops::Variables changeVarAD(atlas::FieldSet &, oops::Variables &) const;
 
  private:
-    std::unordered_map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;
+    std::map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;
     std::vector<std::pair<std::string, const std::unique_ptr<RecipeBase> & >> recipeExecutionPlan_;
     atlas::FieldSet trajectory_;
-    std::unordered_map<std::string, std::vector<std::string>>
+    std::map<std::string, std::vector<std::string>>
         getDefaultCookbookDef();
 
-    void createCookbook(std::unordered_map<std::string, std::vector<std::string>>,
+    void createCookbook(std::map<std::string, std::vector<std::string>>,
                         const std::vector<RecipeParametersWrapper> & allRecpParamWraps =
                               std::vector<RecipeParametersWrapper>());
     bool planVariable(atlas::FieldSet &,

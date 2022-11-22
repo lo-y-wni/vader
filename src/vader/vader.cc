@@ -7,8 +7,8 @@
 
 #include <algorithm>
 #include <iostream>
+#include <map>
 #include <memory>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -28,11 +28,8 @@ Vader::~Vader() {
     oops::Log::trace() << "Vader::~Vader done" << std::endl;
 }
 // ------------------------------------------------------------------------------------------------
-void Vader::createCookbook(std::unordered_map<std::string,
-                                              std::vector<std::string>>
-                                              definition,
-                        const std::vector<RecipeParametersWrapper> &
-                    allRecpParamWraps) {
+void Vader::createCookbook(std::map<std::string, std::vector<std::string>> definition,
+                           const std::vector<RecipeParametersWrapper> & allRecpParamWraps) {
     oops::Log::trace() << "entering Vader::createCookbook" << std::endl;
     std::vector<std::unique_ptr<RecipeBase>> recipes;
     for (auto defEntry : definition) {
@@ -66,7 +63,7 @@ void Vader::createCookbook(std::unordered_map<std::string,
 Vader::Vader(const VaderParameters & parameters) {
     util::Timer timer(classname(), "Vader");
     // TODO(vahl): Parameters can alter the default cookbook here
-    std::unordered_map<std::string, std::vector<std::string>> definition =
+    std::map<std::string, std::vector<std::string>> definition =
         getDefaultCookbookDef();
     oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
     oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;

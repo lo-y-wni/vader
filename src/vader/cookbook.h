@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <map>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "oops/util/Logger.h"
@@ -28,7 +28,7 @@ namespace vader
 // This defines the recipes used (and their priority) by default in Vader
 // (Recipes can be added, removed, or rearranged in cookbook by specifying in
 //  yaml.)
-std::unordered_map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
+std::map<std::string, std::vector<std::string>> Vader::getDefaultCookbookDef() {
     return {
         // This defines the default Vader Cookbook
         // Key: name of the variable produced by all the recipes in the Value
