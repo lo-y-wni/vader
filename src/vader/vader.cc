@@ -18,7 +18,6 @@
 #include "atlas/option/Options.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
-#include "vader/cookbook.h"
 #include "vader/vader.h"
 
 namespace vader {
@@ -62,9 +61,8 @@ void Vader::createCookbook(std::map<std::string, std::vector<std::string>> defin
 // ------------------------------------------------------------------------------------------------
 Vader::Vader(const VaderParameters & parameters) {
     util::Timer timer(classname(), "Vader");
-    // TODO(vahl): Parameters can alter the default cookbook here
     std::map<std::string, std::vector<std::string>> definition =
-        getDefaultCookbookDef();
+        parameters.cookbook.value();
     oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
     oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
 
