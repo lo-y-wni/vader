@@ -43,6 +43,8 @@ class Vader {
  public:
     static const std::string classname() {return "Vader";}
     explicit Vader(const VaderParameters & parameters);
+    Vader(const Vader &) = delete;
+    Vader& operator=(const Vader &) = delete;
     ~Vader();
 
     /// Calculates as many variables in the list as possible
