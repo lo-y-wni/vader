@@ -1,0 +1,8 @@
+vader: {}
+trajectory grid:
+  type : regular_gaussian
+  N : 12
+trajectory filename: testdata/AirTemperature_A.nc
+ingredients: [air_potential_temperature, dimensionless_exner_function]
+products: [air_temperature]
+adjoint test tolerance: 1.e-12

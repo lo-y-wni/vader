@@ -1,0 +1,7 @@
+recipe:
+  recipe name: AirTemperature_A
+trajectory grid:
+  type : regular_gaussian
+  N : 12
+trajectory filename: testdata/AirTemperature_A.nc
+adjoint test tolerance: 1.e-12

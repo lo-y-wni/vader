@@ -83,17 +83,13 @@ Vader::Vader(const VaderParameters & parameters) {
 /*! \brief Change Variable
 *
 * \details **changeVar** is is called externally to invoke Vader's non-linear variable change
-* functionality. The caller passes an Atlas FieldSet that contains two kinds
-* of fields:
-* * Fields that have already been populated with values
-* * Fields that have been allocated but need to be calculated and populated
-* The already-populated fields serve as the ingredients for recipes which then
-* populate fields. The names of the variables that still need to be
-* populated are passed via the neededVars parameter. After this method is
-* complete, Vader will have popluated all the variables it can based on
-* the ingredients it was given and the recipes in its cookbook. The names of the
-* variables it was able to populate will have been removed from the neededVars
-* list. Any variable names remaining in neededVars remain unpopulated.
+* functionality. The caller passes an Atlas FieldSet that contains fields that have already been
+* populated with values: the ingredients for the recipes.
+* The names of the variables that still need to be populated are passed via the neededVars
+* parameter. After this method is complete, Vader will have created and populated all the
+* variables it can based on the ingredients it was given and the recipes in its cookbook.
+* The names of the variables it was able to populate will have been removed from the neededVars
+* list.
 *
 * \param[in,out] afieldset This is the FieldSet described above
 * \param[in,out] neededVars Names of unpopulated Fields in afieldset
@@ -186,7 +182,9 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
     trajectory_.clear();
     for (const auto from_Field : afieldset) {
         // Make a deep copy of each field and put it in trajectory_
-        atlas::Field to_Field(from_Field.name(), from_Field.datatype(), from_Field.shape());
+        atlas::Field to_Field = from_Field.functionspace().createField<double>(
+                    atlas::option::name(from_Field.name()) |
+                    atlas::option::levels(from_Field.levels()));
         auto from_view = atlas::array::make_view<double, 2>(from_Field);
         auto to_view = atlas::array::make_view<double, 2>(to_Field);
         to_view.assign(from_view);
@@ -265,7 +263,7 @@ oops::Variables Vader::changeVarAD(atlas::FieldSet & afieldset,
 * * Adds the variable and recipe name to the "recipeExecutionPlan" if the recipe is viable.
 * * If successful, removes the targetVariable from neededVars and returns 'true'
 *
-* \param[in,out] afieldset A fieldset containg both populated and unpopulated fields
+* \param[in,out] afieldset A fieldset containg only populated fields
 * \param[in,out] neededVars Names of unpopulated Fields in afieldset
 * \param[in] targetVariable variable name this instance is trying to populate
 * \param[in] needsTLDA Flag to only consider recipes that have TLAD implemented
@@ -285,6 +283,17 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
         std::endl;
 
     auto fieldSetFieldNames = afieldset.field_names();
+
+    // Check if needed variable is part of the ingredients already.
+    bool variableExists =
+        (std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), targetVariable)
+                        != fieldSetFieldNames.end());
+    if (variableExists) {
+        oops::Log::debug() << "Vairable is part of the ingredients already. " << std::endl;
+        variablePlanned = true;
+        neededVars -= targetVariable;
+        return true;  // Don't need to check any recipes.
+    }
 
     auto recipeList = cookbook_.find(targetVariable);
 
@@ -365,6 +374,42 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
         std::endl;
     return variablePlanned;
 }
+
+/*! \brief creates a field with correct functionspace and levels, and optionally
+ *         initializes to zero. If the field already exists, asserts that it has
+ *         enough levels in it.
+ * \param[in,out] afieldset  Fieldset that needs to have the requested field
+ *                           allocated
+ * \param[in]     fieldname  Name of the field to be created or checked for dims
+ * \param[in]     fs         Functionspace for creating the new field
+ * \param[in]     nlevels    Number of levels for creating the new field
+ * \param[in]     init       Initialize field with zeros? (default: false)
+ */
+void checkOrAddField(atlas::FieldSet & afieldset, const std::string & fieldname,
+                     const atlas::FunctionSpace & fs, size_t nlevels,
+                     bool init = false) {
+    if (afieldset.has(fieldname))
+    {
+        // Verify the number of levels in the Field is enough for the recipe
+        ASSERT(afieldset.field(fieldname).levels() >= nlevels);
+    } else {
+        // Create the field and put it in the FieldSet
+        atlas::Field newField = fs.createField<double>(
+                    atlas::option::name(fieldname) |
+                    atlas::option::levels(nlevels));
+        if (init) {
+            // A new field for adjoint needs to be zeroed out
+            auto view = atlas::array::make_view<double, 2>(newField);
+            for (int j0 = 0; j0 < newField.shape(0); ++j0) {
+                for (int j1 = 0; j1 < newField.shape(1); ++j1) {
+                    view(j0, j1) = 0.0;
+                }
+            }
+        }
+        afieldset.add(newField);
+    }
+}
+
 // ------------------------------------------------------------------------------------------------
 /*! \brief Execute Plan (non-linear)
 *
@@ -388,23 +433,10 @@ void Vader::executePlanNL(atlas::FieldSet & afieldset,
         for (auto ingredient :  varPlan.second->ingredients()) {
             ASSERT(afieldset.has(ingredient));
         }
-
-        if (afieldset.has(varPlan.first))
-        {
-            // Verify the number of levels in the Field is enough for the recipe
-            ASSERT(afieldset.field(varPlan.first).levels() >=
-                   varPlan.second->productLevels(afieldset));
-        } else {
-            // Create the field and put it in the FieldSet
-            atlas::Field newField =
-                varPlan.second->productFunctionSpace(afieldset).createField<double>(
-                    atlas::option::name(varPlan.first) |
-                    atlas::option::levels(varPlan.second->productLevels(afieldset)));
-            oops::Log::debug() << "Vader adding Field " << newField.name() <<
-                " to fieldset." << std::endl;
-            afieldset.add(newField);
-        }
-
+        // add product field to the fieldset if needed
+        checkOrAddField(afieldset, varPlan.first,
+                        varPlan.second->productFunctionSpace(afieldset),
+                        varPlan.second->productLevels(afieldset));
         if (varPlan.second->requiresSetup()) {
             varPlan.second->setup(afieldset);
         }
@@ -433,7 +465,10 @@ void Vader::executePlanTL(atlas::FieldSet & afieldset,
     for (auto varPlan : recipeExecutionPlan) {
         oops::Log::debug() << "Attempting to calculate variable " << varPlan.first <<
             " using recipe with name: " << varPlan.second->name() << std::endl;
-        ASSERT(afieldset.has(varPlan.first));
+        // add product field to the fieldset if needed
+        checkOrAddField(afieldset, varPlan.first,
+                        varPlan.second->productFunctionSpace(afieldset),
+                        varPlan.second->productLevels(afieldset));
         for (auto ingredient :  varPlan.second->ingredients()) {
             ASSERT(afieldset.has(ingredient));
         }
@@ -470,8 +505,12 @@ void Vader::executePlanAD(atlas::FieldSet & afieldset,
         oops::Log::debug()  << "Performing adjoint of recipe with name: " <<
             varPlanIt->second->name() << std::endl;
         ASSERT(afieldset.has(varPlanIt->first));
+        // Check if ingredients need to be allocated
         for (auto ingredient :  varPlanIt->second->ingredients()) {
-            ASSERT(afieldset.has(ingredient));
+            // add ingredient field to the fieldset and zero out if needed
+            checkOrAddField(afieldset, ingredient,
+                     trajectory_.field(ingredient).functionspace(),
+                     trajectory_.field(ingredient).levels(), true);
         }
         if (varPlanIt->second->requiresSetup()) {
             varPlanIt->second->setup(afieldset);

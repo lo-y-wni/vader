@@ -38,10 +38,11 @@ message( STATUS "  - ENABLE_VADER_MO: ${ENABLE_VADER_MO}" )
 # Required
 find_package( jedicmake QUIET )  # Prefer find modules from jedi-cmake
 find_package( oops 1.0.0 REQUIRED )
+find_package( NetCDF REQUIRED COMPONENTS C )
 
 ## Sources
 add_subdirectory( src )
-# add_subdirectory( test )
+add_subdirectory( test )
 add_subdirectory( tools )
 
 if( ENABLE_VADER_DOC )
