@@ -16,6 +16,8 @@ vader/recipes/TempToPTemp.h
 vader/recipes/TempToPTemp.cc
 vader/recipes/TempToVTemp.h
 vader/recipes/TempToVTemp.cc
+vader/recipes/TestRecipes.h
+vader/recipes/TestRecipes.cc
 )
 if ( ENABLE_VADER_MO )
 list( APPEND vader_src_files

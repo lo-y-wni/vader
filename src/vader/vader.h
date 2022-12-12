@@ -42,20 +42,26 @@ namespace vader {
 class Vader {
  public:
     static const std::string classname() {return "Vader";}
+    typedef  std::vector<std::pair<std::string,
+                                   const std::unique_ptr<RecipeBase> & >> vaderPlanType;
     explicit Vader(const VaderParameters & parameters);
     Vader(const Vader &) = delete;
     Vader& operator=(const Vader &) = delete;
     ~Vader();
 
+    std::vector<std::string> getPlanNames() const;
+    std::vector<std::string> getPlanNames(vaderPlanType plan) const;
+
     /// Calculates as many variables in the list as possible
-    oops::Variables changeVar(atlas::FieldSet &, oops::Variables &) const;
+    oops::Variables changeVar(atlas::FieldSet &, oops::Variables &,
+                              vaderPlanType plan = vaderPlanType()) const;
     oops::Variables changeVarTraj(atlas::FieldSet &, oops::Variables &);
     oops::Variables changeVarTL(atlas::FieldSet &, oops::Variables &) const;
     oops::Variables changeVarAD(atlas::FieldSet &, oops::Variables &) const;
 
  private:
     std::map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;
-    std::vector<std::pair<std::string, const std::unique_ptr<RecipeBase> & >> recipeExecutionPlan_;
+    vaderPlanType recipeExecutionPlan_;
     atlas::FieldSet trajectory_;
     std::map<std::string, std::vector<std::string>>
         getDefaultCookbookDef();
@@ -63,21 +69,16 @@ class Vader {
     void createCookbook(std::map<std::string, std::vector<std::string>>,
                         const std::vector<RecipeParametersWrapper> & allRecpParamWraps =
                               std::vector<RecipeParametersWrapper>());
-    bool planVariable(atlas::FieldSet &,
+
+    bool planVariable(const std::vector<std::string> &,
                       oops::Variables &,
                       const std::string,
                       bool,
-                      std::vector<std::pair<std::string,
-                        const std::unique_ptr<RecipeBase> & >> &) const;
-    void executePlanNL(atlas::FieldSet &,
-                       const std::vector<std::pair<std::string,
-                        const std::unique_ptr<RecipeBase> & >> &) const;
-    void executePlanTL(atlas::FieldSet &,
-                       const std::vector<std::pair<std::string,
-                        const std::unique_ptr<RecipeBase> & >> &) const;
-    void executePlanAD(atlas::FieldSet &,
-                       const std::vector<std::pair<std::string,
-                        const std::unique_ptr<RecipeBase> & >> &) const;
+                      vaderPlanType &) const;
+
+    void executePlanNL(atlas::FieldSet &, const vaderPlanType &) const;
+    void executePlanTL(atlas::FieldSet &, const vaderPlanType &) const;
+    void executePlanAD(atlas::FieldSet &, const vaderPlanType &) const;
 };
 
 }  // namespace vader

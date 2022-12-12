@@ -1,0 +1,19 @@
+vader:
+  cookbook:
+    TestVarA: [TestVarA_A]
+plan variable tests:
+- ingredients: []
+  products: []
+  plan for TLAD: true
+  expected planned products: []
+  expected recipe plan: []
+- ingredients: [TestVarB]
+  products: [TestVarA]
+  plan for TLAD: false
+  expected planned products: [TestVarA]
+  expected recipe plan: [TestVarA_A]
+- ingredients: [TestVarC]
+  products: [TestVarA]
+  plan for TLAD: false
+  expected planned products: []
+  expected recipe plan: []

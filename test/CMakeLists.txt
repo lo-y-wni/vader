@@ -1,6 +1,7 @@
 list( APPEND vader_testinput
-  testinput/recipe_AirTemperature_A.yaml
-  testinput/vader_AirTemperature_A.yaml
+testinput/recipe_AirTemperature_A.yaml
+testinput/vader_AirTemperature_A.yaml
+testinput/planvariable.yaml
 )
 
 list( APPEND vader_testdata
@@ -42,4 +43,10 @@ ecbuild_add_test( TARGET  test_vader_recipe_AirTemperature_A
 ecbuild_add_test( TARGET  test_vader_vader_AirTemperature_A
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_vader.x
                   ARGS    "testinput/vader_AirTemperature_A.yaml"
+                  LIBS    vader )
+
+# Test planVariable algorithm
+ecbuild_add_test( TARGET  test_vader_planvariable
+                  SOURCES vader/TestPlanVariable.cc
+                  ARGS    "testinput/planvariable.yaml"
                   LIBS    vader )
