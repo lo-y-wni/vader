@@ -310,8 +310,7 @@ bool Vader::planVariable(const std::vector<std::string> & fieldSetFieldNames,
         (std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), targetVariable)
                         != fieldSetFieldNames.end());
     if (variableExists) {
-        oops::Log::debug() << "Vairable is part of the ingredients already. " << std::endl;
-        variablePlanned = true;
+        oops::Log::debug() << "Variable is part of the ingredients already. " << std::endl;
         neededVars -= targetVariable;
         return true;  // Don't need to check any recipes.
     }

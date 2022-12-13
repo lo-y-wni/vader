@@ -37,7 +37,7 @@ class VaderParameters : public oops::Parameters {
     // Default VADER cookbook definition
     {{"potential_temperature",  {TempToPTemp::Name}},
      {"virtual_temperature",    {TempToVTemp::Name}},
-     {"air_temperature",        {AirTemperature_A::Name}}
+     {"air_temperature",        {AirTemperature_A::Name, AirTemperature_B::Name}}
     //  {"air_pressure_thickness", {PressureToDelP::Name}}
     },
     this
