@@ -15,7 +15,7 @@ list( APPEND VADER_LANGUAGES CXX Fortran)
 # 	list( APPEND VADER_LANGUAGES Fortran)
 # endif()
 
-project( vader VERSION 1.1.0 LANGUAGES ${VADER_LANGUAGES} )
+project( vader VERSION 1.2.0 LANGUAGES ${VADER_LANGUAGES} )
 
 ## Ecbuild integration
 find_package( ecbuild QUIET )
@@ -27,11 +27,9 @@ set( CMAKE_DIRECTORY_LABELS ${PROJECT_NAME} )
 ## Configuration options
 include( ${PROJECT_NAME}_compiler_flags )
 option( ENABLE_VADER_DOC "Build VADER documentation" OFF )
-option( ENABLE_VADER_MO  "Build VADER Met Office Code" OFF )
 
 message( STATUS "VADER variables")
 message( STATUS "  - ENABLE_VADER_DOC: ${ENABLE_VADER_DOC}" )
-message( STATUS "  - ENABLE_VADER_MO: ${ENABLE_VADER_MO}" )
 
 ## Dependencies
 
