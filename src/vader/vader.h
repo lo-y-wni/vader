@@ -74,6 +74,7 @@ class Vader {
                       oops::Variables &,
                       const std::string,
                       bool,
+                      oops::Variables &,
                       vaderPlanType &) const;
 
     void executePlanNL(atlas::FieldSet &, const vaderPlanType &) const;

@@ -29,24 +29,145 @@ class TestRecipeParameters : public RecipeParametersBase {
 };
 
 // ------------------------------------------------------------------------------------------------
-/*! \brief TestVarA_A class defines a recipe for TestVarA
+/*! \brief Test_VarA_from_B class defines a recipe for TestVarA
  *
  *  \details This instantiation of RecipeBase produces TestVarA
  *           using TestVarB as input. Non-linear recipe only.
  */
-class TestVarA_A : public RecipeBase {
+class Test_VarA_from_B : public RecipeBase {
  public:
     static const char Name[];
     static const std::vector<std::string> Ingredients;
 
     typedef TestRecipeParameters Parameters_;
 
-    explicit TestVarA_A(const Parameters_ &);
+    explicit Test_VarA_from_B(const Parameters_ &);
 
     // Recipe base class overrides
     std::string name() const override;
     std::string product() const override {return "TestVarA";}
     std::vector<std::string> ingredients() const override {return {"TestVarB"};}
+    size_t productLevels(const atlas::FieldSet &) const override {return 0;}
+    atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
+                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+    // bool hasTLAD() const override { return true; }
+    bool executeNL(atlas::FieldSet &) override;
+    // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
+    // bool executeAD(atlas::FieldSet &, const atlas::FieldSet &) override;
+
+ private:
+};
+
+// ------------------------------------------------------------------------------------------------
+/*! \brief Test_VarA_from_C_D class defines a recipe for TestVarA
+ *
+ *  \details This instantiation of RecipeBase produces TestVarA
+ *           using TestVarC and TestVarD as input. Non-linear recipe only.
+ */
+class Test_VarA_from_C_D : public RecipeBase {
+ public:
+    static const char Name[];
+    static const std::vector<std::string> Ingredients;
+
+    typedef TestRecipeParameters Parameters_;
+
+    explicit Test_VarA_from_C_D(const Parameters_ &);
+
+    // Recipe base class overrides
+    std::string name() const override;
+    std::string product() const override {return "TestVarA";}
+    std::vector<std::string> ingredients() const override {return {"TestVarC", "TestVarD"};}
+    size_t productLevels(const atlas::FieldSet &) const override {return 0;}
+    atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
+                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+    // bool hasTLAD() const override { return true; }
+    bool executeNL(atlas::FieldSet &) override;
+    // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
+    // bool executeAD(atlas::FieldSet &, const atlas::FieldSet &) override;
+
+ private:
+};
+
+// ------------------------------------------------------------------------------------------------
+/*! \brief Test_VarB_from_E class defines a recipe for TestVarB
+ *
+ *  \details This instantiation of RecipeBase produces TestVarB
+ *           using TestVarE as input. Non-linear recipe only.
+ */
+class Test_VarB_from_E : public RecipeBase {
+ public:
+    static const char Name[];
+    static const std::vector<std::string> Ingredients;
+
+    typedef TestRecipeParameters Parameters_;
+
+    explicit Test_VarB_from_E(const Parameters_ &);
+
+    // Recipe base class overrides
+    std::string name() const override;
+    std::string product() const override {return "TestVarB";}
+    std::vector<std::string> ingredients() const override {return {"TestVarE"};}
+    size_t productLevels(const atlas::FieldSet &) const override {return 0;}
+    atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
+                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+    // bool hasTLAD() const override { return true; }
+    bool executeNL(atlas::FieldSet &) override;
+    // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
+    // bool executeAD(atlas::FieldSet &, const atlas::FieldSet &) override;
+
+ private:
+};
+// ------------------------------------------------------------------------------------------------
+/*! \brief Test_VarB_from_A class defines a recipe for TestVarB
+ *
+ *  \details This instantiation of RecipeBase produces TestVarB
+ *           using TestVarA as input. Non-linear recipe only.
+ *           This recipe combines with recipe Test_VarA_from_B to make 
+ *           sure the Vader algorithm does not end up in an infinte
+ *           recursion loop when attempting to create ingredients.
+ */
+class Test_VarB_from_A : public RecipeBase {
+ public:
+    static const char Name[];
+    static const std::vector<std::string> Ingredients;
+
+    typedef TestRecipeParameters Parameters_;
+
+    explicit Test_VarB_from_A(const Parameters_ &);
+
+    // Recipe base class overrides
+    std::string name() const override;
+    std::string product() const override {return "TestVarB";}
+    std::vector<std::string> ingredients() const override {return {"TestVarA"};}
+    size_t productLevels(const atlas::FieldSet &) const override {return 0;}
+    atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
+                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+    // bool hasTLAD() const override { return true; }
+    bool executeNL(atlas::FieldSet &) override;
+    // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
+    // bool executeAD(atlas::FieldSet &, const atlas::FieldSet &) override;
+
+ private:
+};
+// ------------------------------------------------------------------------------------------------
+/*! \brief Test_VarC_from_F class defines a recipe for TestVarC
+ *
+ *  \details This instantiation of RecipeBase produces TestVarC
+ *           using TestVarF as input. Non-linear recipe only.
+ */
+class Test_VarC_from_F : public RecipeBase {
+ public:
+    static const char Name[];
+    static const std::vector<std::string> Ingredients;
+
+    typedef TestRecipeParameters Parameters_;
+
+    explicit Test_VarC_from_F(const Parameters_ &);
+
+    // Recipe base class overrides
+    std::string name() const override;
+    std::string product() const override {return "TestVarC";}
+    std::vector<std::string> ingredients() const override {return {"TestVarF"};}
     size_t productLevels(const atlas::FieldSet &) const override {return 0;}
     atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
                                 {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
