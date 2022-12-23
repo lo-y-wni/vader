@@ -13,7 +13,7 @@
 #include "atlas/field/Field.h"
 #include "atlas/util/Metadata.h"
 #include "oops/util/Logger.h"
-#include "vader/recipes/TempToVTemp.h"
+#include "vader/recipes/AirVirtualTemperature.h"
 #include "vader/vadervariables.h"
 
 namespace vader
@@ -21,47 +21,48 @@ namespace vader
 // ------------------------------------------------------------------------------------------------
 
 // Static attribute initialization
-const char TempToVTemp::Name[] = "TempToVTemp";
-const std::vector<std::string> TempToVTemp::Ingredients = {VV_TS, VV_Q};
+const char AirVirtualTemperature_A::Name[] = "AirVirtualTemperature_A";
+const std::vector<std::string> AirVirtualTemperature_A::Ingredients = {VV_TS, VV_Q};
 const double default_epsilon = 0.62196;
 
 // Register the maker
-static RecipeMaker<TempToVTemp> makerTempToVTemp_(TempToVTemp::Name);
+static RecipeMaker<AirVirtualTemperature_A> makerTempToVTemp_(AirVirtualTemperature_A::Name);
 
-TempToVTemp::TempToVTemp(const Parameters_ &params) :
+AirVirtualTemperature_A::AirVirtualTemperature_A(const Parameters_ &params) :
     epsilon_{params.epsilon.value()}
 {
-    oops::Log::trace() << "TempToVTemp::TempToVTemp(params)" << std::endl;
+    oops::Log::trace() << "AirVirtualTemperature_A::AirVirtualTemperature_A(params)" << std::endl;
 }
 
-std::string TempToVTemp::name() const
+std::string AirVirtualTemperature_A::name() const
 {
-    return TempToVTemp::Name;
+    return AirVirtualTemperature_A::Name;
 }
 
-std::string TempToVTemp::product() const
+std::string AirVirtualTemperature_A::product() const
 {
     return "virtual_temperature";
 }
 
-std::vector<std::string> TempToVTemp::ingredients() const
+std::vector<std::string> AirVirtualTemperature_A::ingredients() const
 {
-    return TempToVTemp::Ingredients;
+    return AirVirtualTemperature_A::Ingredients;
 }
 
-size_t TempToVTemp::productLevels(const atlas::FieldSet & afieldset) const
+size_t AirVirtualTemperature_A::productLevels(const atlas::FieldSet & afieldset) const
 {
     return afieldset.field(VV_TS).levels();
 }
 
-atlas::FunctionSpace TempToVTemp::productFunctionSpace(const atlas::FieldSet & afieldset) const
+atlas::FunctionSpace AirVirtualTemperature_A::productFunctionSpace
+                                              (const atlas::FieldSet & afieldset) const
 {
     return afieldset.field(VV_TS).functionspace();
 }
 
-bool TempToVTemp::executeNL(atlas::FieldSet & afieldset)
+bool AirVirtualTemperature_A::executeNL(atlas::FieldSet & afieldset)
 {
-    oops::Log::trace() << "entering TempToVTemp::executeNL function"
+    oops::Log::trace() << "entering AirVirtualTemperature_A::executeNL function"
         << std::endl;
 
     atlas::Field temperature = afieldset.field(VV_TS);
@@ -83,16 +84,17 @@ bool TempToVTemp::executeNL(atlas::FieldSet & afieldset)
       }
     }
 
-    oops::Log::trace() << "leaving TempToVTemp::executeNL function" << std::endl;
+    oops::Log::trace() << "leaving AirVirtualTemperature_A::executeNL function" << std::endl;
 
     return true;
 }
 
-bool TempToVTemp::executeTL(atlas::FieldSet & afieldsetTL, const atlas::FieldSet & afieldsetTraj)
+bool AirVirtualTemperature_A::executeTL(atlas::FieldSet & afieldsetTL,
+                                        const atlas::FieldSet & afieldsetTraj)
 {
     bool tl_virtual_temperature_filled = false;
 
-    oops::Log::trace() << "entering TempToVTemp::executeTL function"
+    oops::Log::trace() << "entering AirVirtualTemperature_A::executeTL function"
         << std::endl;
 
     atlas::Field traj_temperature = afieldsetTraj.field(VV_TS);
@@ -122,16 +124,17 @@ bool TempToVTemp::executeTL(atlas::FieldSet & afieldsetTL, const atlas::FieldSet
 
     tl_virtual_temperature_filled = true;
 
-    oops::Log::trace() << "leaving TempToVTemp::executeTL function" << std::endl;
+    oops::Log::trace() << "leaving AirVirtualTemperature_A::executeTL function" << std::endl;
 
     return tl_virtual_temperature_filled;
 }
 
-bool TempToVTemp::executeAD(atlas::FieldSet & afieldsetAD, const atlas::FieldSet & afieldsetTraj)
+bool AirVirtualTemperature_A::executeAD(atlas::FieldSet & afieldsetAD,
+                                        const atlas::FieldSet & afieldsetTraj)
 {
     bool adjointSuccess = false;
 
-    oops::Log::trace() << "entering TempToVTemp::executeAD function"
+    oops::Log::trace() << "entering AirVirtualTemperature_A::executeAD function"
         << std::endl;
 
     atlas::Field traj_temperature = afieldsetTraj.field(VV_TS);
@@ -164,7 +167,7 @@ bool TempToVTemp::executeAD(atlas::FieldSet & afieldsetAD, const atlas::FieldSet
 
     adjointSuccess = true;
 
-    oops::Log::trace() << "leaving TempToVTemp::executeAD function" << std::endl;
+    oops::Log::trace() << "leaving AirVirtualTemperature_A::executeAD function" << std::endl;
 
     return adjointSuccess;
 }

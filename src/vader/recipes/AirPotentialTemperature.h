@@ -18,8 +18,8 @@
 
 namespace vader {
 
-class TempToPTempParameters : public RecipeParametersBase {
-  OOPS_CONCRETE_PARAMETERS(TempToPTempParameters, RecipeParametersBase)
+class AirPotentialTemperature_AParameters : public RecipeParametersBase {
+  OOPS_CONCRETE_PARAMETERS(AirPotentialTemperature_AParameters, RecipeParametersBase)
 
  public:
   oops::RequiredParameter<std::string> name{
@@ -30,7 +30,7 @@ class TempToPTempParameters : public RecipeParametersBase {
 };
 
 // ------------------------------------------------------------------------------------------------
-/*! \brief TempToPTemp class defines a recipe for potential temperature
+/*! \brief AirPotentialTemperature_A class defines a recipe for potential temperature
  *
  *  \details This instantiation of RecipeBase produces potential temperature
  *           using temperature and surface pressure as inputs. The parameters
@@ -38,14 +38,14 @@ class TempToPTempParameters : public RecipeParametersBase {
  *           If they are not, the code will attempt to provide default values.
  *           (See https://glossary.ametsoc.org/wiki/Potential_temperature)
  */
-class TempToPTemp : public RecipeBase {
+class AirPotentialTemperature_A : public RecipeBase {
  public:
     static const char Name[];
     static const std::vector<std::string> Ingredients;
 
-    typedef TempToPTempParameters Parameters_;
+    typedef AirPotentialTemperature_AParameters Parameters_;
 
-    explicit TempToPTemp(const Parameters_ &);
+    explicit AirPotentialTemperature_A(const Parameters_ &);
 
     // Recipe base class overrides
     std::string name() const override;

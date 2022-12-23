@@ -17,8 +17,8 @@
 namespace vader
 {
 
-class PressureToDelPParameters : public RecipeParametersBase {
-  OOPS_CONCRETE_PARAMETERS(PressureToDelPParameters, RecipeParametersBase)
+class AirPressureThickness_AParameters : public RecipeParametersBase {
+  OOPS_CONCRETE_PARAMETERS(AirPressureThickness_AParameters, RecipeParametersBase)
 
  public:
   oops::RequiredParameter<std::string> name{
@@ -30,15 +30,15 @@ class PressureToDelPParameters : public RecipeParametersBase {
 // ------------------------------------------------------------------------------------------------
 /// Recipe base class
 
-class PressureToDelP : public RecipeBase
+class AirPressureThickness_A : public RecipeBase
 {
  public:
     static const char Name[];
     static const std::vector<std::string> Ingredients;
 
-    typedef PressureToDelPParameters Parameters_;
+    typedef AirPressureThickness_AParameters Parameters_;
 
-    explicit PressureToDelP(const Parameters_ &);
+    explicit AirPressureThickness_A(const Parameters_ &);
 
     std::string name() const override;
     std::string product() const override;
