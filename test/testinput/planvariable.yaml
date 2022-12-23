@@ -1,0 +1,48 @@
+vader:
+  cookbook:
+    TestVarA: [Test_VarA_from_B,Test_VarA_from_C_D]
+    TestVarB: [Test_VarB_from_E,Test_VarB_from_A]
+    TestVarC: [Test_VarC_from_F]
+plan variable tests:
+# Empty test
+- ingredients: []
+  products: []
+  plan for TLAD: true
+  expected planned products: []
+  expected recipe plan: []
+# One ingredient which is available
+- ingredients: [TestVarB]
+  products: [TestVarA]
+  plan for TLAD: false
+  expected planned products: [TestVarA]
+  expected recipe plan: [Test_VarA_from_B]
+# One ingredient which doesn't match any recipe
+- ingredients: [TestVarZ]
+  products: [TestVarA]
+  plan for TLAD: false
+  expected planned products: []
+  expected recipe plan: []
+# Two ingredients which match 2nd recipe for product
+- ingredients: [TestVarC,TestVarD]
+  products: [TestVarA]
+  plan for TLAD: false
+  expected planned products: [TestVarA]
+  expected recipe plan: [Test_VarA_from_C_D]
+# Two matching recipes - first one listed in cookbook should be used
+- ingredients: [TestVarB,TestVarC,TestVarD]
+  products: [TestVarA]
+  plan for TLAD: false
+  expected planned products: [TestVarA]
+  expected recipe plan: [Test_VarA_from_B]
+# Recursion needed to get an ingredient
+- ingredients: [TestVarE]
+  products: [TestVarA]
+  plan for TLAD: false
+  expected planned products: [TestVarB,TestVarA]
+  expected recipe plan: [Test_VarB_from_E,Test_VarA_from_B]
+# Ingredient variable in both ingredients and products
+- ingredients: [TestVarC,TestVarD]
+  products: [TestVarA,TestVarC]
+  plan for TLAD: false
+  expected planned products: [TestVarA,TestVarC]
+  expected recipe plan: [Test_VarA_from_C_D]

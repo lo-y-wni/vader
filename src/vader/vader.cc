@@ -80,58 +80,92 @@ Vader::Vader(const VaderParameters & parameters) {
     }
 }
 // ------------------------------------------------------------------------------------------------
+std::vector<std::string> Vader::getPlanNames() const {
+    return getPlanNames(recipeExecutionPlan_);
+}
+// ------------------------------------------------------------------------------------------------
+/*! \brief Get Plan Names
+*
+* \details **getPlanNames** provides a list of the names, in order, of the recipes in
+* plan. (This is primarily useful for testing the Vader algorithm.)
+*
+* \param[in] plan A populated variable of type vaderPlanType
+* \returns Ordered list of the names of the recipes in plan.
+*/
+std::vector<std::string> Vader::getPlanNames(const vaderPlanType plan) const {
+    std::vector<std::string> recipeNames;
+    for (const auto & varPlan : plan)
+    {
+        recipeNames.push_back(varPlan.second->name());
+    }
+    return recipeNames;
+}
+// ------------------------------------------------------------------------------------------------
 /*! \brief Change Variable
 *
-* \details **changeVar** is is called externally to invoke Vader's non-linear variable change
-* functionality. The caller passes an Atlas FieldSet that contains fields that have already been
-* populated with values: the ingredients for the recipes.
-* The names of the variables that still need to be populated are passed via the neededVars
-* parameter. After this method is complete, Vader will have created and populated all the
-* variables it can based on the ingredients it was given and the recipes in its cookbook.
-* The names of the variables it was able to populate will have been removed from the neededVars
-* list.
+* \details **changeVar** is called externally to invoke Vader's non-linear variable change
+* functionality. The caller passes an Atlas FieldSet that contains only fields that have already
+* been populated with values. These fields serve as the initial ingredients for recipes. The names
+* of the desired output variables are passed via the neededVars parameter. After this method is
+* complete, Vader will have popluated all the desired variables it can based on
+* the ingredients it was given and the recipes in its cookbook. The names of the
+* variables Vader created are returned to the caller in two different ways:
+* * they are removed from neededVars
+* * they are put into the method return object.
+* Note that Vader may create some variables not listed in neededVars if they are required
+* intermediate ingredients for recipes in order to produce one or more of the neededVars.
+* Any variable names remaining in neededVars could not be created by Vader.
 *
 * \param[in,out] afieldset This is the FieldSet described above
-* \param[in,out] neededVars Names of unpopulated Fields in afieldset
-* \returns List of variables VADER was able to populate
+* \param[in,out] neededVars Names of variables to try to produce
+* \param[out] plan Optional arg allowing the caller to recieve the recipe execution plan used
+                   (can be used for testing the planVariable routine)
+* \returns List of variables VADER was able to produce
 *
 */
 oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
-                                 oops::Variables & neededVars) const {
+                                 oops::Variables & neededVars,
+                                 vaderPlanType plan) const {
     util::Timer timer(classname(), "changeVar");
     oops::Log::trace() << "entering Vader::changeVar " << std::endl;
     oops::Log::debug() << "neededVars passed to Vader::changeVar: " << neededVars << std::endl;
 
-    oops::Variables varsProduced(neededVars);
+    // onlyIngredientVars are the variables that Vader should NOT later return in varsProduced
+    // (i.e. variables both in afieldset AND neededVars will be returned in varsProduced)
+    oops::Variables onlyIngredientVars(afieldset.field_names());
+    onlyIngredientVars -= neededVars;
+    plan.clear();
 
-    auto fieldSetFieldNames = afieldset.field_names();
+    const auto fieldSetFieldNames = afieldset.field_names();
+    oops::Log::debug() << "Fields passed to Vader::changeVar: " << fieldSetFieldNames << std::endl;
     // Loop through all the requested fields in neededVars
     // Since neededVars can be modified by planVariable and planVariable calls
     // itself recursively, we make a copy of the list here before we start.
     std::vector<std::string> targetVariables{neededVars.variables()};
-    std::vector<std::pair<std::string, const std::unique_ptr<RecipeBase> &>> plan;
     bool recipesNeedTLAD = false;  // It's OK here to plan recipes with no TL/AD methods
 
     for (auto targetVariable : targetVariables) {
         oops::Log::debug() <<
-            "Vader::changeVar calling Vader::planVariable for: "
+            "Vader::changeVar processing top-level requested variable: "
             << targetVariable << std::endl;
         // Since this function is called recursively, make sure targetVariable is
         // still needed
         if (!neededVars.has(targetVariable)) {
             oops::Log::debug() << targetVariable <<
-                " is no longer in the variable list neededVars." << std::endl;
-            oops::Log::trace() << "leaving Vader::planVariable for variable: "
-                << targetVariable << std::endl;
+                " is no longer in the variable list neededVars. Moving on." << std::endl;
             continue;
         }
-        planVariable(afieldset, neededVars, targetVariable, recipesNeedTLAD, plan);
+        oops::Variables excludedVars;
+        planVariable(fieldSetFieldNames, neededVars, targetVariable, recipesNeedTLAD,
+                     excludedVars, plan);
     }
     executePlanNL(afieldset, plan);
 
     oops::Log::debug() << "neededVars remaining after Vader::changeVar: " << neededVars
         << std::endl;
-    varsProduced -= neededVars;
+
+    oops::Variables varsProduced(afieldset.field_names());
+    varsProduced -= onlyIngredientVars;
     oops::Log::trace() << "leaving Vader::changeVar" << std::endl;
     return varsProduced;
 }
@@ -144,7 +178,7 @@ oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
 * as the changeVar method, but also saves the result in Vader's trajectory_ property.
 *
 * \param[in,out] afieldset This is the input/output FieldSet, same as in changeVar.
-* \param[in,out] neededVars Names of unpopulated Fields in afieldset
+* \param[in,out] neededVars Names of variables to try to produce
 *
 */
 oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
@@ -153,9 +187,12 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
     oops::Log::trace() << "entering Vader::changeVarTraj " << std::endl;
     oops::Log::debug() << "neededVars passed to Vader::changeVarTraj: " << neededVars << std::endl;
 
-    oops::Variables varsProduced(neededVars);
+    // onlyIngredientVars are the variables that Vader should NOT later return in varsProduced
+    // (i.e. variables both in afieldset AND neededVars will be returned in varsProduced)
+    oops::Variables onlyIngredientVars(afieldset.field_names());
+    onlyIngredientVars -= neededVars;
 
-    auto fieldSetFieldNames = afieldset.field_names();
+    const auto fieldSetFieldNames = afieldset.field_names();
     // Loop through all the requested fields in neededVars
     // Since neededVars can be modified by planVariable and planVariable calls
     // itself recursively, we make a copy of the list here before we start.
@@ -164,18 +201,18 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
 
     for (auto targetVariable : targetVariables) {
         oops::Log::debug() <<
-            "Vader::changeVarTraj calling Vader::planVariable for: "
+            "Vader::changeVarTraj processing top-level requested variable: "
             << targetVariable << std::endl;
         // Since this function is called recursively, make sure targetVariable is
         // still needed
         if (!neededVars.has(targetVariable)) {
             oops::Log::debug() << targetVariable <<
-                " is no longer in the variable list neededVars." << std::endl;
-            oops::Log::trace() << "leaving Vader::planVariable for variable: "
-                << targetVariable << std::endl;
+                " is no longer in the variable list neededVars. Moving on." << std::endl;
             continue;
         }
-        planVariable(afieldset, neededVars, targetVariable, recipesNeedTLAD, recipeExecutionPlan_);
+        oops::Variables excludedVars;
+        planVariable(fieldSetFieldNames, neededVars, targetVariable, recipesNeedTLAD,
+                     excludedVars, recipeExecutionPlan_);
     }
     executePlanNL(afieldset, recipeExecutionPlan_);
     // Save the trajectory in Vader's private variable
@@ -193,7 +230,8 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
 
     oops::Log::debug() << "neededVars remaining after Vader::changeVarTraj: " << neededVars
         << std::endl;
-    varsProduced -= neededVars;
+    oops::Variables varsProduced(afieldset.field_names());
+    varsProduced -= onlyIngredientVars;
     oops::Log::trace() << "leaving Vader::changeVarTraj" << std::endl;
     return varsProduced;
 }
@@ -208,7 +246,7 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
 * communicate back to the caller which variables VADER has created.
 *
 * \param[in,out] afieldset This is the input/output fieldset, same as in changeVar
-* \param[in,out] neededVars Names of unpopulated Fields in afieldset
+* \param[in,out] neededVars Names of variables to try to produce
 *
 */
 oops::Variables Vader::changeVarTL(atlas::FieldSet & afieldset,
@@ -256,41 +294,39 @@ oops::Variables Vader::changeVarAD(atlas::FieldSet & afieldset,
 /*! \brief Plan Variable
 *
 * \details **planVariable** contains Vader's primary algorithm for attempting to
-* populate an unpopulated field. It:
+* find a recipe or sequence of recipes that can produce a desired variable. It:
 * * Checks the cookbook for recipes for the desired field (the targetVariable)
 * * Checks each recipe to see if its required ingredients have been provided
 * * If an ingredient is missing, recursively calls itself to attempt to get it
 * * Adds the variable and recipe name to the "recipeExecutionPlan" if the recipe is viable.
 * * If successful, removes the targetVariable from neededVars and returns 'true'
 *
-* \param[in,out] afieldset A fieldset containg only populated fields
-* \param[in,out] neededVars Names of unpopulated Fields in afieldset
-* \param[in] targetVariable variable name this instance is trying to populate
+* \param[in] fieldSetFieldNames Names of available ingredients
+* \param[in,out] neededVars Names of variables to try to produce
+* \param[in] targetVariable variable name this instance is trying to plan
 * \param[in] needsTLDA Flag to only consider recipes that have TLAD implemented
+* \param[in,out] excludedVars variables to not try to create due to recursion chain
 * \param[in,out] plan ordered list of viable recipes that will get exectued later
 * \return boolean 'true' if it successfully creates a plan for targetVariable, else false
 *
 */
-bool Vader::planVariable(atlas::FieldSet & afieldset,
+bool Vader::planVariable(const std::vector<std::string> & fieldSetFieldNames,
                          oops::Variables & neededVars,
                          const std::string targetVariable,
                          const bool needsTLAD,
-                         std::vector<std::pair<std::string,
-                                              const std::unique_ptr<RecipeBase> &>> & plan) const {
+                         oops::Variables & excludedVars,
+                         vaderPlanType & plan) const {
     bool variablePlanned = false;
 
     oops::Log::trace() << "entering Vader::planVariable for variable: " << targetVariable <<
         std::endl;
-
-    auto fieldSetFieldNames = afieldset.field_names();
 
     // Check if needed variable is part of the ingredients already.
     bool variableExists =
         (std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), targetVariable)
                         != fieldSetFieldNames.end());
     if (variableExists) {
-        oops::Log::debug() << "Vairable is part of the ingredients already. " << std::endl;
-        variablePlanned = true;
+        oops::Log::debug() << "Variable is part of the ingredients already. " << std::endl;
         neededVars -= targetVariable;
         return true;  // Don't need to check any recipes.
     }
@@ -318,11 +354,6 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
                     break;
                 }
             }
-            if (recipeAlreadyPlanned) {
-                oops::Log::debug() << "Preventing the recursion of recipe: " <<
-                    recipe->name() << std::endl;
-                continue;
-            }
             oops::Log::debug() << "Checking to see if we have ingredients for recipe: " <<
                 recipe->name() << std::endl;
             bool haveIngredient = false;
@@ -334,36 +365,46 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
                 }
                 haveIngredient =
                     (std::find(fieldSetFieldNames.begin(), fieldSetFieldNames.end(), ingredient)
-                        != fieldSetFieldNames.end()) && (!neededVars.has(ingredient));
+                        != fieldSetFieldNames.end());
                 if (!haveIngredient) {
-                    oops::Log::debug() << "ingredient " << ingredient <<
-                        " not found. Recursively checking if Vader can make it." << std::endl;
-                    // Temporarily add the recipe under consideration to the plan to prevent
-                    // infinite recursion.
-                    plan.push_back(std::pair<std::string, const std::unique_ptr<RecipeBase> &>
-                                                                        ({targetVariable, recipe}));
-                    haveIngredient = planVariable(afieldset, neededVars, ingredient,
-                                                  needsTLAD, plan);
-                    // Remove the temporary inclusion of the recipe in the plan.
-                    // (It gets re-added permanently below when appropriate.)
-                    plan.pop_back();
+                    oops::Log::debug() << "ingredient " << ingredient << " for recipe "
+                        << recipe->name() << " not in FieldSet." << std::endl;
+                    if (excludedVars.has(ingredient)) {
+                        oops::Log::debug() << "This ingredient is already being worked on at a " <<
+                        "higher level of planVariable recursion, so not trying to create it at "
+                        "this level." << std::endl;
+                        haveIngredient = false;
+                    } else {
+                        oops::Log::debug() << "Seeing if we can create this ingredient " <<
+                            "by calling planVariable recursively." << std::endl;
+                        // Put this the current targetVariable in excludedVars so we don't try to
+                        // create it again as an ingredient at a lower level of recursion. Then
+                        // call planVariable recursively.
+                        excludedVars.push_back(targetVariable);
+                        haveIngredient = planVariable(fieldSetFieldNames, neededVars, ingredient,
+                                                    needsTLAD, excludedVars, plan);
+                        // Remove the ingredient from excludedVars since we're back to this level.
+                        excludedVars -= targetVariable;
+                    }
                 }
-                oops::Log::debug() << "ingredient " << ingredient <<
-                    (haveIngredient ? " is" : " is not") << " available." << std::endl;
+                oops::Log::debug() << "ingredient " << ingredient << " for recipe "
+                     << recipe->name() << (haveIngredient ? " is" : " is not") << " available."
+                     << std::endl;
                 if (!haveIngredient) break;  // Missing an ingredient. Don't check the others.
             }
             if (haveIngredient) {
                 oops::Log::debug() <<
-                    "All ingredients are in the fieldset. Adding recipe to recipeExecutionPlan." <<
-                    std::endl;
+                    "All ingredients are in the fieldset. Adding recipe " << recipe->name() <<
+                    " to recipeExecutionPlan." << std::endl;
                 plan.push_back(std::pair<std::string, const std::unique_ptr<RecipeBase> &>
                                                                     ({targetVariable, recipe}));
                 variablePlanned = true;
                 neededVars -= targetVariable;
                 break;  // Found a viable recipe. Don't need to check any other potential recipes.
             } else {
-                oops::Log::debug() << "Do not have all the ingredients for this recipe." <<
-                    std::endl;
+                oops::Log::debug() <<
+                    "Do not have and cannot create all the ingredients for recipe " <<
+                    recipe->name() << std::endl;
             }
         }
     } else {
@@ -383,11 +424,12 @@ bool Vader::planVariable(atlas::FieldSet & afieldset,
  * \param[in]     fieldname  Name of the field to be created or checked for dims
  * \param[in]     fs         Functionspace for creating the new field
  * \param[in]     nlevels    Number of levels for creating the new field
- * \param[in]     init       Initialize field with zeros? (default: false)
+ * \param[in]     initZero   Initialize field with zeros? (default: false)
  */
 void checkOrAddField(atlas::FieldSet & afieldset, const std::string & fieldname,
                      const atlas::FunctionSpace & fs, size_t nlevels,
-                     bool init = false) {
+                     bool initZero = false) {
+    oops::Log::trace() << "entering checkOrAddField for Field: " << fieldname << std::endl;
     if (afieldset.has(fieldname))
     {
         // Verify the number of levels in the Field is enough for the recipe
@@ -397,7 +439,7 @@ void checkOrAddField(atlas::FieldSet & afieldset, const std::string & fieldname,
         atlas::Field newField = fs.createField<double>(
                     atlas::option::name(fieldname) |
                     atlas::option::levels(nlevels));
-        if (init) {
+        if (initZero) {
             // A new field for adjoint needs to be zeroed out
             auto view = atlas::array::make_view<double, 2>(newField);
             for (int j0 = 0; j0 < newField.shape(0); ++j0) {
@@ -408,6 +450,7 @@ void checkOrAddField(atlas::FieldSet & afieldset, const std::string & fieldname,
         }
         afieldset.add(newField);
     }
+    oops::Log::trace() << "leaving checkOrAddField" << std::endl;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -419,13 +462,12 @@ void checkOrAddField(atlas::FieldSet & afieldset, const std::string & fieldname,
 * are performed on the passed FieldSet to ensure it has the ingredients, and the
 * product Field is created and added if not already present.
 *
-* \param[in,out] afieldset A fieldset containg both populated and unpopulated fields
+* \param[in,out] afieldset A fieldset contaning only populated ingredient fields
 * \param[in] recipeExecutionPlan ordered list of recipes that are to be exectued
 *
 */
 void Vader::executePlanNL(atlas::FieldSet & afieldset,
-            const std::vector<std::pair<std::string,
-                              const std::unique_ptr<RecipeBase> &>> & recipeExecutionPlan) const {
+                          const vaderPlanType & recipeExecutionPlan) const {
     oops::Log::trace() << "entering Vader::executePlanNL" <<  std::endl;
     for (auto varPlan : recipeExecutionPlan) {
         oops::Log::debug() << "Attempting to calculate variable " << varPlan.first <<
@@ -452,13 +494,12 @@ void Vader::executePlanNL(atlas::FieldSet & afieldset,
 * recipes specified in the recipeExecutionPlan that is passed in. (The recipeExecutionPlan is
 * created through calls to planVariable.)
 *
-* \param[in,out] afieldset A fieldset containg both populated and unpopulated fields
+* \param[in,out] afieldset A fieldset contaning only populated ingredient fields
 * \param[in] recipeExecutionPlan ordered list of recipes that are to be exectued
 *
 */
 void Vader::executePlanTL(atlas::FieldSet & afieldset,
-            const std::vector<std::pair<std::string,
-                              const std::unique_ptr<RecipeBase> &>> & recipeExecutionPlan) const {
+                          const vaderPlanType & recipeExecutionPlan) const {
     oops::Log::trace() << "entering Vader::executePlanTL" <<  std::endl;
     // We must get the recipes specified in the recipeExecutionPlan out of the cookbook,
     // where they live
@@ -488,13 +529,12 @@ void Vader::executePlanTL(atlas::FieldSet & afieldset,
 * recipes specified in the recipeExecutionPlan that is passed in. (The recipeExecutionPlan is
 * created through calls to planVariable.)
 *
-* \param[in,out] afieldset A fieldset containg both populated and unpopulated fields
+* \param[in,out] afieldset A fieldset contaning only populated ingredient fields
 * \param[in] recipeExecutionPlan ordered list of recipes that are to be exectued
 *
 */
 void Vader::executePlanAD(atlas::FieldSet & afieldset,
-            const std::vector<std::pair<std::string,
-                              const std::unique_ptr<RecipeBase> &>> & recipeExecutionPlan) const {
+                          const vaderPlanType & recipeExecutionPlan) const {
     oops::Log::trace() << "entering Vader::executePlanAD" <<  std::endl;
     // We must get the recipes specified in the recipeExecutionPlan out of the cookbook,
     // where they live

@@ -13,7 +13,7 @@
 #include "atlas/field/Field.h"
 #include "atlas/util/Metadata.h"
 #include "oops/util/Logger.h"
-#include "vader/recipes/TempToPTemp.h"
+#include "vader/recipes/AirPotentialTemperature.h"
 #include "vader/vadervariables.h"
 
 namespace vader
@@ -21,57 +21,60 @@ namespace vader
 // ------------------------------------------------------------------------------------------------
 
 // Static attribute initialization
-const char TempToPTemp::Name[] = "TempToPTemp";
-const std::vector<std::string> TempToPTemp::Ingredients = {VV_TS, VV_PS};
+const char AirPotentialTemperature_A::Name[] = "AirPotentialTemperature_A";
+const std::vector<std::string> AirPotentialTemperature_A::Ingredients = {VV_TS, VV_PS};
 const double default_kappa = 0.2857;
 const double p0_not_in_params = -1.0;
 const double default_Pa_p0 = 100000.0;
 const double default_hPa_p0 = 1000.0;
 
 // Register the maker
-static RecipeMaker<TempToPTemp> makerTempToPTemp_(TempToPTemp::Name);
+static RecipeMaker<AirPotentialTemperature_A> makerTempToPTemp_(AirPotentialTemperature_A::Name);
 
-TempToPTemp::TempToPTemp(const Parameters_ &params) :
+AirPotentialTemperature_A::AirPotentialTemperature_A(const Parameters_ &params) :
     p0_{params.p0.value()},
     kappa_{params.kappa.value()}
 {
-    oops::Log::trace() << "TempToPTemp::TempToPTemp(params)" << std::endl;
-    oops::Log::debug() << "TempToPTemp params p0 value: " << params.p0.value()
+    oops::Log::trace() << "AirPotentialTemperature_A::AirPotentialTemperature_A(params)"
         << std::endl;
-    oops::Log::debug() << "TempToPTemp params kappa value: "
+    oops::Log::debug() << "AirPotentialTemperature_A params p0 value: " << params.p0.value()
+        << std::endl;
+    oops::Log::debug() << "AirPotentialTemperature_A params kappa value: "
         << params.kappa.value() << std::endl;
 }
 
-std::string TempToPTemp::name() const
+std::string AirPotentialTemperature_A::name() const
 {
-    return TempToPTemp::Name;
+    return AirPotentialTemperature_A::Name;
 }
 
-std::string TempToPTemp::product() const
+std::string AirPotentialTemperature_A::product() const
 {
+    // TODO(vahl): update this to air_potential_temperature (models will also need to adapt)
     return "potential_temperature";
 }
 
-std::vector<std::string> TempToPTemp::ingredients() const
+std::vector<std::string> AirPotentialTemperature_A::ingredients() const
 {
-    return TempToPTemp::Ingredients;
+    return AirPotentialTemperature_A::Ingredients;
 }
 
-size_t TempToPTemp::productLevels(const atlas::FieldSet & afieldset) const
+size_t AirPotentialTemperature_A::productLevels(const atlas::FieldSet & afieldset) const
 {
     return afieldset.field(VV_TS).levels();
 }
 
-atlas::FunctionSpace TempToPTemp::productFunctionSpace(const atlas::FieldSet & afieldset) const
+atlas::FunctionSpace AirPotentialTemperature_A::productFunctionSpace
+                                                (const atlas::FieldSet & afieldset) const
 {
     return afieldset.field(VV_TS).functionspace();
 }
 
-bool TempToPTemp::executeNL(atlas::FieldSet & afieldset)
+bool AirPotentialTemperature_A::executeNL(atlas::FieldSet & afieldset)
 {
     bool potential_temperature_filled = false;
 
-    oops::Log::trace() << "entering TempToPTemp::executeNL function"
+    oops::Log::trace() << "entering AirPotentialTemperature_A::executeNL function"
         << std::endl;
 
     atlas::Field temperature = afieldset.field(VV_TS);
@@ -83,7 +86,7 @@ bool TempToPTemp::executeNL(atlas::FieldSet & afieldset)
     surface_pressure.metadata().get("units", ps_units);
     if (p0_ == p0_not_in_params)
     {
-        oops::Log::debug() << "TempToPTemp: p0 not in parameters. Deducing "
+        oops::Log::debug() << "AirPotentialTemperature_A: p0 not in parameters. Deducing "
             "value from pressure units." << std::endl;
         if (ps_units == "Pa")
         {
@@ -92,14 +95,15 @@ bool TempToPTemp::executeNL(atlas::FieldSet & afieldset)
             p0_ = default_hPa_p0;
         } else {
             oops::Log::error() <<
-              "TempToPTemp::execute failed because p0 could not be determined." << std::endl;
+              "AirPotentialTemperature_A::execute failed because p0 could not be determined."
+                << std::endl;
             return false;
         }
     }
 
-    oops::Log::debug() << "TempToPTemp::execute: p0 value: " << p0_ <<
+    oops::Log::debug() << "AirPotentialTemperature_A::execute: p0 value: " << p0_ <<
         std::endl;
-    oops::Log::debug() << "TempToPTemp::execute: kappa value: " << kappa_ <<
+    oops::Log::debug() << "AirPotentialTemperature_A::execute: kappa value: " << kappa_ <<
     std::endl;
 
     auto temperature_view = atlas::array::make_view<double, 2>(temperature);
@@ -118,7 +122,7 @@ bool TempToPTemp::executeNL(atlas::FieldSet & afieldset)
 
     potential_temperature_filled = true;
 
-    oops::Log::trace() << "leaving TempToPTemp::executeNL function" << std::endl;
+    oops::Log::trace() << "leaving AirPotentialTemperature_A::executeNL function" << std::endl;
 
     return potential_temperature_filled;
 }

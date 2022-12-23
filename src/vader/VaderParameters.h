@@ -16,10 +16,10 @@
 #include "RecipeBase.h"
 
 // Recipe headers
+#include "recipes/AirPotentialTemperature.h"
+#include "recipes/AirPressureThickness.h"
 #include "recipes/AirTemperature.h"
-#include "recipes/PressureToDelP.h"
-#include "recipes/TempToPTemp.h"
-#include "recipes/TempToVTemp.h"
+#include "recipes/AirVirtualTemperature.h"
 
 namespace vader {
 
@@ -35,9 +35,9 @@ class VaderParameters : public oops::Parameters {
   oops::Parameter<std::map<std::string, std::vector<std::string>>> cookbook{
     "cookbook",
     // Default VADER cookbook definition
-    {{"potential_temperature",  {TempToPTemp::Name}},
-     {"virtual_temperature",    {TempToVTemp::Name}},
-     {"air_temperature",        {AirTemperature_A::Name}}
+    {{"potential_temperature",  {AirPotentialTemperature_A::Name}},
+     {"virtual_temperature",    {AirVirtualTemperature_A::Name}},
+     {"air_temperature",        {AirTemperature_A::Name, AirTemperature_B::Name}}
     //  {"air_pressure_thickness", {PressureToDelP::Name}}
     },
     this

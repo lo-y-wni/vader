@@ -18,8 +18,8 @@
 
 namespace vader {
 
-class TempToVTempParameters : public RecipeParametersBase {
-  OOPS_CONCRETE_PARAMETERS(TempToVTempParameters, RecipeParametersBase)
+class AirVirtualTemperature_AParameters : public RecipeParametersBase {
+  OOPS_CONCRETE_PARAMETERS(AirVirtualTemperature_AParameters, RecipeParametersBase)
 
  public:
   oops::RequiredParameter<std::string> name{
@@ -29,21 +29,21 @@ class TempToVTempParameters : public RecipeParametersBase {
 };
 
 // ------------------------------------------------------------------------------------------------
-/*! \brief TempToVTemp class defines a recipe for virtual temperature
+/*! \brief AirVirtualTemperature_A class defines a recipe for virtual temperature
  *
  *  \details This instantiation of RecipeBase produces virtual temperature
  *           using temperature and specific humidity as inputs. The parameter
  *           epsilon can be specified via the constructor configuration.
  *           If it is not, the code will provide a default value.
  */
-class TempToVTemp : public RecipeBase {
+class AirVirtualTemperature_A : public RecipeBase {
  public:
     static const char Name[];
     static const std::vector<std::string> Ingredients;
 
-    typedef TempToVTempParameters Parameters_;
+    typedef AirVirtualTemperature_AParameters Parameters_;
 
-    explicit TempToVTemp(const Parameters_ &);
+    explicit AirVirtualTemperature_A(const Parameters_ &);
 
     // Recipe base class overrides
     std::string name() const override;
