@@ -19,6 +19,10 @@ vader/recipes/AirVirtualTemperature.h
 vader/recipes/AirVirtualTemperature_A.cc
 vader/recipes/TestRecipes.h
 vader/recipes/TestRecipes.cc
+vader/recipes/uwind_at_10m.h
+vader/recipes/uwind_at_10m_A.cc
+vader/recipes/vwind_at_10m.h
+vader/recipes/vwind_at_10m_A.cc
 mo/common_varchange.h
 mo/common_varchange.cc
 mo/common_linearvarchange.h

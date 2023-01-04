@@ -1,11 +1,16 @@
 list( APPEND vader_testinput
 testinput/recipe_AirTemperature_A.yaml
 testinput/vader_AirTemperature_A.yaml
+testinput/recipe_uwind_at_10m_A.yaml
+testinput/vader_uwind_at_10m_A.yaml
+testinput/recipe_vwind_at_10m_A.yaml
+testinput/vader_vwind_at_10m_A.yaml
 testinput/planvariable.yaml
 )
 
 list( APPEND vader_testdata
   testdata/AirTemperature_A.nc
+  testdata/wind_at_10m_A.nc
 )
 
 # Create data directory for test input and symlink all files
@@ -39,10 +44,30 @@ ecbuild_add_test( TARGET  test_vader_recipe_AirTemperature_A
                   ARGS    "testinput/recipe_AirTemperature_A.yaml"
                   LIBS    vader )
 
+ecbuild_add_test( TARGET  test_vader_recipe_uwind_at_10m_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
+                  ARGS    "testinput/recipe_uwind_at_10m_A.yaml"
+                  LIBS    vader )
+
+ecbuild_add_test( TARGET  test_vader_recipe_vwind_at_10m_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
+                  ARGS    "testinput/recipe_vwind_at_10m_A.yaml"
+                  LIBS    vader )
+
 # Test vader calling recipes
 ecbuild_add_test( TARGET  test_vader_vader_AirTemperature_A
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_vader.x
                   ARGS    "testinput/vader_AirTemperature_A.yaml"
+                  LIBS    vader )
+
+ecbuild_add_test( TARGET  test_vader_vader_uwind_at_10m_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_vader.x
+                  ARGS    "testinput/vader_uwind_at_10m_A.yaml"
+                  LIBS    vader )
+
+ecbuild_add_test( TARGET  test_vader_vader_vwind_at_10m_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_vader.x
+                  ARGS    "testinput/vader_vwind_at_10m_A.yaml"
                   LIBS    vader )
 
 # Test planVariable algorithm

@@ -20,6 +20,8 @@
 #include "recipes/AirPressureThickness.h"
 #include "recipes/AirTemperature.h"
 #include "recipes/AirVirtualTemperature.h"
+#include "recipes/uwind_at_10m.h"
+#include "recipes/vwind_at_10m.h"
 
 namespace vader {
 
@@ -37,7 +39,9 @@ class VaderParameters : public oops::Parameters {
     // Default VADER cookbook definition
     {{"potential_temperature",  {AirPotentialTemperature_A::Name}},
      {"virtual_temperature",    {AirVirtualTemperature_A::Name}},
-     {"air_temperature",        {AirTemperature_A::Name, AirTemperature_B::Name}}
+     {"air_temperature",        {AirTemperature_A::Name, AirTemperature_B::Name}},
+     {"uwind_at_10m",           {uwind_at_10m_A::Name}},
+     {"vwind_at_10m",           {vwind_at_10m_A::Name}}
     //  {"air_pressure_thickness", {PressureToDelP::Name}}
     },
     this
