@@ -383,7 +383,7 @@ void evalHydrostaticPressureTL(atlas::FieldSet & incFlds,
   //     (vertical regression matrix bin_m)
   // Since each matrix is square we can easily infer the bin index from the row index
   // First index of vertRegView is bin_index * number of levels + level index,
-  //     the second is number of levels associated with matrix column.
+  // the second is number of levels associated with matrix column.
   const auto vertRegView = make_view<const double, 2>(augStateFlds["vertical_regression_matrices"]);
 
   auto hPIncView = make_view<double, 2>(incFlds["hydrostatic_pressure_levels"]);
@@ -392,16 +392,13 @@ void evalHydrostaticPressureTL(atlas::FieldSet & incFlds,
   atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
-    for (atlas::idx_t b = 0; b < nBins; ++b) {
-      if (interpWeightView(jn , b) > __FLT_EPSILON__) {
-        for (atlas::idx_t jl = 0; jl < levels; ++jl) {
-          hPIncView(jn, jl) = uPIncView(jn, jl);
-          for (atlas::idx_t jl2 = 0; jl2 < levels; ++jl2) {
-            hPIncView(jn, jl) +=
-                                 interpWeightView(jn, b) *
-                                 vertRegView(b * levels + jl, jl2) *
-                                 gPIncView(jn, jl2);
-          }
+    for (atlas::idx_t jl = 0; jl < levels; ++jl) {
+      hPIncView(jn, jl) = uPIncView(jn, jl);
+      for (atlas::idx_t b = 0; b < nBins; ++b) {
+        for (atlas::idx_t jl2 = 0; jl2 < levels; ++jl2) {
+          hPIncView(jn, jl) += interpWeightView(jn, b) *
+                               vertRegView(b * levels + jl, jl2) *
+                               gPIncView(jn, jl2);
         }
       }
     }
@@ -442,19 +439,16 @@ void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
      std::pow(pView(jn, levels-1) / pView(jn, levels), constants::rd_over_cp - 1.0);
     hPHatView(jn, levels) = 0.0;
 
-    for (atlas::idx_t b = nBins -1; b >= 0; --b) {
-      if (interpWeightView(jn , b) > __FLT_EPSILON__) {
-        for (atlas::idx_t jl = levels - 1; jl >= 0; --jl) {
-          for (atlas::idx_t jl2 = levels - 1; jl2 >= 0; --jl2) {
-            gpHatView(jn, jl2) +=
-                                  interpWeightView(jn, b) *
-                                  vertRegView(b * levels + jl, jl2) *
-                                  hPHatView(jn, jl);
-          }
-          uPHatView(jn, jl) += hPHatView(jn, jl);
-          hPHatView(jn, jl) = 0.0;
+    for (atlas::idx_t jl = levels - 1; jl >= 0; --jl) {
+      for (atlas::idx_t b = nBins -1; b >= 0; --b) {
+        for (atlas::idx_t jl2 = levels - 1; jl2 >= 0; --jl2) {
+          gpHatView(jn, jl2) += interpWeightView(jn, b) *
+                                vertRegView(b * levels + jl, jl2) *
+                                hPHatView(jn, jl);
         }
       }
+      uPHatView(jn, jl) += hPHatView(jn, jl);
+      hPHatView(jn, jl) = 0.0;
     }
   }
 }
