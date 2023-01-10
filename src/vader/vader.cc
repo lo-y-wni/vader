@@ -561,4 +561,32 @@ void Vader::executePlanAD(atlas::FieldSet & afieldset,
     }
     oops::Log::trace() << "leaving Vader::executePlanAD" <<  std::endl;
 }
+// ------------------------------------------------------------------------------------------------
+/*! \brief print
+*
+* \details **print** this method prints the current Vader cookbook in yaml form to an osstream
+*
+* \param[in] os the stream to print to
+*
+*/
+void Vader::print(std::ostream & os) const {
+    oops::Log::trace() << "entering Vader::print" <<  std::endl;
+    std::string cookbookString("VADER Cookbook\ncookbook:\n");
+    for (const auto & cbMember : cookbook_) {
+        cookbookString += "  ";  // 2 space indent for yaml
+        bool firstRecipe = true;
+        cookbookString += cbMember.first + ": [";
+        for (const auto & recipe : cbMember.second) {
+            if (firstRecipe) {
+                firstRecipe = false;
+            } else {
+                cookbookString += ",";
+            }
+            cookbookString += recipe->name();
+        }
+        cookbookString += "]\n";
+    }
+    os << cookbookString;
+    oops::Log::trace() << "leaving Vader::print" <<  std::endl;
+}
 }  // namespace vader

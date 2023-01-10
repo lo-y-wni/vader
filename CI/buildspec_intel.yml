@@ -103,7 +103,7 @@ phases:
       - cp ../DartConfiguration.tcl .
       - sed -i 's/vader-bundle/vader-bundle\/vader/' DartConfiguration.tcl
       - sed -i 's/build_container/build_container\/vader/' DartConfiguration.tcl
-      - make -j4
+      - make -j3
 
       - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
         then export BUILD_STATUS="1";

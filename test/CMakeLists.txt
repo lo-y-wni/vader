@@ -1,4 +1,5 @@
 list( APPEND vader_testinput
+testinput/empty.yaml
 testinput/recipe_AirTemperature_A.yaml
 testinput/vader_AirTemperature_A.yaml
 testinput/recipe_uwind_at_10m_A.yaml
@@ -74,4 +75,10 @@ ecbuild_add_test( TARGET  test_vader_vader_vwind_at_10m_A
 ecbuild_add_test( TARGET  test_vader_planvariable
                   SOURCES vader/TestPlanVariable.cc
                   ARGS    "testinput/planvariable.yaml"
+                  LIBS    vader )
+
+# Test print (Prints default Vader cookbook, in yaml form, to log)
+ecbuild_add_test( TARGET  test_vader_print_cookbook
+                  SOURCES vader/TestPrintVader.cc
+                  ARGS    "testinput/empty.yaml"
                   LIBS    vader )

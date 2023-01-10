@@ -15,6 +15,7 @@
 
 #include "atlas/field/FieldSet.h"
 #include "oops/base/Variables.h"
+#include "oops/util/Printable.h"
 #include "RecipeBase.h"
 #include "VaderParameters.h"
 
@@ -39,7 +40,7 @@ namespace vader {
  *           the same output variable.
  */
 
-class Vader {
+class Vader  : public util::Printable {
  public:
     static const std::string classname() {return "Vader";}
     typedef  std::vector<std::pair<std::string,
@@ -80,6 +81,7 @@ class Vader {
     void executePlanNL(atlas::FieldSet &, const vaderPlanType &) const;
     void executePlanTL(atlas::FieldSet &, const vaderPlanType &) const;
     void executePlanAD(atlas::FieldSet &, const vaderPlanType &) const;
+    void print(std::ostream &) const;
 };
 
 }  // namespace vader
