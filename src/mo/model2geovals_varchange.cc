@@ -79,13 +79,13 @@ bool evalRatioToMt(atlas::FieldSet & fields, const std::vector<std::string> & va
   const auto ds_m_t  = make_view<const double, 2>(fields[vars[1]]);
   auto ds_tfield  = make_view<double, 2>(fields[vars[2]]);
 
-  auto fspace = fields[vars[1]].functionspace();
+  auto fspace = fields[vars[2]].functionspace();
 
   auto evaluateRatioToMt = [&] (idx_t i, idx_t j) {
     ds_tfield(i, j) = ds_m_x(i, j) / ds_m_t(i, j);
   };
 
-  auto conf = Config("levels", fields[1].levels()) |
+  auto conf = Config("levels", fields[vars[2]].levels()) |
               Config("include_halo", true);
 
   functions::parallelFor(fspace, evaluateRatioToMt, conf);
