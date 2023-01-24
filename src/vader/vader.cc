@@ -59,12 +59,20 @@ void Vader::createCookbook(std::map<std::string, std::vector<std::string>> defin
     oops::Log::trace() << "leaving Vader::createCookbook" << std::endl;
 }
 // ------------------------------------------------------------------------------------------------
-Vader::Vader(const VaderParameters & parameters) {
+Vader::Vader(const VaderParameters & parameters, const cookbookConfigType & clientCookbook) {
     util::Timer timer(classname(), "Vader");
-    std::map<std::string, std::vector<std::string>> definition =
-        parameters.cookbook.value();
     oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
     oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
+
+    // Allow the client to provide their own cookbook configuration
+    std::shared_ptr<cookbookConfigType> definition;
+    if (clientCookbook.empty()) {
+        definition.reset(new cookbookConfigType(parameters.cookbook.value()));
+        oops::Log::debug() << "Vader::Vader getting cookbook config from parameters" << std::endl;
+    } else {
+        definition.reset(new cookbookConfigType(clientCookbook));
+        oops::Log::debug() << "Vader::Vader getting cookbook config from client" << std::endl;
+    }
 
     // Vader is designed to function without parameters. So VaderParameters
     // should not have any RequiredParameters.
@@ -74,9 +82,9 @@ Vader::Vader(const VaderParameters & parameters) {
     // oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
     //
     if (parameters.recipeParams.value() == boost::none) {
-        createCookbook(definition);
+        createCookbook(*definition);
     } else {
-        createCookbook(definition, *parameters.recipeParams.value());
+        createCookbook(*definition, *parameters.recipeParams.value());
     }
 }
 // ------------------------------------------------------------------------------------------------
@@ -170,10 +178,10 @@ oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
     return varsProduced;
 }
 // ------------------------------------------------------------------------------------------------
-/*! \brief Change Variable-Trajectory 
+/*! \brief Change Variable-Trajectory
 *
 * \details **changeVarTraj** is called externally to set up the trajectory for subsequent calls to
-* vader's changeVarTL and changeVarAD methods. (The corresponding method used to be called 
+* vader's changeVarTL and changeVarAD methods. (The corresponding method used to be called
 * 'setTrajectory' in OOPS.) It performs the same non-linear variable change logic
 * as the changeVar method, but also saves the result in Vader's trajectory_ property.
 *
@@ -236,7 +244,7 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
     return varsProduced;
 }
 // ------------------------------------------------------------------------------------------------
-/*! \brief Change Variable Tangent Linear 
+/*! \brief Change Variable Tangent Linear
 *
 * \details **changeVarTL** is called externally to perform the tangent linear (TL) variable change.
 * Note that unlike changeVar and changeVarTraj, the vader planVariable algorithm to determine which
@@ -262,12 +270,12 @@ oops::Variables Vader::changeVarTL(atlas::FieldSet & afieldset,
     return varsPopulated;
 }
 // ------------------------------------------------------------------------------------------------
-/*! \brief Change Variable Adjoint 
+/*! \brief Change Variable Adjoint
 *
 * \details **changeVarAD** is called externally to perform the adjoint (AD) variable change.
 * Note that unlike changeVar and changeVarTraj, the vader planVariable algorithm to determine which
 * recipes to call is not invoked. Instead, the same recipe plan determined during changeVarTraj is
-* executed, but in reverse order, calling the AD methods of the planned recipes. 
+* executed, but in reverse order, calling the AD methods of the planned recipes.
 * Also note that varsToAdjoint here should be the SAME VARIABLES that are passed to changeVarTraj
 * and changeVarTL in the 'neededVars' parameter. But in this case these variables should already be
 * populated in afieldset. VADER will perform the adjoint methods of the recipes that produce these

@@ -45,7 +45,9 @@ class Vader  : public util::Printable {
     static const std::string classname() {return "Vader";}
     typedef  std::vector<std::pair<std::string,
                                    const std::unique_ptr<RecipeBase> & >> vaderPlanType;
-    explicit Vader(const VaderParameters & parameters);
+    typedef std::map<std::string, std::vector<std::string>> cookbookConfigType;
+    explicit Vader(const VaderParameters & parameters,
+                   const cookbookConfigType & clientCookbook = {});
     Vader(const Vader &) = delete;
     Vader& operator=(const Vader &) = delete;
     ~Vader();
