@@ -64,16 +64,6 @@ Vader::Vader(const VaderParameters & parameters, const cookbookConfigType & clie
     oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
     oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
 
-    // Allow the client to provide their own cookbook configuration
-    std::shared_ptr<cookbookConfigType> definition;
-    if (clientCookbook.empty()) {
-        definition.reset(new cookbookConfigType(parameters.cookbook.value()));
-        oops::Log::debug() << "Vader::Vader getting cookbook config from parameters" << std::endl;
-    } else {
-        definition.reset(new cookbookConfigType(clientCookbook));
-        oops::Log::debug() << "Vader::Vader getting cookbook config from client" << std::endl;
-    }
-
     // Vader is designed to function without parameters. So VaderParameters
     // should not have any RequiredParameters.
     //
@@ -82,9 +72,9 @@ Vader::Vader(const VaderParameters & parameters, const cookbookConfigType & clie
     // oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
     //
     if (parameters.recipeParams.value() == boost::none) {
-        createCookbook(*definition);
+        createCookbook(clientCookbook);
     } else {
-        createCookbook(*definition, *parameters.recipeParams.value());
+        createCookbook(clientCookbook, *parameters.recipeParams.value());
     }
 }
 // ------------------------------------------------------------------------------------------------

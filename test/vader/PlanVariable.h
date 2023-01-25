@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -27,6 +28,8 @@ class PlanVarTestParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(PlanVarTestParameters, Parameters)
 
  public:
+  oops::RequiredParameter<std::map<std::string, std::vector<std::string>>> cookbook{
+    "cookbook", "Vader cookbook to use for test", this};
   oops::RequiredParameter<std::vector<std::string>> ingredients{
     "ingredients", "list of all available ingredients", this};
   oops::RequiredParameter<std::vector<std::string>> products{
@@ -66,7 +69,7 @@ void testPlanVariable() {
 
   // loop through all tests
   for (const auto & param : params.tests.value()) {
-    vader::Vader vader(params.vader);
+    vader::Vader vader(params.vader, param.cookbook);
     const std::vector<std::string> targetVars = param.products;
     const std::vector<std::string> ingredientVars = param.ingredients;
     bool planTLAD = param.planTLAD;
