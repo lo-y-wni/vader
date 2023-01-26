@@ -17,6 +17,8 @@ vader/recipes/AirTemperature_A.cc
 vader/recipes/AirTemperature_B.cc
 vader/recipes/AirVirtualTemperature.h
 vader/recipes/AirVirtualTemperature_A.cc
+vader/recipes/SurfaceAirPressure.h
+vader/recipes/SurfaceAirPressure_A.cc
 vader/recipes/TestRecipes.h
 vader/recipes/TestRecipes.cc
 vader/recipes/uwind_at_10m.h
