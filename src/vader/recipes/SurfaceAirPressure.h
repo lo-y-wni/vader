@@ -44,7 +44,6 @@ class SurfaceAirPressure_A : public RecipeBase
 
     typedef SurfaceAirPressure_AParameters Parameters_;
 
-    SurfaceAirPressure_A();
     explicit SurfaceAirPressure_A(const Parameters_ &);
 
     std::string name() const override;

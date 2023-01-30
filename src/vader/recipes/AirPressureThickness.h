@@ -17,6 +17,8 @@
 namespace vader
 {
 
+// -------------------------------------------------------------------------------------------------
+
 class AirPressureThickness_AParameters : public RecipeParametersBase {
   OOPS_CONCRETE_PARAMETERS(AirPressureThickness_AParameters, RecipeParametersBase)
 
@@ -26,9 +28,6 @@ class AirPressureThickness_AParameters : public RecipeParametersBase {
      this};
      // No parameters for this recipe currently
 };
-
-// ------------------------------------------------------------------------------------------------
-/// Recipe base class
 
 class AirPressureThickness_A : public RecipeBase
 {
@@ -49,4 +48,8 @@ class AirPressureThickness_A : public RecipeBase
 
  private:
 };
+
+// -------------------------------------------------------------------------------------------------
+
 }  // namespace vader
+

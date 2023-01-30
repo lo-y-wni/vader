@@ -27,13 +27,6 @@ static RecipeMaker<SurfaceAirPressure_A> makerSurfaceAirPressure_A_(SurfaceAirPr
 
 // -------------------------------------------------------------------------------------------------
 
-SurfaceAirPressure_A::SurfaceAirPressure_A() {
-    oops::Log::trace() << "SurfaceAirPressure_A::SurfaceAirPressure_A() Starting" << std::endl;
-    oops::Log::trace() << "SurfaceAirPressure_A::SurfaceAirPressure_A() Done" << std::endl;
-}
-
-// -------------------------------------------------------------------------------------------------
-
 SurfaceAirPressure_A::SurfaceAirPressure_A(const SurfaceAirPressure_AParameters &params) {
     oops::Log::trace() << "SurfaceAirPressure_A::SurfaceAirPressure_A Starting" << std::endl;
     oops::Log::trace() << "SurfaceAirPressure_A::SurfaceAirPressure_A Done" << std::endl;
@@ -84,6 +77,25 @@ bool SurfaceAirPressure_A::executeNL(atlas::FieldSet & afieldset) {
     std::string delp_units, ps_units, prsi_units;
     delp.metadata().get("units", delp_units);
     ps.metadata().get("units", ps_units);
+
+    // Transfer nLevels from delp to ps
+    ASSERT_MSG(delp.metadata().has("nLevels"), "In Vader::SurfacePressure_A::executeNL "
+               "all fields passed to Vader must contain nLevels in their metadata");
+    int nLevels;
+    delp.metadata().get("nLevels", nLevels);
+    ps.metadata().set("nLevels", nLevels);
+
+    // Pass through ak/bk if present
+    if (delp.metadata().has("ak")) {
+        std::vector<double> ak;
+        delp.metadata().get("ak", ak);
+        ps.metadata().set("ak", ak);
+    }
+    if (delp.metadata().has("bk")) {
+        std::vector<double> bk;
+        delp.metadata().get("bk", bk);
+        ps.metadata().set("bk", bk);
+    }
 
     // Assert that the units match
     ASSERT_MSG(ps_units == delp_units, "In Vader::SurfaceAirPressure_A::executeNL the units for "
