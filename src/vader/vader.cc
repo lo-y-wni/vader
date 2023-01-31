@@ -345,10 +345,8 @@ bool Vader::planVariable(const std::vector<std::string> & fieldSetFieldNames,
             }
             // Check that this recipe is not already in the plan to prevent
             // infinite recursion.
-            bool recipeAlreadyPlanned = false;
             for (const auto planRecipe : plan) {
                 if (planRecipe.second->name() == recipe->name()) {
-                    recipeAlreadyPlanned = true;
                     break;
                 }
             }
@@ -425,7 +423,7 @@ bool Vader::planVariable(const std::vector<std::string> & fieldSetFieldNames,
  * \param[in]     initZero   Initialize field with zeros? (default: false)
  */
 void checkOrAddField(atlas::FieldSet & afieldset, const std::string & fieldname,
-                     const atlas::FunctionSpace & fs, size_t nlevels,
+                     const atlas::FunctionSpace & fs, int nlevels,
                      bool initZero = false) {
     oops::Log::trace() << "entering checkOrAddField for Field: " << fieldname << std::endl;
     if (afieldset.has(fieldname))

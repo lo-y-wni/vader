@@ -66,7 +66,7 @@ void getMIOFields(atlas::FieldSet & augStateFlds) {
 
   for  (atlas::idx_t jn = 0; jn < augStateFlds["rht"].shape(0); ++jn) {
     for (int jl = 0; jl < augStateFlds["rht"].levels(); ++jl) {
-      if (jl < constants::mioLevs) {
+      if (jl < static_cast<int>(constants::mioLevs)) {
         std::size_t ibin = (rhtView(jn, jl) > 1.0) ? constants::mioBins - 1 :
                            static_cast<std::size_t>(floor(rhtView(jn, jl) / constants::rHTBin));
 
@@ -103,8 +103,8 @@ Eigen::MatrixXd createMIOCoeff(const std::string mioFileName,
                       static_cast<int>(constants::mioLevs),
                       valuesvec[0]);
 
-    for (int j = 0; j < constants::mioLevs; ++j) {
-        for (int i = 0; i < constants::mioBins; ++i) {
+    for (int j = 0; j < static_cast<int>(constants::mioLevs); ++j) {
+        for (int i = 0; i < static_cast<int>(constants::mioBins); ++i) {
             // Fortran returns column major order, but C++ needs row major
             mioCoeff(j, i) = valuesvec[i * constants::mioLevs+j];
         }
