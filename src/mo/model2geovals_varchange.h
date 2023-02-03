@@ -140,12 +140,12 @@ bool evalAirTemperature(atlas::FieldSet & fields);
 bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields);
 
 
-/// \brief function to evaluate 'param_a' and 'param_b';
-/// 'param_a' and 'param_b' are  two 'derived' fields used to evaluate
+/// \brief function to evaluate 'surf_param_a' and 'surf_param_b';
+/// 'surf_param_a' and 'surf_param_b' are  two 'derived' fields used to evaluate
 /// the background pressure at the observation height
 ///
-///          param_a = f(height_levels[0], t_msh)
-///          param_b = f(t_msh, pressure_level_minus_one[0])
+///          surf_param_a = f(height_levels[0], t_msh)
+///          surf_param_b = f(t_msh, pressure_level_minus_one[0])
 /// where ...
 ///     height_levels[0] = model surface height
 ///            t_msh = temperature at model surface height
