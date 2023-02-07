@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "atlas/field.h"
+#include "atlas/functionspace.h"
+
 #include "mo/constants.h"
 #include "mo/control2analysis_linearvarchange.h"
 #include "mo/control2analysis_varchange.h"
@@ -258,8 +261,6 @@ void evalAirTemperatureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & aug
         thetaView(jn, lvlsm1);
     exnerTopHatVal = 0.0;
 
-
-
     for (atlas::idx_t jl = lvls - 2; jl >= 0; --jl) {
       thetaHatView(jn, jl) += (
         (hView(jn, jl) - hlView(jn, jl)) * exnerLevelsView(jn, jl + 1) +
@@ -411,7 +412,7 @@ void evalHydrostaticPressureTL(atlas::FieldSet & incFlds,
 
 void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
                                const atlas::FieldSet & augStateFlds) {
-  auto gpHatView = make_view<double, 2>(hatFlds["geostrophic_pressure_levels_minus_one"]);
+  auto gPHatView = make_view<double, 2>(hatFlds["geostrophic_pressure_levels_minus_one"]);
   auto uPHatView = make_view<double, 2>(hatFlds["unbalanced_pressure_levels_minus_one"]);
 
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
@@ -431,7 +432,7 @@ void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
   auto hPHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
 
   atlas::idx_t levels = hatFlds["geostrophic_pressure_levels_minus_one"].levels();
-  atlas::idx_t nBins = augStateFlds["vertical_regression_matrices"].shape(0) / levels;
+  atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
     hPHatView(jn, levels - 1) +=
@@ -442,7 +443,7 @@ void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
     for (atlas::idx_t jl = levels - 1; jl >= 0; --jl) {
       for (atlas::idx_t b = nBins -1; b >= 0; --b) {
         for (atlas::idx_t jl2 = levels - 1; jl2 >= 0; --jl2) {
-          gpHatView(jn, jl2) += interpWeightView(jn, b) *
+          gPHatView(jn, jl2) += interpWeightView(jn, b) *
                                 vertRegView(b * levels + jl, jl2) *
                                 hPHatView(jn, jl);
         }

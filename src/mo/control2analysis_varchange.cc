@@ -129,8 +129,6 @@ void evalDryAirDensity(atlas::FieldSet & fields) {
 ///          from air_pressure_levels_minus_one and using hydrostatic balance relation
 ///          for topmost level
 void evalExnerPressureLevels(atlas::FieldSet & fields) {
-  oops::Log::trace() << "[evalAirPressureLevels()] starting ..." << std::endl;
-
   const auto exnerMinusOneView = make_view<const double, 2>(fields["exner_levels_minus_one"]);
   // Note that it is unclear whether this should be virtual_potential_temperature
   // or potential_temperature in this case. Either way the difference will be tiny since

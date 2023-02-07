@@ -30,6 +30,8 @@ void executeFunc(const atlas::FunctionSpace & fspace, const Functor & functor) {
     functor(atlas::functionspace::CubedSphereNodeColumns(fspace));
   } else if (atlas::functionspace::CellColumns(fspace)) {
     functor(atlas::functionspace::CubedSphereCellColumns(fspace));
+  } else if (atlas::functionspace::StructuredColumns(fspace)) {
+    functor(atlas::functionspace::StructuredColumns(fspace));
   } else {
     oops::Log::error() << "ERROR - a functor call failed "
                           "(function space type not allowed)" << std::endl;
