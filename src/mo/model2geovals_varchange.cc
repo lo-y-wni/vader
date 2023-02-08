@@ -64,12 +64,6 @@ bool evalTotalMassMoistAir(atlas::FieldSet & fields)
   return true;
 }
 
-/// \brief function to evaluate the quantity:
-///   qx = m_x/m_t
-/// where ...
-///   m_x = [ mv | mci | mcl | m_r ]
-///   m_t  = total mass of moist air
-///
 bool evalRatioToMt(atlas::FieldSet & fields, const std::vector<std::string> & vars)
 {
   oops::Log::trace() << "[evalRatioToMt()] starting ..." << std::endl;
@@ -309,6 +303,20 @@ bool evalParamAParamB(atlas::FieldSet & fields)
   }
 
   oops::Log::trace() << "[evalParamAParamB()] ... exit" << std::endl;
+
+  return true;
+}
+
+bool evalGpHeightMinusOne(atlas::FieldSet & fields)
+{
+  oops::Log::trace() << "[evalGpHeightMinusOne()] starting ..." << std::endl;
+
+  const auto height_lmoView = make_view<const double, 2>(fields["height_levels_minus_one"]);
+  auto gph_lmoView = make_view<double, 2>(fields["geopotential_height_levels_minus_one"]);
+
+  gph_lmoView.assign(height_lmoView);
+
+  oops::Log::trace() << "[evalGpHeightMinusOne()] ... exit" << std::endl;
 
   return true;
 }

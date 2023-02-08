@@ -160,4 +160,13 @@ bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields);
 ///
 bool evalParamAParamB(atlas::FieldSet & fields);
 
+/// \brief function to calculate Geopotential height field
+///        on rho levels as equal to the height field on rho levels.
+///        This is a good approximation in the lower atmosphere
+///        where the acceleration due to gravity (g) is approximatey
+///        equal to g0, the globally averaged accelaration due
+///        to gravity at the Earth's surface
+///
+bool evalGpHeightMinusOne(atlas::FieldSet & fields);
+
 }  // namespace mo
