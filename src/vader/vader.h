@@ -24,6 +24,7 @@
 #include "recipes/AirPressureThickness.h"
 #include "recipes/AirTemperature.h"
 #include "recipes/AirVirtualTemperature.h"
+#include "recipes/DryAirDensityLevelsMinusOne.h"
 #include "recipes/uwind_at_10m.h"
 #include "recipes/vwind_at_10m.h"
 
@@ -60,7 +61,8 @@ class Vader  : public util::Printable {
             {"virtual_temperature",    {AirVirtualTemperature_A::Name}},
             {"air_temperature",        {AirTemperature_A::Name, AirTemperature_B::Name}},
             {"uwind_at_10m",           {uwind_at_10m_A::Name}},
-            {"vwind_at_10m",           {vwind_at_10m_A::Name}}
+            {"vwind_at_10m",           {vwind_at_10m_A::Name}},
+            {"dry_air_density_levels_minus_one",  {DryAirDensityLevelsMinusOne_A::Name}}
             //  {"air_pressure_thickness", {PressureToDelP::Name}}
             });
     Vader(const Vader &) = delete;

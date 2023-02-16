@@ -31,7 +31,11 @@ void addFieldFromFile(atlas::FieldSet & fieldset,
   // Get sizes (nx and ny from the grid definition; nz from the file)
   atlas::idx_t nx = grid.nxmax();
   atlas::idx_t ny = grid.ny();
-  if ((retval = nc_inq_dimid(ncid, "nz", &dim_id))) ERR(retval);
+
+  const std::string nz_field("nz_" + name);
+  if ((retval = nc_inq_dimid(ncid, "nz", &dim_id))) {
+    if ((retval = nc_inq_dimid(ncid, nz_field.c_str(), &dim_id))) ERR(retval);
+  }
   if ((retval = nc_inq_dimlen(ncid, dim_id, &levels))) ERR(retval);
 
   // Read data

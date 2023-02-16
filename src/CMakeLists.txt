@@ -20,6 +20,8 @@ vader/recipes/AirTemperature_A.cc
 vader/recipes/AirTemperature_B.cc
 vader/recipes/AirVirtualTemperature.h
 vader/recipes/AirVirtualTemperature_A.cc
+vader/recipes/DryAirDensityLevelsMinusOne.h
+vader/recipes/DryAirDensityLevelsMinusOne_A.cc
 vader/recipes/SurfaceAirPressure.h
 vader/recipes/SurfaceAirPressure_A.cc
 vader/recipes/TestRecipes.h
