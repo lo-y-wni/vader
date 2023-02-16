@@ -29,8 +29,6 @@
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
 
-#include "vader/vadervariables.h"
-
 using atlas::array::make_view;
 using atlas::idx_t;
 

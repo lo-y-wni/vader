@@ -14,7 +14,6 @@
 #include "atlas/util/Metadata.h"
 #include "oops/util/Logger.h"
 #include "vader/recipes/AirTemperature.h"
-#include "vader/vadervariables.h"
 
 namespace vader
 {
@@ -51,12 +50,12 @@ std::vector<std::string> AirTemperature_B::ingredients() const
 
 size_t AirTemperature_B::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field(VV_TV).levels();
+    return afieldset.field("virtual_temperature").levels();
 }
 
 atlas::FunctionSpace AirTemperature_B::productFunctionSpace(const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field(VV_TV).functionspace();
+    return afieldset.field("virtual_temperature").functionspace();
 }
 
 bool AirTemperature_B::executeNL(atlas::FieldSet & afieldset)
@@ -64,9 +63,9 @@ bool AirTemperature_B::executeNL(atlas::FieldSet & afieldset)
     oops::Log::trace() << "entering AirTemperature_B::executeNL function"
         << std::endl;
 
-    atlas::Field virtual_temperature = afieldset.field(VV_TV);
-    atlas::Field temperature = afieldset.field(VV_TS);
-    atlas::Field specific_humidity = afieldset.field(VV_Q);
+    atlas::Field virtual_temperature = afieldset.field("virtual_temperature");
+    atlas::Field temperature = afieldset.field("air_temperature");
+    atlas::Field specific_humidity = afieldset.field("specific_humidity");
 
     auto virtual_temperature_view = atlas::array::make_view<double, 2>(virtual_temperature);
     auto temperature_view = atlas::array::make_view<double, 2>(temperature);

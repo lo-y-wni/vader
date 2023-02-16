@@ -32,7 +32,7 @@ class AirTemperature_B_Parameters : public RecipeParametersBase {
 
  public:
   oops::Parameter<double> epsilon{"epsilon",
-        "the ratio of the gas constants of air and water vapor", 0.62196, this};
+        "the ratio of the gas constants of air and water vapor", 0.62195753495598138, this};
 };
 
 // ------------------------------------------------------------------------------------------------

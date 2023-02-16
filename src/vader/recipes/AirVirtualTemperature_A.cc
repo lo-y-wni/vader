@@ -14,7 +14,6 @@
 #include "atlas/util/Metadata.h"
 #include "oops/util/Logger.h"
 #include "vader/recipes/AirVirtualTemperature.h"
-#include "vader/vadervariables.h"
 
 namespace vader
 {
@@ -22,7 +21,8 @@ namespace vader
 
 // Static attribute initialization
 const char AirVirtualTemperature_A::Name[] = "AirVirtualTemperature_A";
-const std::vector<std::string> AirVirtualTemperature_A::Ingredients = {VV_TS, VV_Q};
+const std::vector<std::string> AirVirtualTemperature_A::Ingredients = {"air_temperature",
+                                                                       "specific_humidity"};
 const double default_epsilon = 0.62196;
 
 // Register the maker
@@ -51,13 +51,13 @@ std::vector<std::string> AirVirtualTemperature_A::ingredients() const
 
 size_t AirVirtualTemperature_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field(VV_TS).levels();
+    return afieldset.field("air_temperature").levels();
 }
 
 atlas::FunctionSpace AirVirtualTemperature_A::productFunctionSpace
                                               (const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field(VV_TS).functionspace();
+    return afieldset.field("air_temperature").functionspace();
 }
 
 bool AirVirtualTemperature_A::executeNL(atlas::FieldSet & afieldset)
@@ -65,9 +65,9 @@ bool AirVirtualTemperature_A::executeNL(atlas::FieldSet & afieldset)
     oops::Log::trace() << "entering AirVirtualTemperature_A::executeNL function"
         << std::endl;
 
-    atlas::Field temperature = afieldset.field(VV_TS);
-    atlas::Field specific_humidity = afieldset.field(VV_Q);
-    atlas::Field virtual_temperature = afieldset.field(VV_TV);
+    atlas::Field temperature = afieldset.field("air_temperature");
+    atlas::Field specific_humidity = afieldset.field("specific_humidity");
+    atlas::Field virtual_temperature = afieldset.field("virtual_temperature");
 
     auto temperature_view = atlas::array::make_view<double, 2>(temperature);
     auto specific_humidity_view = atlas::array::make_view<double, 2>(specific_humidity);
@@ -97,11 +97,11 @@ bool AirVirtualTemperature_A::executeTL(atlas::FieldSet & afieldsetTL,
     oops::Log::trace() << "entering AirVirtualTemperature_A::executeTL function"
         << std::endl;
 
-    atlas::Field traj_temperature = afieldsetTraj.field(VV_TS);
-    atlas::Field traj_specific_humidity = afieldsetTraj.field(VV_Q);
-    atlas::Field tl_temperature = afieldsetTL.field(VV_TS);
-    atlas::Field tl_specific_humidity = afieldsetTL.field(VV_Q);
-    atlas::Field tl_virtual_temperature = afieldsetTL.field(VV_TV);
+    atlas::Field traj_temperature = afieldsetTraj.field("air_temperature");
+    atlas::Field traj_specific_humidity = afieldsetTraj.field("specific_humidity");
+    atlas::Field tl_temperature = afieldsetTL.field("air_temperature");
+    atlas::Field tl_specific_humidity = afieldsetTL.field("specific_humidity");
+    atlas::Field tl_virtual_temperature = afieldsetTL.field("virtual_temperature");
 
     auto tl_temperature_view = atlas::array::make_view<double, 2>(tl_temperature);
     auto traj_temperature_view = atlas::array::make_view<double, 2>(traj_temperature);
@@ -137,11 +137,11 @@ bool AirVirtualTemperature_A::executeAD(atlas::FieldSet & afieldsetAD,
     oops::Log::trace() << "entering AirVirtualTemperature_A::executeAD function"
         << std::endl;
 
-    atlas::Field traj_temperature = afieldsetTraj.field(VV_TS);
-    atlas::Field traj_specific_humidity = afieldsetTraj.field(VV_Q);
-    atlas::Field ad_temperature = afieldsetAD.field(VV_TS);
-    atlas::Field ad_specific_humidity = afieldsetAD.field(VV_Q);
-    atlas::Field ad_virtual_temperature = afieldsetAD.field(VV_TV);
+    atlas::Field traj_temperature = afieldsetTraj.field("air_temperature");
+    atlas::Field traj_specific_humidity = afieldsetTraj.field("specific_humidity");
+    atlas::Field ad_temperature = afieldsetAD.field("air_temperature");
+    atlas::Field ad_specific_humidity = afieldsetAD.field("specific_humidity");
+    atlas::Field ad_virtual_temperature = afieldsetAD.field("virtual_temperature");
 
     auto ad_temperature_view = atlas::array::make_view<double, 2>(ad_temperature);
     auto traj_temperature_view = atlas::array::make_view<double, 2>(traj_temperature);

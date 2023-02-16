@@ -25,7 +25,7 @@ class AirVirtualTemperature_AParameters : public RecipeParametersBase {
   oops::RequiredParameter<std::string> name{
      "recipe name",
      this};
-  oops::Parameter<double> epsilon{"epsilon", "epsilon", 0.62196, this};
+  oops::Parameter<double> epsilon{"epsilon", "epsilon", 0.62195753495598138, this};
 };
 
 // ------------------------------------------------------------------------------------------------

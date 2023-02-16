@@ -28,8 +28,6 @@
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
 
-#include "vader/vadervariables.h"
-
 using atlas::array::make_view;
 using atlas::idx_t;
 
@@ -78,13 +76,13 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
 
   // The check for the presence of required input fields will be performed by the Vader
   // algorithm when this code is in a Vader Recipe. At that time this check can be removed.
-  if ( !fields.has(vader::VV_TS) ||
-       !fields.has(vader::VV_SVP)) {
+  if ( !fields.has("air_temperature") ||
+       !fields.has("svp")) {
     return false;
   }
 
-  if (fields[vader::VV_SVP].shape(0) != fields[vader::VV_TS].shape(0)
-      || fields[vader::VV_SVP].levels() != fields[vader::VV_TS].levels()) {
+  if (fields["svp"].shape(0) != fields["air_temperature"].shape(0)
+      || fields["svp"].levels() != fields["air_temperature"].levels()) {
     // svp field not compatible with air temperature field, cannot continue.
     return false;
   }
