@@ -248,7 +248,7 @@ bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields)
   auto fspace = fields["specific_humidity_at_two_meters_above_surface"].functionspace();
 
   auto evaluateSpecificHumidity_2m = [&] (idx_t i, idx_t j) {
-    ds_q2m(i, j) = ds_rh(i, j) * ds_qsat(i, j); };
+    ds_q2m(i, j) = 0.01 * ds_rh(i, j) * ds_qsat(i, j); };
 
   auto conf = Config("levels",
     fields["specific_humidity_at_two_meters_above_surface"].levels()) |
