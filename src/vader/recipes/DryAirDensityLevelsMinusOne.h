@@ -8,6 +8,7 @@
 #ifndef SRC_VADER_RECIPES_DRYAIRDENSITYLEVELSMINUSONE_H_
 #define SRC_VADER_RECIPES_DRYAIRDENSITYLEVELSMINUSONE_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -44,7 +45,7 @@ class DryAirDensityLevelsMinusOne_A : public RecipeBase {
 
     typedef DryAirDensityLevelsMinusOne_AParameters Parameters_;
 
-    explicit DryAirDensityLevelsMinusOne_A(const Parameters_ &);
+    DryAirDensityLevelsMinusOne_A(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;

@@ -28,7 +28,8 @@ const std::vector<std::string> DryAirDensityLevelsMinusOne_A::
 static RecipeMaker<DryAirDensityLevelsMinusOne_A>
     makerDryAirDensityLevelsMinusOne_A_(DryAirDensityLevelsMinusOne_A::Name);
 
-DryAirDensityLevelsMinusOne_A::DryAirDensityLevelsMinusOne_A(const Parameters_ &params) :
+DryAirDensityLevelsMinusOne_A::DryAirDensityLevelsMinusOne_A(const Parameters_ & params,
+                                        const VaderConfigVars & configVariables) :
     rd_{params.rd.value()}
 {
     oops::Log::trace() <<

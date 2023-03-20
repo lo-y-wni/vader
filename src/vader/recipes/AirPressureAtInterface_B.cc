@@ -1,4 +1,4 @@
-/*
+ /*
  * (C) Copyright 2021-2022  UCAR.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
@@ -29,7 +29,10 @@ static RecipeMaker<AirPressureAtInterface_B>
 // -------------------------------------------------------------------------------------------------
 
 AirPressureAtInterface_B::AirPressureAtInterface_B(
-                                                 const AirPressureAtInterface_BParameters &params) {
+                                                 const AirPressureAtInterface_BParameters & params,
+                                        const VaderConfigVars & configVariables) :
+                                        configVariables_{configVariables}
+{
     oops::Log::trace() << "AirPressureAtInterface_B::AirPressureAtInterface_B(params) Starting"
                        << std::endl;
     oops::Log::trace() << "AirPressureAtInterface_B::AirPressureAtInterface_B(params) Done"
@@ -73,6 +76,8 @@ bool AirPressureAtInterface_B::executeNL(atlas::FieldSet & afieldset) {
     //
     oops::Log::trace() << "AirPressureAtInterface_B::executeNL Starting" << std::endl;
 
+    double ptop = configVariables_.getFromConfig<double>("air_pressure_at_top_of_atmosphere_model");
+
     // Get the fields
     atlas::Field delp = afieldset.field("air_pressure_thickness");
     atlas::Field prsi = afieldset.field("air_pressure_levels");
@@ -94,12 +99,6 @@ bool AirPressureAtInterface_B::executeNL(atlas::FieldSet & afieldset) {
     // Get the grid size
     const int gridSize = delp.shape(0);
     const int nLevel = prsi.levels() - 1;  // Reduce by 1 since index begins at 0
-
-    // Get ptop from the delp metadata
-    ASSERT_MSG(delp.metadata().has("ptop"), "In Vader::AirPressureAtInterface_B::executeNL delp "
-               "must contain ptop in its metadata");
-    double ptop;
-    delp.metadata().get("ptop", ptop);
 
     // Set pressure at the surface to surface pressure
     for ( size_t jNode = 0; jNode < gridSize ; ++jNode ) {

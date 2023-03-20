@@ -32,6 +32,7 @@ message( STATUS "VADER variables")
 message( STATUS "  - ENABLE_VADER_DOC: ${ENABLE_VADER_DOC}" )
 
 ## Dependencies
+find_package( Boost 1.64.0 REQUIRED )
 
 # Required
 find_package( jedicmake QUIET )  # Prefer find modules from jedi-cmake

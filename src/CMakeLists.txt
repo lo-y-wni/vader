@@ -6,6 +6,10 @@ vader/recipe.h
 vader/recipe.cc
 vader/RecipeBase.h
 vader/RecipeBase.cc
+vader/VaderConstructConfig.h
+vader/VaderConstructConfig.cc
+vader/VaderConfigVars.h
+vader/VaderConfigVars.cc
 vader/vader.cc
 vader/VaderParameters.h
 vader/recipes/AirPotentialTemperature_A.cc

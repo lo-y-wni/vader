@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,7 @@ class AirPressureThickness_A : public RecipeBase
 
     typedef AirPressureThickness_AParameters Parameters_;
 
-    explicit AirPressureThickness_A(const Parameters_ &);
+    AirPressureThickness_A(const Parameters_ &, const VaderConfigVars &);
 
     std::string name() const override;
     std::string product() const override;

@@ -44,7 +44,7 @@ class AirPressure_A : public RecipeBase
 
     typedef AirPressure_AParameters Parameters_;
 
-    explicit AirPressure_A(const Parameters_ &);
+    AirPressure_A(const Parameters_ &, const VaderConfigVars &);
 
     std::string name() const override;
     std::string product() const override;

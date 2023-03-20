@@ -27,11 +27,11 @@ Vader::~Vader() {
     oops::Log::trace() << "Vader::~Vader done" << std::endl;
 }
 // ------------------------------------------------------------------------------------------------
-void Vader::createCookbook(std::map<std::string, std::vector<std::string>> definition,
+void Vader::createCookbook(const cookbookConfigType & cookbook,
                            const std::vector<RecipeParametersWrapper> & allRecpParamWraps) {
     oops::Log::trace() << "entering Vader::createCookbook" << std::endl;
     std::vector<std::unique_ptr<RecipeBase>> recipes;
-    for (auto defEntry : definition) {
+    for (auto defEntry : cookbook) {
         recipes.clear();
         for (auto recipeName : defEntry.second) {
             // There might not be any recipe parameters at all.
@@ -39,11 +39,11 @@ void Vader::createCookbook(std::map<std::string, std::vector<std::string>> defin
             // We must prepare for all eventualities.
             bool parametersFound = false;
             for (auto & singleRecpParamWrap : allRecpParamWraps) {
-                if (singleRecpParamWrap.recipeParams.value().name.value()
-                                                            == recipeName) {
+                if (singleRecpParamWrap.recipeParams.value().name.value() == recipeName) {
                     recipes.push_back(std::unique_ptr<RecipeBase>
                         (RecipeFactory::create(recipeName,
-                            singleRecpParamWrap.recipeParams)));
+                                               singleRecpParamWrap.recipeParams,
+                                               configVariables_)));
                     parametersFound = true;
                     break;
                 }
@@ -51,7 +51,8 @@ void Vader::createCookbook(std::map<std::string, std::vector<std::string>> defin
             if (!parametersFound) {
                 auto emptyRecipeParams = RecipeFactory::createParameters(recipeName);
                 recipes.push_back(std::unique_ptr<RecipeBase>
-                                  (RecipeFactory::create(recipeName, *emptyRecipeParams)));
+                                  (RecipeFactory::create(recipeName, *emptyRecipeParams,
+                                                         configVariables_)));
             }
         }
         cookbook_[defEntry.first] = std::move(recipes);
@@ -59,7 +60,8 @@ void Vader::createCookbook(std::map<std::string, std::vector<std::string>> defin
     oops::Log::trace() << "leaving Vader::createCookbook" << std::endl;
 }
 // ------------------------------------------------------------------------------------------------
-Vader::Vader(const VaderParameters & parameters, const cookbookConfigType & clientCookbook) {
+Vader::Vader(const VaderParameters & parameters, const VaderConstructConfig & constructConfig) :
+             configVariables_(constructConfig.getConfigVars()) {
     util::Timer timer(classname(), "Vader");
     oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
     oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
@@ -72,9 +74,9 @@ Vader::Vader(const VaderParameters & parameters, const cookbookConfigType & clie
     // oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
     //
     if (parameters.recipeParams.value() == boost::none) {
-        createCookbook(clientCookbook);
+        createCookbook(constructConfig.cookbook);
     } else {
-        createCookbook(clientCookbook, *parameters.recipeParams.value());
+        createCookbook(constructConfig.cookbook, *parameters.recipeParams.value());
     }
 }
 // ------------------------------------------------------------------------------------------------

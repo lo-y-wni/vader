@@ -43,7 +43,7 @@ class LnAirPressureAtInterface_A : public RecipeBase
 
     typedef LnAirPressureAtInterface_AParameters Parameters_;
 
-    explicit LnAirPressureAtInterface_A(const Parameters_ &);
+    LnAirPressureAtInterface_A(const Parameters_ &, const VaderConfigVars &);
 
     std::string name() const override;
     std::string product() const override;

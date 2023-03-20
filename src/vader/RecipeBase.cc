@@ -29,17 +29,18 @@ RecipeFactory::RecipeFactory(const std::string & name) {
 // ------------------------------------------------------------------------------------------------
 
 RecipeBase * RecipeFactory::create(const std::string name,
-                                   const RecipeParametersBase & params) {
-  oops::Log::trace() << "RecipeFactory::create(name, params) starting for name: " << name <<
-    std::endl;
+                                   const RecipeParametersBase & params,
+                                   const VaderConfigVars & configVariables) {
+  oops::Log::trace() << "RecipeFactory::create(name, params, clientConfig) starting for name: " <<
+    name << std::endl;
   typename std::map<std::string, RecipeFactory*>::iterator jloc = getMakers().find(name);
   if (jloc == getMakers().end()) {
     oops::Log::error() << name << " does not exist in vader::RecipeFactory." << std::endl;
     ABORT("Element does not exist in vader::RecipeFactory.");
   }
-  RecipeBase * ptr = jloc->second->make(params);
-  oops::Log::trace() << "RecipeFactory::create(name, params) finished for name: " << name <<
-    std::endl;
+  RecipeBase * ptr = jloc->second->make(params, configVariables);
+  oops::Log::trace() << "RecipeFactory::create(name, params, clientConfig) finished for name: " <<
+    name << std::endl;
   return ptr;
 }
 

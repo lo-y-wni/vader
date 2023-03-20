@@ -44,7 +44,7 @@ class SurfaceAirPressure_A : public RecipeBase
 
     typedef SurfaceAirPressure_AParameters Parameters_;
 
-    explicit SurfaceAirPressure_A(const Parameters_ &);
+    SurfaceAirPressure_A(const Parameters_ &, const VaderConfigVars &);
 
     std::string name() const override;
     std::string product() const override;
@@ -55,5 +55,6 @@ class SurfaceAirPressure_A : public RecipeBase
 
  private:
     std::map<std::string, double> p0Defaults_;
+    const VaderConfigVars & configVariables_;
 };
 }  // namespace vader

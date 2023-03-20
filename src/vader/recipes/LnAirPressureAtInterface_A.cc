@@ -17,6 +17,7 @@
 
 namespace vader {
 
+
 // -------------------------------------------------------------------------------------------------
 
 // Static attribute initialization
@@ -32,7 +33,9 @@ static RecipeMaker<LnAirPressureAtInterface_A>
 // -------------------------------------------------------------------------------------------------
 
 LnAirPressureAtInterface_A::LnAirPressureAtInterface_A(const
-                                                     LnAirPressureAtInterface_AParameters &params) {
+                                                     LnAirPressureAtInterface_AParameters & params,
+                                                     const VaderConfigVars & configVariables)
+{
     oops::Log::trace() << "LnAirPressureAtInterface_A::LnAirPressureAtInterface_A Starting"
                        << std::endl;
     oops::Log::trace() << "LnAirPressureAtInterface_A::LnAirPressureAtInterface_A Done"

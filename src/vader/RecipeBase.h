@@ -22,6 +22,7 @@
 #include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/parameters/RequiredPolymorphicParameter.h"
 #include "oops/util/Printable.h"
+#include "vader/VaderConfigVars.h"
 
 namespace vader {
 
@@ -90,7 +91,8 @@ class RecipeBase : public util::Printable,
 class RecipeFactory {
  public:
   static RecipeBase * create(const std::string name,
-                             const RecipeParametersBase &);
+                             const RecipeParametersBase &,
+                             const VaderConfigVars &);
   static std::unique_ptr<RecipeParametersBase> createParameters(const std::string &);
 
   static std::vector<std::string> getMakerNames() {
@@ -103,7 +105,8 @@ class RecipeFactory {
   explicit RecipeFactory(const std::string &);
 
  private:
-  virtual RecipeBase* make(const RecipeParametersBase &) = 0;
+  virtual RecipeBase* make(const RecipeParametersBase &,
+                           const VaderConfigVars &) = 0;
 
   virtual std::unique_ptr<RecipeParametersBase> makeParameters() const = 0;
 
@@ -118,9 +121,10 @@ class RecipeFactory {
 template<class T>
 class RecipeMaker : public RecipeFactory {
     typedef typename T::Parameters_ Parameters_;
-    RecipeBase * make(const RecipeParametersBase & params) override {
+    RecipeBase * make(const RecipeParametersBase & params,
+                      const VaderConfigVars & configVariables) override {
         const auto &stronglyTypedParams = dynamic_cast<const Parameters_&>(params);
-        return new T(stronglyTypedParams);
+        return new T(stronglyTypedParams, configVariables);
     }
     std::unique_ptr<RecipeParametersBase> makeParameters() const override {
         return std::make_unique<Parameters_>();

@@ -43,7 +43,7 @@ class AirPressureAtInterface_A : public RecipeBase
 
     typedef AirPressureAtInterface_AParameters Parameters_;
 
-    explicit AirPressureAtInterface_A(const Parameters_ &);
+    AirPressureAtInterface_A(const Parameters_ &, const VaderConfigVars &);
 
     std::string name() const override;
     std::string product() const override;
@@ -53,7 +53,7 @@ class AirPressureAtInterface_A : public RecipeBase
     bool executeNL(atlas::FieldSet &) override;
 
  private:
-    std::map<std::string, double> p0Defaults_;
+    const VaderConfigVars & configVariables_;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -70,6 +70,8 @@ class AirPressureAtInterface_BParameters : public RecipeParametersBase {
  *
  *  \details This recipe sums the pressure thickness value with the pressure level beneath to
  *           produce the next pressure level value. It does not provide TL/AD algorithms.
+ *           Note that executing this recipe requires that air_pressure_at_top_of_atmosphere_model
+ *           be populated in the VaderConfigVars passed to the recipe constructor.
  */
 class AirPressureAtInterface_B : public RecipeBase
 {
@@ -79,7 +81,7 @@ class AirPressureAtInterface_B : public RecipeBase
 
     typedef AirPressureAtInterface_BParameters Parameters_;
 
-    explicit AirPressureAtInterface_B(const Parameters_ &);
+    AirPressureAtInterface_B(const Parameters_ &, const VaderConfigVars &);
 
     std::string name() const override;
     std::string product() const override;
@@ -89,7 +91,7 @@ class AirPressureAtInterface_B : public RecipeBase
     bool executeNL(atlas::FieldSet &) override;
 
  private:
-    std::map<std::string, double> p0Defaults_;
+    const VaderConfigVars & configVariables_;
 };
 
 // -------------------------------------------------------------------------------------------------

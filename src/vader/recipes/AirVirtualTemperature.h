@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -43,7 +44,7 @@ class AirVirtualTemperature_A : public RecipeBase {
 
     typedef AirVirtualTemperature_AParameters Parameters_;
 
-    explicit AirVirtualTemperature_A(const Parameters_ &);
+    AirVirtualTemperature_A(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;

@@ -8,6 +8,7 @@
 #ifndef SRC_VADER_RECIPES_UWIND_AT_10M_H_
 #define SRC_VADER_RECIPES_UWIND_AT_10M_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -41,7 +42,7 @@ class uwind_at_10m_A : public RecipeBase {
 
     typedef uwind_at_10m_AParameters Parameters_;
 
-    explicit uwind_at_10m_A(const Parameters_ &);
+    uwind_at_10m_A(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;

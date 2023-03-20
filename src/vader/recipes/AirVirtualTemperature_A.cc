@@ -28,7 +28,8 @@ const double default_epsilon = 0.62196;
 // Register the maker
 static RecipeMaker<AirVirtualTemperature_A> makerTempToVTemp_(AirVirtualTemperature_A::Name);
 
-AirVirtualTemperature_A::AirVirtualTemperature_A(const Parameters_ &params) :
+AirVirtualTemperature_A::AirVirtualTemperature_A(const Parameters_ & params,
+                                    const VaderConfigVars & configVariables) :
     epsilon_{params.epsilon.value()}
 {
     oops::Log::trace() << "AirVirtualTemperature_A::AirVirtualTemperature_A(params)" << std::endl;

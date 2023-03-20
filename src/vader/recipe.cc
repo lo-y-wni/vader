@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <map>
 #include <vector>
 
 #include "vader/recipe.h"
@@ -14,8 +15,9 @@ namespace vader
 {
 
 // ------------------------------------------------------------------------------------------------
-Recipe::Recipe(const std::string name, const Parameters_ & paramWrapper)
-    : recipe_{RecipeFactory::create(name, paramWrapper.recipeParams)} {}
+Recipe::Recipe(const std::string name, const Parameters_ & paramWrapper,
+               const VaderConfigVars & configVariables)
+    : recipe_{RecipeFactory::create(name, paramWrapper.recipeParams, configVariables)} {}
 // ------------------------------------------------------------------------------------------------
 std::string Recipe::name() const
 {

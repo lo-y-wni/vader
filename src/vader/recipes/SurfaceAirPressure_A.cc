@@ -27,7 +27,9 @@ static RecipeMaker<SurfaceAirPressure_A> makerSurfaceAirPressure_A_(SurfaceAirPr
 
 // -------------------------------------------------------------------------------------------------
 
-SurfaceAirPressure_A::SurfaceAirPressure_A(const SurfaceAirPressure_AParameters &params) {
+SurfaceAirPressure_A::SurfaceAirPressure_A(const SurfaceAirPressure_AParameters & params,
+                                        const VaderConfigVars & configVariables) :
+                                        configVariables_{configVariables} {
     oops::Log::trace() << "SurfaceAirPressure_A::SurfaceAirPressure_A Starting" << std::endl;
     oops::Log::trace() << "SurfaceAirPressure_A::SurfaceAirPressure_A Done" << std::endl;
 }
@@ -78,35 +80,22 @@ bool SurfaceAirPressure_A::executeNL(atlas::FieldSet & afieldset) {
     delp.metadata().get("units", delp_units);
     ps.metadata().get("units", ps_units);
 
-    // Transfer nLevels from delp to ps
-    ASSERT_MSG(delp.metadata().has("nLevels"), "In Vader::SurfacePressure_A::executeNL "
-               "all fields passed to Vader must contain nLevels in their metadata");
-    int nLevels;
-    delp.metadata().get("nLevels", nLevels);
-    ps.metadata().set("nLevels", nLevels);
-
-    // Pass through ak/bk if present
-    if (delp.metadata().has("ak")) {
-        std::vector<double> ak;
-        delp.metadata().get("ak", ak);
-        ps.metadata().set("ak", ak);
-    }
-    if (delp.metadata().has("bk")) {
-        std::vector<double> bk;
-        delp.metadata().get("bk", bk);
-        ps.metadata().set("bk", bk);
-    }
-
     // Assert that the units match
     ASSERT_MSG(ps_units == delp_units, "In Vader::SurfaceAirPressure_A::executeNL the units for "
                "surface pressure " + ps_units + "do not match the pressure thickness units"
                + delp_units);
 
-    // Get ptop from the delp metadata
-    ASSERT_MSG(delp.metadata().has("ptop"), "In Vader::SurfaceAirPressure_A::executeNL delp must "
-               "contain ptop in its metadata");
-    double ptop;
-    delp.metadata().get("ptop", ptop);
+    // Extract ak/bk from client config
+    std::vector<double> ak = configVariables_.getFromConfig<std::vector<double>>
+                                                ("sigma_pressure_hybrid_coordinate_a_coefficient");
+    std::vector<double> bk = configVariables_.getFromConfig<std::vector<double>>
+                                                ("sigma_pressure_hybrid_coordinate_b_coefficient");
+
+    // Get number of levels
+    int nLevels = configVariables_.getFromConfig<int>("nLevels");
+
+    // Get ptop
+    double ptop = configVariables_.getFromConfig<double>("air_pressure_at_top_of_atmosphere_model");
 
     // Set the array views to manipulate the data
     auto delp_view = atlas::array::make_view<double, 2>(delp);

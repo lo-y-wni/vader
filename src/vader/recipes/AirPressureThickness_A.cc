@@ -32,7 +32,8 @@ static RecipeMaker<AirPressureThickness_A>
 
 // -------------------------------------------------------------------------------------------------
 
-AirPressureThickness_A::AirPressureThickness_A(const AirPressureThickness_AParameters &params) {
+AirPressureThickness_A::AirPressureThickness_A(const AirPressureThickness_AParameters & params,
+                                        const VaderConfigVars & configVariables) {
     oops::Log::trace() << "AirPressureThickness_A::AirPressureThickness_A(params)" << std::endl;
 }
 

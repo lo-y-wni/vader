@@ -27,7 +27,8 @@ const std::vector<std::string> AirTemperature_B::Ingredients = {"virtual_tempera
 // Register the maker
 static RecipeMaker<AirTemperature_B> makerAirTemperature_B_(AirTemperature_B::Name);
 
-AirTemperature_B::AirTemperature_B(const Parameters_ &params) :
+AirTemperature_B::AirTemperature_B(const Parameters_ & params,
+                                   const VaderConfigVars & configVariables) :
     epsilon_{params.epsilon.value()}
 {
     oops::Log::trace() << "AirTemperature_B::AirTemperature_B(params)" << std::endl;

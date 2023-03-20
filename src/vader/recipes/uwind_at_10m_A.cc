@@ -26,7 +26,8 @@ const std::vector<std::string> uwind_at_10m_A::Ingredients = {"eastward_wind"};
 // Register the maker
 static RecipeMaker<uwind_at_10m_A> makeruwind_at_10m_A_(uwind_at_10m_A::Name);
 
-uwind_at_10m_A::uwind_at_10m_A(const Parameters_ &params)
+uwind_at_10m_A::uwind_at_10m_A(const Parameters_ & params,
+                               const VaderConfigVars & configVariables)
 {
     oops::Log::trace() << "uwind_at_10m_A::uwind_at_10m_A(params)" << std::endl;
 }

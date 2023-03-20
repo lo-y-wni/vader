@@ -15,6 +15,7 @@
 #include "oops/util/Logger.h"
 #include "vader/recipes/AirPotentialTemperature.h"
 
+
 namespace vader
 {
 // ------------------------------------------------------------------------------------------------
@@ -30,7 +31,8 @@ const double default_hPa_p0 = 1000.0;
 // Register the maker
 static RecipeMaker<AirPotentialTemperature_A> makerTempToPTemp_(AirPotentialTemperature_A::Name);
 
-AirPotentialTemperature_A::AirPotentialTemperature_A(const Parameters_ &params) :
+AirPotentialTemperature_A::AirPotentialTemperature_A(const Parameters_ & params,
+                                    const VaderConfigVars & configVariables) :
     p0_{params.p0.value()},
     kappa_{params.kappa.value()}
 {

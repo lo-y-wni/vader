@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -28,7 +29,7 @@ class Recipe  : public util::Printable,
  public:
     typedef RecipeParametersWrapper Parameters_;
 
-    Recipe(const std::string, const Parameters_ &);
+    Recipe(const std::string, const Parameters_ &, const VaderConfigVars &);
 
     std::string name() const;
     std::string product() const;

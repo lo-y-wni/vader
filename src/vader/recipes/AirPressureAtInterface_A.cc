@@ -32,7 +32,10 @@ static RecipeMaker<AirPressureAtInterface_A>
 // -------------------------------------------------------------------------------------------------
 
 AirPressureAtInterface_A::AirPressureAtInterface_A(
-                                                 const AirPressureAtInterface_AParameters &params) {
+                                                 const AirPressureAtInterface_AParameters & params,
+                                                 const VaderConfigVars & configVariables):
+                                                 configVariables_{configVariables}
+{
     oops::Log::trace() << "AirPressureAtInterface_A::AirPressureAtInterface_A Starting"
                        << std::endl;
     oops::Log::trace() << "AirPressureAtInterface_A::AirPressureAtInterface_A Done"
@@ -60,11 +63,7 @@ std::vector<std::string> AirPressureAtInterface_A::ingredients() const {
 // -------------------------------------------------------------------------------------------------
 
 size_t AirPressureAtInterface_A::productLevels(const atlas::FieldSet & afieldset) const {
-    atlas::Field ps = afieldset.field("surface_pressure");
-    ASSERT_MSG(ps.metadata().has("nLevels"), "In Vader::AirPressureAtInterface_A::productLevels "
-               "ps must contain nLevels in its metadata");
-    int nLevels;
-    ps.metadata().get("nLevels", nLevels);
+    int nLevels = configVariables_.getFromConfig<int>("nLevels");
     return nLevels + 1;
 }
 
@@ -94,20 +93,14 @@ bool AirPressureAtInterface_A::executeNL(atlas::FieldSet & afieldset) {
     ASSERT_MSG(prsi_units == ps_units, "In Vader::AirPressureAtInterface_A::executeNL the units "
                "for pressure " + prsi_units + "do not match the surface pressure units" + ps_units);
 
-    // Extract ak/bk from the metadata
-    ASSERT_MSG(ps.metadata().has("ak"), "In Vader::AirPressureAtInterface_A::executeNL ps must "
-               "contain ak in its metadata");
-    ASSERT_MSG(ps.metadata().has("bk"), "In Vader::AirPressureAtInterface_A::executeNL ps must "
-               "contain bk in its metadata");
-    std::vector<double> ak, bk;
-    ps.metadata().get("ak", ak);
-    ps.metadata().get("bk", bk);
+    // Extract ak/bk from client config
+    std::vector<double> ak = configVariables_.getFromConfig<std::vector<double>>
+                                                ("sigma_pressure_hybrid_coordinate_a_coefficient");
+    std::vector<double> bk = configVariables_.getFromConfig<std::vector<double>>
+                                                ("sigma_pressure_hybrid_coordinate_b_coefficient");
 
     // Get number of levels
-    ASSERT_MSG(ps.metadata().has("nLevels"), "In Vader::AirPressureAtInterface_A::productLevels "
-               "ps must contain nLevels in its metadata");
-    int nLevels;
-    ps.metadata().get("nLevels", nLevels);
+    int nLevels = configVariables_.getFromConfig<int>("nLevels");
 
     // Get the grid size
     const int gridSize = ps.shape(0);

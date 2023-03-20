@@ -44,7 +44,7 @@ class AirPressureToKappa_A : public RecipeBase
 
     typedef AirPressureToKappa_AParameters Parameters_;
 
-    explicit AirPressureToKappa_A(const Parameters_ &);
+    AirPressureToKappa_A(const Parameters_ &, const VaderConfigVars &);
 
     std::string name() const override;
     std::string product() const override;

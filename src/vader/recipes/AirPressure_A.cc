@@ -30,7 +30,10 @@ static RecipeMaker<AirPressure_A> makerAirPressure_A_(AirPressure_A::Name);
 
 // -------------------------------------------------------------------------------------------------
 
-AirPressure_A::AirPressure_A(const AirPressure_AParameters &params) : kappa_{params.kappa.value()} {
+AirPressure_A::AirPressure_A(const AirPressure_AParameters & params,
+                             const VaderConfigVars & configVariables) :
+                             kappa_{params.kappa.value()}
+{
     oops::Log::trace() << "AirPressure_A::AirPressure_A Starting" << std::endl;
     oops::Log::trace() << "AirPressure_A::AirPressure_A Done" << std::endl;
 }

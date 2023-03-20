@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -41,7 +42,7 @@ class Test_VarA_from_B : public RecipeBase {
 
     typedef TestRecipeParameters Parameters_;
 
-    explicit Test_VarA_from_B(const Parameters_ &);
+    Test_VarA_from_B(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;
@@ -71,7 +72,7 @@ class Test_VarA_from_C_D : public RecipeBase {
 
     typedef TestRecipeParameters Parameters_;
 
-    explicit Test_VarA_from_C_D(const Parameters_ &);
+    Test_VarA_from_C_D(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;
@@ -101,7 +102,7 @@ class Test_VarB_from_E : public RecipeBase {
 
     typedef TestRecipeParameters Parameters_;
 
-    explicit Test_VarB_from_E(const Parameters_ &);
+    Test_VarB_from_E(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;
@@ -133,7 +134,7 @@ class Test_VarB_from_A : public RecipeBase {
 
     typedef TestRecipeParameters Parameters_;
 
-    explicit Test_VarB_from_A(const Parameters_ &);
+    Test_VarB_from_A(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;
@@ -162,7 +163,7 @@ class Test_VarC_from_F : public RecipeBase {
 
     typedef TestRecipeParameters Parameters_;
 
-    explicit Test_VarC_from_F(const Parameters_ &);
+    Test_VarC_from_F(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;

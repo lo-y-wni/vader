@@ -31,7 +31,8 @@ static RecipeMaker<AirPotentialTemperature_B> makerTempToPTemp_(AirPotentialTemp
 
 // -------------------------------------------------------------------------------------------------
 
-AirPotentialTemperature_B::AirPotentialTemperature_B(const Parameters_ &params) {
+AirPotentialTemperature_B::AirPotentialTemperature_B(const Parameters_ & params,
+                                        const VaderConfigVars & configVariables) {
     oops::Log::trace() << "AirPotentialTemperature_B::AirPotentialTemperature_B(params)"
         << std::endl;
 }

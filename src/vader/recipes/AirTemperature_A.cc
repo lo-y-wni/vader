@@ -32,7 +32,8 @@ const std::vector<std::string> AirTemperature_A::Ingredients = {APT, DEF};
 // Register the maker
 static RecipeMaker<AirTemperature_A> makerAirTemperature_A_(AirTemperature_A::Name);
 
-AirTemperature_A::AirTemperature_A(const Parameters_ & params)
+AirTemperature_A::AirTemperature_A(const Parameters_ & params,
+                                   const VaderConfigVars & configVariables)
 {
 }
 

@@ -5,6 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <map>
 #include <vector>
 
 #include "oops/util/Logger.h"
@@ -28,23 +29,28 @@ static RecipeMaker<Test_VarB_from_E> makerTestVarB_A_(Test_VarB_from_E::Name);
 static RecipeMaker<Test_VarB_from_A> makerTestVarB_B_(Test_VarB_from_A::Name);
 static RecipeMaker<Test_VarC_from_F> makerTestVarC_A_(Test_VarC_from_F::Name);
 
-Test_VarA_from_B::Test_VarA_from_B(const Parameters_ &params)
+Test_VarA_from_B::Test_VarA_from_B(const Parameters_ & params,
+                                   const VaderConfigVars & configVariables)
 {
     oops::Log::trace() << "Test_VarA_from_B::Test_VarA_from_B(params)" << std::endl;
 }
-Test_VarA_from_C_D::Test_VarA_from_C_D(const Parameters_ &params)
+Test_VarA_from_C_D::Test_VarA_from_C_D(const Parameters_ & params,
+                                       const VaderConfigVars & configVariables)
 {
     oops::Log::trace() << "Test_VarA_from_C_D::Test_VarA_from_C_D(params)" << std::endl;
 }
-Test_VarB_from_E::Test_VarB_from_E(const Parameters_ &params)
+Test_VarB_from_E::Test_VarB_from_E(const Parameters_ & params,
+                                   const VaderConfigVars & configVariables)
 {
     oops::Log::trace() << "Test_VarB_from_E::Test_VarB_from_E(params)" << std::endl;
 }
-Test_VarB_from_A::Test_VarB_from_A(const Parameters_ &params)
+Test_VarB_from_A::Test_VarB_from_A(const Parameters_ & params,
+                                   const VaderConfigVars & configVariables)
 {
     oops::Log::trace() << "Test_VarB_from_A::Test_VarB_from_A(params)" << std::endl;
 }
-Test_VarC_from_F::Test_VarC_from_F(const Parameters_ &params)
+Test_VarC_from_F::Test_VarC_from_F(const Parameters_ & params,
+                                   const VaderConfigVars & configVariables)
 {
     oops::Log::trace() << "Test_VarC_from_F::Test_VarC_from_F(params)" << std::endl;
 }

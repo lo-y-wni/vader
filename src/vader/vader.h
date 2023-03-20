@@ -17,16 +17,8 @@
 #include "oops/base/Variables.h"
 #include "oops/util/Printable.h"
 #include "RecipeBase.h"
+#include "VaderConstructConfig.h"
 #include "VaderParameters.h"
-
-// Recipe headers
-#include "recipes/AirPotentialTemperature.h"
-#include "recipes/AirPressureThickness.h"
-#include "recipes/AirTemperature.h"
-#include "recipes/AirVirtualTemperature.h"
-#include "recipes/DryAirDensityLevelsMinusOne.h"
-#include "recipes/uwind_at_10m.h"
-#include "recipes/vwind_at_10m.h"
 
 namespace vader {
 
@@ -53,18 +45,8 @@ class Vader  : public util::Printable {
     static const std::string classname() {return "Vader";}
     typedef  std::vector<std::pair<std::string,
                                    const std::unique_ptr<RecipeBase> & >> vaderPlanType;
-    typedef std::map<std::string, std::vector<std::string>> cookbookConfigType;
     Vader(const VaderParameters & parameters,
-          const cookbookConfigType & clientCookbook = {
-            // Default VADER cookbook definition
-            {"potential_temperature",  {AirPotentialTemperature_A::Name}},
-            {"virtual_temperature",    {AirVirtualTemperature_A::Name}},
-            {"air_temperature",        {AirTemperature_A::Name, AirTemperature_B::Name}},
-            {"uwind_at_10m",           {uwind_at_10m_A::Name}},
-            {"vwind_at_10m",           {vwind_at_10m_A::Name}},
-            {"dry_air_density_levels_minus_one",  {DryAirDensityLevelsMinusOne_A::Name}}
-            //  {"air_pressure_thickness", {PressureToDelP::Name}}
-            });
+          const VaderConstructConfig & constructConfig = VaderConstructConfig());
     Vader(const Vader &) = delete;
     Vader& operator=(const Vader &) = delete;
     ~Vader();
@@ -83,10 +65,11 @@ class Vader  : public util::Printable {
     std::map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;
     vaderPlanType recipeExecutionPlan_;
     atlas::FieldSet trajectory_;
+    const VaderConfigVars configVariables_;
     std::map<std::string, std::vector<std::string>>
         getDefaultCookbookDef();
 
-    void createCookbook(std::map<std::string, std::vector<std::string>>,
+    void createCookbook(const cookbookConfigType &,
                         const std::vector<RecipeParametersWrapper> & allRecpParamWraps =
                               std::vector<RecipeParametersWrapper>());
 
