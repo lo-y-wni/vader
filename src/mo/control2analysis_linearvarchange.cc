@@ -109,65 +109,6 @@ void hexner2ThetavAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState
   }
 }
 
-void evalDryAirDensityTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds) {
-  const auto hlView = make_view<const double, 2>(augStateFlds["height_levels"]);
-  const auto hView = make_view<const double, 2>(augStateFlds["height"]);
-  const auto exnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
-  const auto thetaView = make_view<const double, 2>(augStateFlds["potential_temperature"]);
-  const auto rhoView = make_view<const double, 2>(augStateFlds["dry_air_density_levels_minus_one"]);
-  const auto exnerIncView = make_view<const double, 2>(incFlds["exner_levels_minus_one"]);
-  const auto thetaIncView = make_view<const double, 2>(incFlds["potential_temperature"]);
-  auto rhoIncView = make_view<double, 2>(incFlds["dry_air_density_levels_minus_one"]);
-
-  for (atlas::idx_t jn = 0; jn < rhoIncView.shape(0); ++jn) {
-    for (atlas::idx_t jl = 1; jl < incFlds["dry_air_density_levels_minus_one"].levels(); ++jl) {
-      rhoIncView(jn, jl) = rhoView(jn, jl) * (
-        exnerIncView(jn, jl) / exnerView(jn, jl) -
-        (((hlView(jn, jl) - hView(jn, jl-1)) * thetaIncView(jn, jl) +
-          (hView(jn, jl) - hlView(jn, jl)) * thetaIncView(jn, jl-1)) /
-         ((hlView(jn, jl) - hView(jn, jl-1)) * thetaView(jn, jl) +
-          (hView(jn, jl) - hlView(jn, jl)) * thetaView(jn, jl-1))));
-    }
-
-    rhoIncView(jn, 0) = rhoView(jn, 0) * (
-        exnerIncView(jn, 0) / exnerView(jn, 0) -
-        thetaIncView(jn, 0)/ thetaView(jn, 0));
-  }
-}
-
-void evalDryAirDensityAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds) {
-  const auto hlView = make_view<const double, 2>(augStateFlds["height_levels"]);
-  const auto hView = make_view<const double, 2>(augStateFlds["height"]);
-  const auto exnerView = make_view<const double, 2>(augStateFlds["exner_levels_minus_one"]);
-  const auto thetaView = make_view<const double, 2>(augStateFlds["potential_temperature"]);
-  const auto rhoView = make_view<const double, 2>(augStateFlds["dry_air_density_levels_minus_one"]);
-  auto exnerHatView = make_view<double, 2>(hatFlds["exner_levels_minus_one"]);
-  auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
-  auto rhoHatView = make_view<double, 2>(hatFlds["dry_air_density_levels_minus_one"]);
-
-  for (atlas::idx_t jn = 0; jn < rhoHatView.shape(0); ++jn) {
-    exnerHatView(jn, 0) += rhoView(jn, 0) * rhoHatView(jn, 0) /
-      exnerView(jn, 0);
-    thetaHatView(jn, 0) -= rhoView(jn, 0) * rhoHatView(jn, 0) /
-      thetaView(jn, 0);
-    rhoHatView(jn, 0) = 0.0;
-
-    for (atlas::idx_t jl = hatFlds["dry_air_density_levels_minus_one"].levels()-1; jl >= 1; --jl) {
-      exnerHatView(jn, jl) += rhoView(jn, jl) * rhoHatView(jn, jl) /
-        exnerView(jn, jl);
-      thetaHatView(jn, jl) -= rhoView(jn, jl) * rhoHatView(jn, jl) *
-        (hlView(jn, jl) - hView(jn, jl-1)) /
-        ((hlView(jn, jl) - hView(jn, jl-1)) * thetaView(jn, jl) +
-        (hView(jn, jl) - hlView(jn, jl)) * thetaView(jn, jl-1) );
-      thetaHatView(jn, jl-1) -= rhoView(jn, jl) * rhoHatView(jn, jl) *
-        (hView(jn, jl) - hlView(jn, jl)) /
-        ((hlView(jn, jl) - hView(jn, jl-1)) * thetaView(jn, jl) +
-        (hView(jn, jl) - hlView(jn, jl)) * thetaView(jn, jl-1));
-      rhoHatView(jn, jl) = 0.0;
-    }
-  }
-}
-
 
 /// \details This calculates air temperature increments.
 void evalAirTemperatureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds) {
@@ -375,34 +316,44 @@ void evalHydrostaticPressureTL(atlas::FieldSet & incFlds,
 
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
   // First index of interpWeightView is horizontal index, the second is bin index here
-  const auto interpWeightView = make_view<const double, 2>(augStateFlds["interpolation_weights"]);
-
-  // Bins Vertical regression matrix stored in one field
-  // B = (vertical regression matrix bin_0)
-  //     (vertical regression matrix bin_1)
-  //     (          ...                   )
-  //     (vertical regression matrix bin_m)
-  // Since each matrix is square we can easily infer the bin index from the row index
-  // First index of vertRegView is bin_index * number of levels + level index,
-  // the second is number of levels associated with matrix column.
-  const auto vertRegView = make_view<const double, 2>(augStateFlds["vertical_regression_matrices"]);
-
-  auto hPIncView = make_view<double, 2>(incFlds["hydrostatic_pressure_levels"]);
 
   atlas::idx_t levels = incFlds["geostrophic_pressure_levels_minus_one"].levels();
-  atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1);
-
+  auto hPIncView = make_view<double, 2>(incFlds["hydrostatic_pressure_levels"]);
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       hPIncView(jn, jl) = uPIncView(jn, jl);
-      for (atlas::idx_t b = 0; b < nBins; ++b) {
-        for (atlas::idx_t jl2 = 0; jl2 < levels; ++jl2) {
-          hPIncView(jn, jl) += interpWeightView(jn, b) *
-                               vertRegView(b * levels + jl, jl2) *
-                               gPIncView(jn, jl2);
+    }
+  }
+
+  if (augStateFlds.has("interpolation_weights")) {
+    // Bins Vertical regression matrix stored in one field
+    // B = (vertical regression matrix bin_0)
+    //     (vertical regression matrix bin_1)
+    //     (          ...                   )
+    //     (vertical regression matrix bin_m)
+    // Since each matrix is square we can easily infer the bin index from the row index
+    // First index of vertRegView is bin_index * number of levels + level index,
+    // the second is number of levels associated with matrix column.
+    const auto vertRegView = make_view<const double, 2>(
+      augStateFlds["vertical_regression_matrices"]);
+    const auto interpWeightView = make_view<const double, 2>(
+      augStateFlds["interpolation_weights"]);
+    atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1);
+
+    for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
+      for (atlas::idx_t jl = 0; jl < levels; ++jl) {
+        for (atlas::idx_t b = 0; b < nBins; ++b) {
+          for (atlas::idx_t jl2 = 0; jl2 < levels; ++jl2) {
+            hPIncView(jn, jl) += interpWeightView(jn, b) *
+                                 vertRegView(b * levels + jl, jl2) *
+                                 gPIncView(jn, jl2);
+          }
         }
       }
     }
+  }
+
+  for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
     hPIncView(jn, levels) =
       hPIncView(jn, levels-1) *
       std::pow(pView(jn, levels-1) / pView(jn, levels), constants::rd_over_cp - 1.0);
@@ -416,38 +367,48 @@ void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
   auto uPHatView = make_view<double, 2>(hatFlds["unbalanced_pressure_levels_minus_one"]);
 
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
-  // First index of interpWeightView is horizontal index, the second is bin index here
-  const auto interpWeightView = make_view<const double, 2>(augStateFlds["interpolation_weights"]);
-
-  // Bins Vertical regression matrix stored in one field
-  // B = (vertical regression matrix bin_0)
-  //     (vertical regression matrix bin_1)
-  //     (          ...                   )
-  //     (vertical regression matrix bin_m)
-  // Since each matrix is square we can easily infer the bin index from the row index
-  // First index of vertRegView is bin_index * number of levels + level index,
-  //     the second is level index
-  const auto vertRegView = make_view<const double, 2>(augStateFlds["vertical_regression_matrices"]);
-
   auto hPHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
 
   atlas::idx_t levels = hatFlds["geostrophic_pressure_levels_minus_one"].levels();
-  atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1);
-
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
     hPHatView(jn, levels - 1) +=
      hPHatView(jn, levels) *
      std::pow(pView(jn, levels-1) / pView(jn, levels), constants::rd_over_cp - 1.0);
     hPHatView(jn, levels) = 0.0;
+  }
 
-    for (atlas::idx_t jl = levels - 1; jl >= 0; --jl) {
-      for (atlas::idx_t b = nBins -1; b >= 0; --b) {
-        for (atlas::idx_t jl2 = levels - 1; jl2 >= 0; --jl2) {
-          gPHatView(jn, jl2) += interpWeightView(jn, b) *
-                                vertRegView(b * levels + jl, jl2) *
-                                hPHatView(jn, jl);
+  if (augStateFlds.has("interpolation_weights")) {
+    // Bins Vertical regression matrix stored in one field
+    // B = (vertical regression matrix bin_0)
+    //     (vertical regression matrix bin_1)
+    //     (          ...                   )
+    //     (vertical regression matrix bin_m)
+    // Since each matrix is square we can easily infer the bin index from the row index
+    // First index of vertRegView is bin_index * number of levels + level index,
+    //     the second is level index
+    const auto vertRegView = make_view<const double, 2>(
+      augStateFlds["vertical_regression_matrices"]);
+    const auto interpWeightView = make_view<const double, 2>(
+      augStateFlds["interpolation_weights"]);
+    atlas::idx_t nBins = augStateFlds["interpolation_weights"].shape(1);
+
+    for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
+      for (atlas::idx_t jl = levels - 1; jl >= 0; --jl) {
+        for (atlas::idx_t b = nBins -1; b >= 0; --b) {
+          for (atlas::idx_t jl2 = levels - 1; jl2 >= 0; --jl2) {
+            gPHatView(jn, jl2) += interpWeightView(jn, b) *
+                                  vertRegView(b * levels + jl, jl2) *
+                                  hPHatView(jn, jl);
+          }
         }
+        uPHatView(jn, jl) += hPHatView(jn, jl);
+        hPHatView(jn, jl) = 0.0;
       }
+    }
+  }
+
+  for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
+    for (atlas::idx_t jl = levels - 1; jl >= 0; --jl) {
       uPHatView(jn, jl) += hPHatView(jn, jl);
       hPHatView(jn, jl) = 0.0;
     }

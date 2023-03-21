@@ -27,16 +27,13 @@ class DryAirDensityLevelsMinusOne_AParameters : public RecipeParametersBase {
   oops::RequiredParameter<std::string> name{
      "recipe name",
      this};
-  oops::Parameter<double> rd{"rd", "specific gas constant for dry air", 2.8705e2, this};
 };
 
 // ------------------------------------------------------------------------------------------------
 /*! \brief DryAirDensityLevelsMinusOne_A class defines a recipe for dry air density
  *
  *  \details This instantiation of RecipeBase produces dry air density
- *           using temperature and pressure as inputs. The parameter
- *           rd can be specified via the constructor configuration.
- *           If it is not, the code will provide a default value.
+ *           using virtual_potential_temperature and pressure as inputs.
  */
 class DryAirDensityLevelsMinusOne_A : public RecipeBase {
  public:
@@ -59,7 +56,6 @@ class DryAirDensityLevelsMinusOne_A : public RecipeBase {
     bool executeAD(atlas::FieldSet &, const atlas::FieldSet &) override;
 
  private:
-    const double rd_;
 };
 
 }  // namespace vader
