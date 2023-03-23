@@ -85,6 +85,14 @@ void testVaderAdjoint() {
   oops::Variables vars = productVars;
   vader.changeVarTraj(traj, vars);
 
+  // The test should be setup to do variable change for all variables, exit
+  // if it's not
+  if (vars.size() > 0) {
+    oops::Log::info() << "Not all variables can be converted; no recipes found for "
+                      << vars << std::endl;
+  }
+  EXPECT_EQUAL(vars.size(), 0);
+
   // Testing whether (dx, K^T dy) == (K dx, dy)
   // Allocating dxin to contain randomized dx (for the ingredient variables)
   atlas::FieldSet dxin;
