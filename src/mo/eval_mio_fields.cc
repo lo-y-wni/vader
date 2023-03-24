@@ -24,6 +24,7 @@ using atlas::array::make_view;
 namespace mo {
 
 void eval_mio_fields_nl(const std::string & mio_path, atlas::FieldSet & augStateFlds) {
+  oops::Log::trace() << "[eval_mio_fields_nl()] starting ..." << std::endl;
   const auto rhtView = make_view<const double, 2>(augStateFlds["rht"]);
   const auto clView = make_view<const double, 2>
                 (augStateFlds["liquid_cloud_fraction"]);
@@ -57,6 +58,7 @@ void eval_mio_fields_nl(const std::string & mio_path, atlas::FieldSet & augState
       }
     }
   }
+  oops::Log::trace() << "[eval_mio_fields_nl()] ... exit" << std::endl;
 }
 
 }  // namespace mo

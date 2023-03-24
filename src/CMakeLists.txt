@@ -33,6 +33,8 @@ vader/recipes/LnAirPressureAtInterface_A.cc
 vader/recipes/LnAirPressureAtInterface.h
 vader/recipes/DryAirDensityLevelsMinusOne.h
 vader/recipes/DryAirDensityLevelsMinusOne_A.cc
+vader/recipes/HydrostaticExnerLevels.h
+vader/recipes/HydrostaticExnerLevels_A.cc
 vader/recipes/SurfaceAirPressure.h
 vader/recipes/SurfaceAirPressure_A.cc
 vader/recipes/SurfaceAirPressure.h
@@ -40,6 +42,8 @@ vader/recipes/TestRecipes.cc
 vader/recipes/TestRecipes.h
 vader/recipes/uwind_at_10m_A.cc
 vader/recipes/uwind_at_10m.h
+vader/recipes/VirtualPotentialTemperature_A.cc
+vader/recipes/VirtualPotentialTemperature.h
 vader/recipes/vwind_at_10m_A.cc
 vader/recipes/vwind_at_10m.h
 mo/common_varchange.h
@@ -62,6 +66,8 @@ mo/eval_air_temperature.h
 mo/eval_air_temperature.cc
 mo/eval_dry_air_density.h
 mo/eval_dry_air_density.cc
+mo/eval_hydrostatic_balance.h
+mo/eval_hydrostatic_balance.cc
 mo/eval_mio_fields.h
 mo/eval_mio_fields.cc
 mo/eval_sat_vapour_pressure.h

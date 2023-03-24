@@ -21,7 +21,9 @@
 #include "recipes/AirTemperature.h"
 #include "recipes/AirVirtualTemperature.h"
 #include "recipes/DryAirDensityLevelsMinusOne.h"
+#include "recipes/HydrostaticExnerLevels.h"
 #include "recipes/uwind_at_10m.h"
+#include "recipes/VirtualPotentialTemperature.h"
 #include "recipes/vwind_at_10m.h"
 
 namespace vader {
@@ -55,7 +57,9 @@ struct VaderConstructConfig  : public util::Printable {
             {"air_temperature",        {AirTemperature_A::Name, AirTemperature_B::Name}},
             {"uwind_at_10m",           {uwind_at_10m_A::Name}},
             {"vwind_at_10m",           {vwind_at_10m_A::Name}},
-            {"dry_air_density_levels_minus_one",  {DryAirDensityLevelsMinusOne_A::Name}}
+            {"dry_air_density_levels_minus_one",  {DryAirDensityLevelsMinusOne_A::Name}},
+            {"hydrostatic_exner_levels",  {HydrostaticExnerLevels_A::Name}},
+            {"virtual_potential_temperature",  {VirtualPotentialTemperature_A::Name}}
         },
         std::map<std::string, boost::any> configVariables = {});
     ~VaderConstructConfig();
