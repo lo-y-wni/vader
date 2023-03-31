@@ -66,6 +66,10 @@ mo/eval_air_temperature.h
 mo/eval_air_temperature.cc
 mo/eval_dry_air_density.h
 mo/eval_dry_air_density.cc
+mo/eval_exner.h
+mo/eval_exner.cc
+mo/eval_geostrophic_to_hydrostatic_pressure.h
+mo/eval_geostrophic_to_hydrostatic_pressure.cc
 mo/eval_hydrostatic_balance.h
 mo/eval_hydrostatic_balance.cc
 mo/eval_mio_fields.h
