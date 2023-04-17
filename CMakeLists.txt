@@ -15,7 +15,7 @@ list( APPEND VADER_LANGUAGES CXX Fortran)
 # 	list( APPEND VADER_LANGUAGES Fortran)
 # endif()
 
-project( vader VERSION 1.2.0 LANGUAGES ${VADER_LANGUAGES} )
+project( vader VERSION 1.3.0 LANGUAGES ${VADER_LANGUAGES} )
 
 ## Ecbuild integration
 find_package( ecbuild QUIET )
