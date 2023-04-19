@@ -9,13 +9,8 @@
 ################################################################################
 
 cmake_minimum_required( VERSION 3.12 )
-# option(VADER_BUILD_LANGUAGE_FORTRAN "Build Fortran bindings." ON)
-list( APPEND VADER_LANGUAGES CXX Fortran)
-# if (VADER_BUILD_LANGUAGE_FORTRAN)
-# 	list( APPEND VADER_LANGUAGES Fortran)
-# endif()
 
-project( vader VERSION 1.3.0 LANGUAGES ${VADER_LANGUAGES} )
+project( vader VERSION 1.3.0 LANGUAGES CXX Fortran )
 
 ## Ecbuild integration
 find_package( ecbuild QUIET )
@@ -36,8 +31,9 @@ find_package( Boost 1.64.0 REQUIRED )
 
 # Required
 find_package( jedicmake QUIET )  # Prefer find modules from jedi-cmake
+find_package( MPI REQUIRED COMPONENTS C Fortran )
 find_package( oops 1.0.0 REQUIRED )
-find_package( NetCDF REQUIRED COMPONENTS C )
+find_package( NetCDF REQUIRED COMPONENTS C Fortran )
 
 ## Sources
 add_subdirectory( src )
