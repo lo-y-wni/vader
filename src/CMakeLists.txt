@@ -74,6 +74,8 @@ mo/eval_hydrostatic_balance.h
 mo/eval_hydrostatic_balance.cc
 mo/eval_mio_fields.h
 mo/eval_mio_fields.cc
+mo/eval_moisture_control.h
+mo/eval_moisture_control.cc
 mo/eval_sat_vapour_pressure.h
 mo/eval_sat_vapour_pressure.cc
 mo/model2geovals_linearvarchange.h

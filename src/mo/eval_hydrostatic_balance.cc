@@ -107,6 +107,7 @@ void eval_hydrobal_hydrostatic_exner_levels_nl(atlas::FieldSet & fields) {
 void eval_hydrobal_hydrostatic_exner_levels_tl(atlas::FieldSet & incFlds,
                                                const atlas::FieldSet & augStateFlds) {
   oops::Log::trace() << "[eval_hydrobal_hydrostatic_exner_levels_tl()] ... starting" << std::endl;
+
   auto hlView = make_view<const double, 2>(augStateFlds["height_levels"]);
   auto thetavView = make_view<const double, 2>(augStateFlds["virtual_potential_temperature"]);
   auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels_minus_one"]);

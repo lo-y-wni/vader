@@ -17,15 +17,14 @@ void eval_hydrobal_virtual_potential_temperature_nl(atlas::FieldSet & fields);
 /// \details Tangent linear approximation to the
 ///          transformation from hydrostatically-balanced exner (hydrostatic_exner_levels)
 ///          to virtual_potential_temperature
-void  eval_hydrobal_virtual_potential_temperature_tl(atlas::FieldSet & incFlds,
-                                                     const atlas::FieldSet & augStateFlds);
+void eval_hydrobal_virtual_potential_temperature_tl(atlas::FieldSet & incFlds,
+                                                    const atlas::FieldSet & augStateFlds);
 
 /// \details Adjoint of the tangent linear approximation to the
 ///          transformation from virtual potential temperature () to
 ///          hydrostatically-balanced exner (hexner)
-///          Note:: zeroing of hexnerHatView not done.
-void  eval_hydrobal_virtual_potential_temperature_ad(atlas::FieldSet & hatFlds,
-                                                     const atlas::FieldSet & augStateFlds);
+void eval_hydrobal_virtual_potential_temperature_ad(atlas::FieldSet & hatFlds,
+                                                    const atlas::FieldSet & augStateFlds);
 
 /// \details Hydrostatic balance from virtual potential temperature and
 ///          air pressure levels minus one (at lowest level) to
@@ -36,13 +35,13 @@ void eval_hydrobal_hydrostatic_exner_levels_nl(atlas::FieldSet & fields);
 ///          from virtual potential temperature and
 ///          air pressure levels minus one (at lowest level) to
 ///          hydrostatic_exner_levels
-void  eval_hydrobal_hydrostatic_exner_levels_tl(atlas::FieldSet & incFlds,
-                                                const atlas::FieldSet & augStateFlds);
+void eval_hydrobal_hydrostatic_exner_levels_tl(atlas::FieldSet & incFlds,
+                                               const atlas::FieldSet & augStateFlds);
 
 /// \details Adjoint of the tangent linear approximation to the transformation
 ///          from virtual potential temperature and
 ///          air pressure levels minus one (at lowest level) to
 ///          hydrostatic_exner_levels
-void  eval_hydrobal_hydrostatic_exner_levels_ad(atlas::FieldSet & hatFlds,
-                                                const atlas::FieldSet & augStateFlds);
+void eval_hydrobal_hydrostatic_exner_levels_ad(atlas::FieldSet & hatFlds,
+                                               const atlas::FieldSet & augStateFlds);
 }  // namespace mo
