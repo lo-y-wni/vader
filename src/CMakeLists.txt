@@ -37,9 +37,10 @@ vader/recipes/HydrostaticExnerLevels.h
 vader/recipes/HydrostaticExnerLevels_A.cc
 vader/recipes/SurfaceAirPressure.h
 vader/recipes/SurfaceAirPressure_A.cc
-vader/recipes/SurfaceAirPressure.h
 vader/recipes/TestRecipes.cc
 vader/recipes/TestRecipes.h
+vader/recipes/TotalWater.h
+vader/recipes/TotalWater_A.cc
 vader/recipes/uwind_at_10m_A.cc
 vader/recipes/uwind_at_10m.h
 vader/recipes/VirtualPotentialTemperature_A.cc
@@ -74,6 +75,8 @@ mo/eval_hydrostatic_balance.h
 mo/eval_hydrostatic_balance.cc
 mo/eval_mio_fields.h
 mo/eval_mio_fields.cc
+mo/eval_moisture_incrementing_operator.h
+mo/eval_moisture_incrementing_operator.cc
 mo/eval_moisture_control.h
 mo/eval_moisture_control.cc
 mo/eval_sat_vapour_pressure.h
