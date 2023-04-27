@@ -54,9 +54,9 @@ std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
 void getMIOFields(atlas::FieldSet & augStateFlds) {
   const auto rhtView = make_view<const double, 2>(augStateFlds["rht"]);
   const auto clView = make_view<const double, 2>
-                (augStateFlds["liquid_cloud_fraction"]);
+                (augStateFlds["liquid_cloud_volume_fraction_in_atmosphere_layer"]);
   const auto cfView = make_view<const double, 2>
-                (augStateFlds["frozen_cloud_fraction"]);
+                (augStateFlds["ice_cloud_volume_fraction_in_atmosphere_layer"]);
 
   auto cleffView = make_view<double, 2>(augStateFlds["cleff"]);
   auto cfeffView = make_view<double, 2>(augStateFlds["cfeff"]);
