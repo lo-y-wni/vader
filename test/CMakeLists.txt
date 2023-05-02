@@ -4,11 +4,13 @@ testinput/recipe_AirTemperature_A.yaml
 testinput/recipe_HydrostaticExnerLevels_A.yaml
 testinput/recipe_TotalWater_A.yaml
 testinput/recipe_VirtualPotentialTemperature_A.yaml
+testinput/recipe_VirtualPotentialTemperature_B.yaml
 testinput/vader_AirTemperature_A.yaml
 testinput/vader_DryAirDensityLevelsMinusOne_A.yaml
 testinput/vader_HydrostaticExnerLevels_A.yaml
 testinput/vader_TotalWater_A.yaml
 testinput/vader_VirtualPotentialTemperature_A.yaml
+testinput/vader_VirtualPotentialTemperature_B.yaml
 testinput/recipe_uwind_at_10m_A.yaml
 testinput/vader_uwind_at_10m_A.yaml
 testinput/recipe_vwind_at_10m_A.yaml
@@ -73,6 +75,11 @@ ecbuild_add_test( TARGET  test_vader_recipe_VirtualPotentialTemperature_A
                   ARGS    "testinput/recipe_VirtualPotentialTemperature_A.yaml"
                   LIBS    vader )
 
+ecbuild_add_test( TARGET  test_vader_recipe_VirtualPotentialTemperature_B
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
+                  ARGS    "testinput/recipe_VirtualPotentialTemperature_B.yaml"
+                  LIBS    vader )
+
 ecbuild_add_test( TARGET  test_vader_recipe_vwind_at_10m_A
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
                   ARGS    "testinput/recipe_vwind_at_10m_A.yaml"
@@ -114,6 +121,10 @@ ecbuild_add_test( TARGET  test_vader_vader_VirtualPotentialTemperature_A
                   ARGS    "testinput/vader_VirtualPotentialTemperature_A.yaml"
                   LIBS    vader )
 
+ecbuild_add_test( TARGET  test_vader_vader_VirtualPotentialTemperature_B
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_vader.x
+                  ARGS    "testinput/vader_VirtualPotentialTemperature_B.yaml"
+                  LIBS    vader )
 
 # Test planVariable algorithm
 ecbuild_add_test( TARGET  test_vader_planvariable

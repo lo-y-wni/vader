@@ -20,6 +20,7 @@
 
 namespace vader {
 
+// ------------------------------------------------------------------------------------------------
 class VirtualPotentialTemperature_AParameters : public RecipeParametersBase {
   OOPS_CONCRETE_PARAMETERS(VirtualPotentialTemperature_AParameters, RecipeParametersBase)
 
@@ -29,8 +30,7 @@ class VirtualPotentialTemperature_AParameters : public RecipeParametersBase {
      this};
 };
 
-// ------------------------------------------------------------------------------------------------
-/*! \brief VirtualPotentialTemperature_A class defines a recipe for dry air density
+/*! \brief VirtualPotentialTemperature_A class defines a recipe for virtual potential temperature
  *
  *  \details This instantiation of RecipeBase produces virtual potential temperature
  *           using height_levels and hydrostatic exner levels as inputs.
@@ -57,6 +57,46 @@ class VirtualPotentialTemperature_A : public RecipeBase {
 
  private:
 };
+
+// ------------------------------------------------------------------------------------------------
+class VirtualPotentialTemperature_BParameters : public RecipeParametersBase {
+  OOPS_CONCRETE_PARAMETERS(VirtualPotentialTemperature_BParameters, RecipeParametersBase)
+
+ public:
+  oops::RequiredParameter<std::string> name{
+     "recipe name",
+     this};
+};
+
+/*! \brief VirtualPotentialTemperature_B class defines a recipe for virtual potential temperature
+ *
+ *  \details This instantiation of RecipeBase produces virtual potential temperature
+ *           using specific humidity and potential temperature as inputs.
+ */
+class VirtualPotentialTemperature_B : public RecipeBase {
+ public:
+    static const char Name[];
+    static const std::vector<std::string> Ingredients;
+
+    typedef VirtualPotentialTemperature_BParameters Parameters_;
+
+    VirtualPotentialTemperature_B(const Parameters_ &, const VaderConfigVars &);
+
+    // Recipe base class overrides
+    std::string name() const override;
+    std::string product() const override;
+    std::vector<std::string> ingredients() const override;
+    size_t productLevels(const atlas::FieldSet &) const override;
+    atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override;
+    bool hasTLAD() const override { return true; }
+    bool executeNL(atlas::FieldSet &) override;
+    bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
+    bool executeAD(atlas::FieldSet &, const atlas::FieldSet &) override;
+
+ private:
+};
+// ------------------------------------------------------------------------------------------------
+
 
 }  // namespace vader
 

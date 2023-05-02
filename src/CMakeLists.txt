@@ -44,6 +44,7 @@ vader/recipes/TotalWater_A.cc
 vader/recipes/uwind_at_10m_A.cc
 vader/recipes/uwind_at_10m.h
 vader/recipes/VirtualPotentialTemperature_A.cc
+vader/recipes/VirtualPotentialTemperature_B.cc
 vader/recipes/VirtualPotentialTemperature.h
 vader/recipes/vwind_at_10m_A.cc
 vader/recipes/vwind_at_10m.h
@@ -81,6 +82,8 @@ mo/eval_moisture_control.h
 mo/eval_moisture_control.cc
 mo/eval_sat_vapour_pressure.h
 mo/eval_sat_vapour_pressure.cc
+mo/eval_virtual_potential_temperature.h
+mo/eval_virtual_potential_temperature.cc
 mo/model2geovals_linearvarchange.h
 mo/model2geovals_linearvarchange.cc
 mo/model2geovals_varchange.h

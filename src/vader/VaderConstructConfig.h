@@ -59,8 +59,9 @@ struct VaderConstructConfig  : public util::Printable {
             {"potential_temperature",  {AirPotentialTemperature_A::Name}},
             {"qt",                     {TotalWater_A::Name}},
             {"uwind_at_10m",           {uwind_at_10m_A::Name}},
+            {"virtual_potential_temperature",  {VirtualPotentialTemperature_B::Name,
+                                                VirtualPotentialTemperature_A::Name}},
             {"virtual_temperature",    {AirVirtualTemperature_A::Name}},
-            {"virtual_potential_temperature",  {VirtualPotentialTemperature_A::Name}},
             {"vwind_at_10m",           {vwind_at_10m_A::Name}}
         },
         std::map<std::string, boost::any> configVariables = {});
