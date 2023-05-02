@@ -82,6 +82,8 @@ mo/eval_moisture_control.h
 mo/eval_moisture_control.cc
 mo/eval_sat_vapour_pressure.h
 mo/eval_sat_vapour_pressure.cc
+mo/eval_total_relative_humidity.h
+mo/eval_total_relative_humidity.cc
 mo/eval_virtual_potential_temperature.h
 mo/eval_virtual_potential_temperature.cc
 mo/model2geovals_linearvarchange.h
