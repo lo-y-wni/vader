@@ -23,14 +23,13 @@ namespace vader
 const char AirVirtualTemperature_A::Name[] = "AirVirtualTemperature_A";
 const std::vector<std::string> AirVirtualTemperature_A::Ingredients = {"air_temperature",
                                                                        "specific_humidity"};
-const double default_epsilon = 0.62196;
 
 // Register the maker
 static RecipeMaker<AirVirtualTemperature_A> makerTempToVTemp_(AirVirtualTemperature_A::Name);
 
 AirVirtualTemperature_A::AirVirtualTemperature_A(const Parameters_ & params,
                                     const VaderConfigVars & configVariables) :
-    epsilon_{params.epsilon.value()}
+    configVariables_{configVariables}
 {
     oops::Log::trace() << "AirVirtualTemperature_A::AirVirtualTemperature_A(params)" << std::endl;
 }
@@ -66,6 +65,10 @@ bool AirVirtualTemperature_A::executeNL(atlas::FieldSet & afieldset)
     oops::Log::trace() << "entering AirVirtualTemperature_A::executeNL function"
         << std::endl;
 
+    // TODO(vahl) :"epsilon" should be changed to more CCPP
+    //           "ratio_of_dry_air_gas_to_water_vapor_constants"
+    const double epsilon = configVariables_.getDouble("epsilon");
+
     atlas::Field temperature = afieldset.field("air_temperature");
     atlas::Field specific_humidity = afieldset.field("specific_humidity");
     atlas::Field virtual_temperature = afieldset.field("virtual_temperature");
@@ -81,7 +84,7 @@ bool AirVirtualTemperature_A::executeNL(atlas::FieldSet & afieldset)
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         virtual_temperature_view(jnode, level) =
             temperature_view(jnode, level) *
-            (1.0 + epsilon_ * specific_humidity_view(jnode, level));
+            (1.0 + epsilon * specific_humidity_view(jnode, level));
       }
     }
 
@@ -93,10 +96,10 @@ bool AirVirtualTemperature_A::executeNL(atlas::FieldSet & afieldset)
 bool AirVirtualTemperature_A::executeTL(atlas::FieldSet & afieldsetTL,
                                         const atlas::FieldSet & afieldsetTraj)
 {
-    bool tl_virtual_temperature_filled = false;
-
     oops::Log::trace() << "entering AirVirtualTemperature_A::executeTL function"
         << std::endl;
+
+    double epsilon = configVariables_.getDouble("epsilon");
 
     atlas::Field traj_temperature = afieldsetTraj.field("air_temperature");
     atlas::Field traj_specific_humidity = afieldsetTraj.field("specific_humidity");
@@ -117,26 +120,24 @@ bool AirVirtualTemperature_A::executeTL(atlas::FieldSet & afieldsetTL,
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         tl_virtual_temperature_view(jnode, level) =
             tl_temperature_view(jnode, level) *
-            (1.0 + epsilon_ * traj_specific_humidity_view(jnode, level)) +
-            (traj_temperature_view(jnode, level) * epsilon_ *
+            (1.0 + epsilon * traj_specific_humidity_view(jnode, level)) +
+            (traj_temperature_view(jnode, level) * epsilon *
              tl_specific_humidity_view(jnode, level));
       }
     }
 
-    tl_virtual_temperature_filled = true;
-
     oops::Log::trace() << "leaving AirVirtualTemperature_A::executeTL function" << std::endl;
 
-    return tl_virtual_temperature_filled;
+    return true;
 }
 
 bool AirVirtualTemperature_A::executeAD(atlas::FieldSet & afieldsetAD,
                                         const atlas::FieldSet & afieldsetTraj)
 {
-    bool adjointSuccess = false;
-
     oops::Log::trace() << "entering AirVirtualTemperature_A::executeAD function"
         << std::endl;
+
+    double epsilon = configVariables_.getDouble("epsilon");
 
     atlas::Field traj_temperature = afieldsetTraj.field("air_temperature");
     atlas::Field traj_specific_humidity = afieldsetTraj.field("specific_humidity");
@@ -156,21 +157,19 @@ bool AirVirtualTemperature_A::executeAD(atlas::FieldSet & afieldsetAD,
     for (int level = 0; level < nlevels; ++level) {
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         ad_temperature_view(jnode, level) += ad_virtual_temperature_view(jnode, level) *
-            (1.0 + epsilon_ * traj_specific_humidity_view(jnode, level));
+            (1.0 + epsilon * traj_specific_humidity_view(jnode, level));
 
         ad_specific_humidity_view(jnode, level) +=
-            ad_virtual_temperature_view(jnode, level) * epsilon_ *
+            ad_virtual_temperature_view(jnode, level) * epsilon *
             traj_temperature_view(jnode, level);
 
         ad_virtual_temperature_view(jnode, level) = 0.0;
       }
     }
 
-    adjointSuccess = true;
-
     oops::Log::trace() << "leaving AirVirtualTemperature_A::executeAD function" << std::endl;
 
-    return adjointSuccess;
+    return true;
 }
 
 }  // namespace vader

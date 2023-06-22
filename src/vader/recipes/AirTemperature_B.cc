@@ -29,7 +29,7 @@ static RecipeMaker<AirTemperature_B> makerAirTemperature_B_(AirTemperature_B::Na
 
 AirTemperature_B::AirTemperature_B(const Parameters_ & params,
                                    const VaderConfigVars & configVariables) :
-    epsilon_{params.epsilon.value()}
+    configVariables_{configVariables}
 {
     oops::Log::trace() << "AirTemperature_B::AirTemperature_B(params)" << std::endl;
 }
@@ -64,6 +64,8 @@ bool AirTemperature_B::executeNL(atlas::FieldSet & afieldset)
     oops::Log::trace() << "entering AirTemperature_B::executeNL function"
         << std::endl;
 
+    const double epsilon = configVariables_.getDouble("epsilon");
+
     atlas::Field virtual_temperature = afieldset.field("virtual_temperature");
     atlas::Field temperature = afieldset.field("air_temperature");
     atlas::Field specific_humidity = afieldset.field("specific_humidity");
@@ -79,7 +81,7 @@ bool AirTemperature_B::executeNL(atlas::FieldSet & afieldset)
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         temperature_view(jnode, level) =
             virtual_temperature_view(jnode, level) /
-            (1.0 + epsilon_ * specific_humidity_view(jnode, level));
+            (1.0 + epsilon * specific_humidity_view(jnode, level));
       }
     }
 

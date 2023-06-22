@@ -57,6 +57,7 @@ class DryAirDensityLevelsMinusOne_A : public RecipeBase {
     bool executeAD(atlas::FieldSet &, const atlas::FieldSet &) override;
 
  private:
+    const VaderConfigVars & configVariables_;
 };
 
 }  // namespace vader

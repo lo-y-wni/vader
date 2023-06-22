@@ -26,8 +26,6 @@ class AirPotentialTemperature_AParameters : public RecipeParametersBase {
 
  public:
   oops::RequiredParameter<std::string> name{"recipe name", this};
-  oops::Parameter<double> p0{"p0", "p-naught", -1.0, this};
-  oops::Parameter<double> kappa{"kappa", "kappa", 0.28571428571428570, this};
 };
 
 /*! \brief AirPotentialTemperature_A class defines a recipe for potential temperature
@@ -56,8 +54,7 @@ class AirPotentialTemperature_A : public RecipeBase {
     bool executeNL(atlas::FieldSet &) override;
 
  private:
-    double p0_;
-    const double kappa_;
+    const VaderConfigVars & configVariables_;
 };
 
 // -------------------------------------------------------------------------------------------------

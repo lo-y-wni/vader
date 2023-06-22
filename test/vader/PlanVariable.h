@@ -69,7 +69,7 @@ void testPlanVariable() {
 
   // loop through all tests
   for (const auto & param : params.tests.value()) {
-    vader::Vader vader(params.vader, VaderConstructConfig(param.cookbook));
+    vader::Vader vader(params.vader, param.toConfiguration());
     const std::vector<std::string> targetVars = param.products;
     const std::vector<std::string> ingredientVars = param.ingredients;
     bool planTLAD = param.planTLAD;

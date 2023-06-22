@@ -59,7 +59,12 @@ void testVaderAdjoint() {
   VaderTestParameters params;
   params.validateAndDeserialize(::test::TestEnvironment::config());
 
-  vader::Vader vader(params.vader);
+  eckit::LocalConfiguration modelVarsConfig;
+  modelVarsConfig.set("gas_constant_of_dry_air", 2.8705e2);
+  eckit::LocalConfiguration vaderConfig;
+  vaderConfig.set(vader::configModelVarsKey, modelVarsConfig);
+
+  vader::Vader vader(params.vader, vaderConfig);
   const oops::Variables ingredientVars(params.ingredients);
   const oops::Variables productVars(params.products);
   oops::Log::info() << "Testing vader" << std::endl;

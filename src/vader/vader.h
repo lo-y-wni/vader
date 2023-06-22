@@ -17,10 +17,23 @@
 #include "oops/base/Variables.h"
 #include "oops/util/Printable.h"
 #include "RecipeBase.h"
-#include "VaderConstructConfig.h"
 #include "VaderParameters.h"
 
 namespace vader {
+
+typedef std::map<std::string, std::vector<std::string>> cookbookConfigType;
+// configCookbookKey is a key that can optionally be provided in the eckit::LocalConfiguration
+// that can be passed as the second parameter of the Vader constructor. If passed, the value
+// is used to define the Vader cookbook for the vader instance. If not passed, the default Vader
+// cookbook defined in DefaultCookbook.h will be used.
+static const char configCookbookKey[]  = "cookbook";
+
+// configModelVarsKey is a key that can optionally be provided in the eckit::LocalConfiguration
+// that can be passed as the second parameter of the Vader constructor. If passed, the values
+// will be stored in Vader's configVariables_ property. Whenever a recipe is executed that
+// requires a model-specific value in its algorithm, the recipe will look in that Configuration for
+// the value, and should generate an error if it isn't found. (Instead of using a default value.)
+static const char configModelVarsKey[] = "model data";
 
 // ------------------------------------------------------------------------------------------------
 /*! \brief Vader class to handle variable transformations
@@ -43,10 +56,11 @@ namespace vader {
 class Vader  : public util::Printable {
  public:
     static const std::string classname() {return "Vader";}
+    static const cookbookConfigType defaultCookbookDefinition;
     typedef  std::vector<std::pair<std::string,
                                    const std::unique_ptr<RecipeBase> & >> vaderPlanType;
     Vader(const VaderParameters & parameters,
-          const VaderConstructConfig & constructConfig = VaderConstructConfig());
+          const eckit::Configuration & config = eckit::LocalConfiguration());
     Vader(const Vader &) = delete;
     Vader& operator=(const Vader &) = delete;
     ~Vader();
@@ -65,7 +79,7 @@ class Vader  : public util::Printable {
     std::map<std::string, std::vector<std::unique_ptr<RecipeBase>>> cookbook_;
     vaderPlanType recipeExecutionPlan_;
     atlas::FieldSet trajectory_;
-    const VaderConfigVars configVariables_;
+    const eckit::LocalConfiguration configVariables_;
     std::map<std::string, std::vector<std::string>>
         getDefaultCookbookDef();
 

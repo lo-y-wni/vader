@@ -63,7 +63,7 @@ std::vector<std::string> AirPressureAtInterface_A::ingredients() const {
 // -------------------------------------------------------------------------------------------------
 
 size_t AirPressureAtInterface_A::productLevels(const atlas::FieldSet & afieldset) const {
-    int nLevels = configVariables_.getFromConfig<int>("nLevels");
+    int nLevels = configVariables_.getInt("nLevels");
     return nLevels + 1;
 }
 
@@ -94,13 +94,13 @@ bool AirPressureAtInterface_A::executeNL(atlas::FieldSet & afieldset) {
                "for pressure " + prsi_units + "do not match the surface pressure units" + ps_units);
 
     // Extract ak/bk from client config
-    std::vector<double> ak = configVariables_.getFromConfig<std::vector<double>>
+    std::vector<double> ak = configVariables_.getDoubleVector
                                                 ("sigma_pressure_hybrid_coordinate_a_coefficient");
-    std::vector<double> bk = configVariables_.getFromConfig<std::vector<double>>
+    std::vector<double> bk = configVariables_.getDoubleVector
                                                 ("sigma_pressure_hybrid_coordinate_b_coefficient");
 
     // Get number of levels
-    int nLevels = configVariables_.getFromConfig<int>("nLevels");
+    int nLevels = configVariables_.getInt("nLevels");
 
     // Get the grid size
     const int gridSize = ps.shape(0);

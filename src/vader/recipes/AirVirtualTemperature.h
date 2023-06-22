@@ -26,7 +26,6 @@ class AirVirtualTemperature_AParameters : public RecipeParametersBase {
   oops::RequiredParameter<std::string> name{
      "recipe name",
      this};
-  oops::Parameter<double> epsilon{"epsilon", "epsilon", 0.62195753495598138, this};
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -58,7 +57,7 @@ class AirVirtualTemperature_A : public RecipeBase {
     bool executeAD(atlas::FieldSet &, const atlas::FieldSet &) override;
 
  private:
-    const double epsilon_;
+    const VaderConfigVars & configVariables_;
 };
 
 }  // namespace vader

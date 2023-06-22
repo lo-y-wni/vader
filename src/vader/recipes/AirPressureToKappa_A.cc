@@ -33,7 +33,7 @@ static RecipeMaker<AirPressureToKappa_A> makerAirPressureToKappa_A_(AirPressureT
 
 AirPressureToKappa_A::AirPressureToKappa_A(const AirPressureToKappa_AParameters & params,
                                         const VaderConfigVars & configVariables)
-: kappa_{params.kappa.value()} {
+: configVariables_{configVariables} {
     oops::Log::trace() << "AirPressureToKappa_A::AirPressureToKappa_A Starting" << std::endl;
     oops::Log::trace() << "AirPressureToKappa_A::AirPressureToKappa_A Done" << std::endl;
 }
@@ -74,6 +74,8 @@ atlas::FunctionSpace AirPressureToKappa_A::productFunctionSpace(
 bool AirPressureToKappa_A::executeNL(atlas::FieldSet & afieldset) {
     oops::Log::trace() << "AirPressureToKappa_A::executeNL Starting" << std::endl;
 
+    const double kappa = configVariables_.getDouble("kappa");  // Need better name
+
     // Get fields
     atlas::Field airPressureLevelsF = afieldset.field("air_pressure_levels");
     atlas::Field lnAirPressureAtInterfaceF = afieldset.field("ln_air_pressure_at_interface");
@@ -95,11 +97,11 @@ bool AirPressureToKappa_A::executeNL(atlas::FieldSet & afieldset) {
     for (int vv = 0; vv < v_size; ++vv) {
       for ( size_t hh = 0; hh < h_size ; ++hh ) {
         // Temporary exp(kappa(ln(p)))
-        pk1 = exp(kappa_*lnAirPressureAtInterface(hh, vv));
-        pk2 = exp(kappa_*lnAirPressureAtInterface(hh, vv+1));
+        pk1 = exp(kappa*lnAirPressureAtInterface(hh, vv));
+        pk2 = exp(kappa*lnAirPressureAtInterface(hh, vv+1));
         // Compute p to the kappa
         airPressureToKappa(hh, vv) = (pk2 - pk1) /
-                 (kappa_*(lnAirPressureAtInterface(hh, vv+1) - lnAirPressureAtInterface(hh, vv)));
+                 (kappa*(lnAirPressureAtInterface(hh, vv+1) - lnAirPressureAtInterface(hh, vv)));
       }
     }
 

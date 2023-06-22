@@ -85,17 +85,8 @@ bool SurfaceAirPressure_A::executeNL(atlas::FieldSet & afieldset) {
                "surface pressure " + ps_units + "do not match the pressure thickness units"
                + delp_units);
 
-    // Extract ak/bk from client config
-    std::vector<double> ak = configVariables_.getFromConfig<std::vector<double>>
-                                                ("sigma_pressure_hybrid_coordinate_a_coefficient");
-    std::vector<double> bk = configVariables_.getFromConfig<std::vector<double>>
-                                                ("sigma_pressure_hybrid_coordinate_b_coefficient");
-
-    // Get number of levels
-    int nLevels = configVariables_.getFromConfig<int>("nLevels");
-
     // Get ptop
-    double ptop = configVariables_.getFromConfig<double>("air_pressure_at_top_of_atmosphere_model");
+    double ptop = configVariables_.getDouble("air_pressure_at_top_of_atmosphere_model");
 
     // Set the array views to manipulate the data
     auto delp_view = atlas::array::make_view<double, 2>(delp);

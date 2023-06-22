@@ -76,7 +76,7 @@ bool AirPressureAtInterface_B::executeNL(atlas::FieldSet & afieldset) {
     //
     oops::Log::trace() << "AirPressureAtInterface_B::executeNL Starting" << std::endl;
 
-    double ptop = configVariables_.getFromConfig<double>("air_pressure_at_top_of_atmosphere_model");
+    double ptop = configVariables_.getDouble("air_pressure_at_top_of_atmosphere_model");
 
     // Get the fields
     atlas::Field delp = afieldset.field("air_pressure_thickness");

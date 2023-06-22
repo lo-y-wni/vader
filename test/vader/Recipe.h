@@ -29,7 +29,6 @@
 #include "test/TestEnvironment.h"
 
 #include "vader/RecipeBase.h"
-#include "vader/VaderConstructConfig.h"
 #include "Utils.h"
 
 namespace vader {
@@ -59,7 +58,7 @@ void testRecipeAdjoint() {
   // create recipe
   const auto & recipeParams = params.recipe.value().recipeParams.value();
   RecipeBase* recipe = RecipeFactory::create(recipeParams.name, recipeParams,
-                                             VaderConfigVars());
+                                             eckit::LocalConfiguration());
   const std::vector<std::string> ingredientVars = recipe->ingredients();
   const std::string productVar = recipe->product();
   oops::Log::info() << "Testing vader recipe (K): " << recipe->name() << std::endl;

@@ -32,7 +32,9 @@ static RecipeMaker<DryAirDensityLevelsMinusOne_A>
     makerDryAirDensityLevelsMinusOne_A_(DryAirDensityLevelsMinusOne_A::Name);
 
 DryAirDensityLevelsMinusOne_A::DryAirDensityLevelsMinusOne_A(const Parameters_ & params,
-                                        const VaderConfigVars & configVariables)
+                                        const VaderConfigVars & configVariables) :
+        configVariables_{configVariables}
+
 {
     oops::Log::trace() <<
         "DryAirDensityLevelsMinusOne_A::DryAirDensityLevelsMinusOne_A(params)" << std::endl;

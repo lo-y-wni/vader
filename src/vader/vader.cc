@@ -18,6 +18,7 @@
 #include "atlas/option/Options.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
+#include "vader/DefaultCookbook.h"
 #include "vader/vader.h"
 
 namespace vader {
@@ -60,11 +61,10 @@ void Vader::createCookbook(const cookbookConfigType & cookbook,
     oops::Log::trace() << "leaving Vader::createCookbook" << std::endl;
 }
 // ------------------------------------------------------------------------------------------------
-Vader::Vader(const VaderParameters & parameters, const VaderConstructConfig & constructConfig) :
-             configVariables_(constructConfig.getConfigVars()) {
+Vader::Vader(const VaderParameters & parameters, const eckit::Configuration & config) :
+             configVariables_(config.getSubConfiguration(configModelVarsKey)) {
     util::Timer timer(classname(), "Vader");
-    oops::Log::trace() << "entering Vader::Vader(parameters) " << std::endl;
-    oops::Log::debug() << "Vader::Vader parameters = " << parameters << std::endl;
+    oops::Log::trace() << "entering Vader::Vader(parameters, constructConfig) " << std::endl;
 
     // Vader is designed to function without parameters. So VaderParameters
     // should not have any RequiredParameters.
@@ -73,11 +73,23 @@ Vader::Vader(const VaderParameters & parameters, const VaderConstructConfig & co
     // default construction of empty/default VaderParameters. i.e. their Parameters should contain:
     // oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
     //
-    if (parameters.recipeParams.value() == boost::none) {
-        createCookbook(constructConfig.cookbook);
+    cookbookConfigType cookbookDefinition;
+    if (config.has(configCookbookKey)) {
+        // Convert eckit::Configuration to cookbookConfigType (map)
+        auto configCookbookDefinition = config.getSubConfiguration(configCookbookKey);
+        for (auto configCookbookKey : configCookbookDefinition.keys()) {
+            cookbookDefinition[configCookbookKey] =
+                                        configCookbookDefinition.getStringVector(configCookbookKey);
+        }
     } else {
-        createCookbook(constructConfig.cookbook, *parameters.recipeParams.value());
+        cookbookDefinition = Vader::defaultCookbookDefinition;
     }
+    if (parameters.recipeParams.value() == boost::none) {
+        createCookbook(cookbookDefinition);
+    } else {
+        createCookbook(cookbookDefinition, *parameters.recipeParams.value());
+    }
+    oops::Log::trace() << "leaving Vader::Vader(parameters, constructConfig) " << std::endl;
 }
 // ------------------------------------------------------------------------------------------------
 std::vector<std::string> Vader::getPlanNames() const {

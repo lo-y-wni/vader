@@ -27,7 +27,6 @@ class AirPressure_AParameters : public RecipeParametersBase {
 
  public:
     oops::RequiredParameter<std::string> name{"recipe name", this};
-    oops::Parameter<double> kappa{"kappa", "kappa", 0.28571428571428570, this};
 };
 
 /*! \brief AirPressure_A class defines a recipe for pressure levels from pressure
@@ -54,7 +53,7 @@ class AirPressure_A : public RecipeBase
     bool executeNL(atlas::FieldSet &) override;
 
  private:
-    const double kappa_;
+    const VaderConfigVars & configVariables_;
 };
 
 // -------------------------------------------------------------------------------------------------

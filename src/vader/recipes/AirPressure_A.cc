@@ -32,7 +32,7 @@ static RecipeMaker<AirPressure_A> makerAirPressure_A_(AirPressure_A::Name);
 
 AirPressure_A::AirPressure_A(const AirPressure_AParameters & params,
                              const VaderConfigVars & configVariables) :
-                             kappa_{params.kappa.value()}
+                                    configVariables_{configVariables}
 {
     oops::Log::trace() << "AirPressure_A::AirPressure_A Starting" << std::endl;
     oops::Log::trace() << "AirPressure_A::AirPressure_A Done" << std::endl;
@@ -74,6 +74,9 @@ bool AirPressure_A::executeNL(atlas::FieldSet & afieldset) {
     //
     oops::Log::trace() << "AirPressure_A::executeNL Starting" << std::endl;
 
+    // Extract value from client config
+    const double kappa = configVariables_.getDouble("kappa");  // Need better name
+
     // Get fields
     atlas::Field airPressureLevelsF = afieldset.field("air_pressure_levels");
     atlas::Field airPressureF = afieldset.field("air_pressure");
@@ -86,8 +89,8 @@ bool AirPressure_A::executeNL(atlas::FieldSet & afieldset) {
     int v_size = airPressureLevelsF.levels() - 1;
 
     // kappa variations
-    double kap1 = kappa_ + 1.0;
-    double kapr = 1.0 / kappa_;
+    const double kap1 = kappa + 1.0;
+    const double kapr = 1.0 / kappa;
 
     // Calculate the output variable
     for (int vv = 0; vv < v_size; ++vv) {

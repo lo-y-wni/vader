@@ -22,11 +22,11 @@
 #include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/parameters/RequiredPolymorphicParameter.h"
 #include "oops/util/Printable.h"
-#include "vader/VaderConfigVars.h"
 
 namespace vader {
 
 static const char * recipeNameString = "recipe name";
+typedef eckit::Configuration VaderConfigVars;
 
 // ------------------------------------------------------------------------------------------------
 class RecipeParametersBase : public oops::Parameters {
@@ -92,7 +92,7 @@ class RecipeFactory {
  public:
   static RecipeBase * create(const std::string name,
                              const RecipeParametersBase &,
-                             const VaderConfigVars &);
+                             const eckit::Configuration &);
   static std::unique_ptr<RecipeParametersBase> createParameters(const std::string &);
 
   static std::vector<std::string> getMakerNames() {

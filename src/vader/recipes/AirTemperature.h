@@ -32,8 +32,9 @@ class AirTemperature_B_Parameters : public RecipeParametersBase {
   OOPS_CONCRETE_PARAMETERS(AirTemperature_B_Parameters, RecipeParametersBase)
 
  public:
-  oops::Parameter<double> epsilon{"epsilon",
-        "the ratio of the gas constants of air and water vapor", 0.62195753495598138, this};
+  oops::RequiredParameter<std::string> name{
+     "recipe name",
+     this};
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -87,7 +88,7 @@ class AirTemperature_B : public RecipeBase {
     bool executeNL(atlas::FieldSet &) override;
 
  private:
-    const double epsilon_;
+    const VaderConfigVars & configVariables_;
 };
 
 }  // namespace vader
