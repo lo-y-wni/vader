@@ -50,7 +50,8 @@ class Test_VarA_from_B : public RecipeBase {
     std::vector<std::string> ingredients() const override {return {"TestVarB"};}
     size_t productLevels(const atlas::FieldSet &) const override {return 0;}
     atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
-                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+                                {return atlas::functionspace::PointCloud({
+                                    atlas::PointXY(0.0, 0.0)});}
     // bool hasTLAD() const override { return true; }
     bool executeNL(atlas::FieldSet &) override;
     // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
@@ -80,7 +81,8 @@ class Test_VarA_from_C_D : public RecipeBase {
     std::vector<std::string> ingredients() const override {return {"TestVarC", "TestVarD"};}
     size_t productLevels(const atlas::FieldSet &) const override {return 0;}
     atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
-                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+                                {return atlas::functionspace::PointCloud({
+                                    atlas::PointXY(0.0, 0.0)});}
     // bool hasTLAD() const override { return true; }
     bool executeNL(atlas::FieldSet &) override;
     // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
@@ -110,7 +112,8 @@ class Test_VarB_from_E : public RecipeBase {
     std::vector<std::string> ingredients() const override {return {"TestVarE"};}
     size_t productLevels(const atlas::FieldSet &) const override {return 0;}
     atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
-                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+                                {return atlas::functionspace::PointCloud({
+                                    atlas::PointXY(0.0, 0.0)});}
     // bool hasTLAD() const override { return true; }
     bool executeNL(atlas::FieldSet &) override;
     // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
@@ -142,7 +145,8 @@ class Test_VarB_from_A : public RecipeBase {
     std::vector<std::string> ingredients() const override {return {"TestVarA"};}
     size_t productLevels(const atlas::FieldSet &) const override {return 0;}
     atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
-                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+                                {return atlas::functionspace::PointCloud({
+                                    atlas::PointXY(0.0, 0.0)});}
     // bool hasTLAD() const override { return true; }
     bool executeNL(atlas::FieldSet &) override;
     // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
@@ -171,7 +175,8 @@ class Test_VarC_from_F : public RecipeBase {
     std::vector<std::string> ingredients() const override {return {"TestVarF"};}
     size_t productLevels(const atlas::FieldSet &) const override {return 0;}
     atlas::FunctionSpace productFunctionSpace(const atlas::FieldSet &) const override
-                                {return atlas::functionspace::PointCloud({atlas::PointXY({0.0})});}
+                                {return atlas::functionspace::PointCloud({
+                                    atlas::PointXY(0.0, 0.0)});}
     // bool hasTLAD() const override { return true; }
     bool executeNL(atlas::FieldSet &) override;
     // bool executeTL(atlas::FieldSet &, const atlas::FieldSet &) override;
