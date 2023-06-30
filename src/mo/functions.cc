@@ -109,8 +109,8 @@ Eigen::MatrixXd createMIOCoeff(const std::string mioFileName,
       mioCoeff(j, i) = valuesvec[i * constants::mioLevs+j];
     }
   }
-  return mioCoeff;
   oops::Log::trace() << "[createMIOCoeff] ... exit" << std::endl;
+  return mioCoeff;
 }
 
 }  // namespace functions
