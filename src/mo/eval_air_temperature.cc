@@ -36,10 +36,11 @@ void eval_air_temperature_nl(atlas::FieldSet & stateFlds) {
     }
   }
 
-  oops::Log::trace() << "[evalAirTemperature()] ... exit" << std::endl;
+  oops::Log::trace() << "[eval_air_temperature_nl()] ... exit" << std::endl;
 }
 
 void eval_air_temperature_tl(atlas::FieldSet & incFlds, const atlas::FieldSet & stateFlds) {
+  oops::Log::trace() << "[eval_air_temperature_tl()] starting ..." << std::endl;
   const auto hlView = make_view<const double, 2>(stateFlds["height_levels"]);
   const auto hView = make_view<const double, 2>(stateFlds["height"]);
   const auto exnerLevelsView = make_view<const double, 2>(stateFlds["exner_levels_minus_one"]);
@@ -85,9 +86,11 @@ void eval_air_temperature_tl(atlas::FieldSet & incFlds, const atlas::FieldSet & 
          thetaView(jn, lvlsm1)) /
       (hlView(jn, lvls) - hlView(jn, lvlsm1));
   }
+  oops::Log::trace() << "[eval_air_temperature_tl()] ... exit" << std::endl;
 }
 
 void eval_air_temperature_ad(atlas::FieldSet & hatFlds, const atlas::FieldSet & stateFlds) {
+  oops::Log::trace() << "[eval_air_temperature_ad()] starting ..." << std::endl;
   const auto hlView = make_view<const double, 2>(stateFlds["height_levels"]);
   const auto hView = make_view<const double, 2>(stateFlds["height"]);
   const auto exnerLevelsView = make_view<const double, 2>(stateFlds["exner_levels_minus_one"]);
@@ -146,6 +149,7 @@ void eval_air_temperature_ad(atlas::FieldSet & hatFlds, const atlas::FieldSet & 
       tHatView(jn, jl) = 0.0;
     }
   }
+  oops::Log::trace() << "[eval_air_temperature_ad()] ... exit" << std::endl;
 }
 
 }  // namespace mo

@@ -18,6 +18,7 @@ namespace mo {
 
 // ------------------------------------------------------------------------------------------------
 // Note this is a copy of qtTemperature2qqclqcfTL
+// TODO(Mayeul,MW) Remove duplicate in control2analysis_linearvarchange.cc/h
 void eval_moisture_incrementing_operator_tl(atlas::FieldSet & incFlds,
                                             const atlas::FieldSet & augStateFlds) {
   oops::Log::trace() << "[eval_moisture_incrementing_operator_tl()] starting ..."
@@ -51,6 +52,7 @@ void eval_moisture_incrementing_operator_tl(atlas::FieldSet & incFlds,
 
 // ------------------------------------------------------------------------------------------------
 // Note this is a copy of qtTemperature2qqclqcfAD
+// TODO(Mayeul,MW) Remove duplicate in control2analysis_linearvarchange.cc/h
 void eval_moisture_incrementing_operator_ad(atlas::FieldSet & hatFlds,
                              const atlas::FieldSet & augStateFlds) {
   oops::Log::trace() << "[eval_moisture_incrementing_operator_ad()] starting ..."
@@ -134,4 +136,13 @@ void eval_total_water_ad(atlas::FieldSet & hatFlds,
 
   oops::Log::trace() << "[eval_total_water_ad()] ... done" << std::endl;
 }
+
+// ------------------------------------------------------------------------------------------------
+void eval_total_water(atlas::FieldSet & stateFlds) {
+  oops::Log::trace() << "[eval_total_water()] starting ..." << std::endl;
+  eval_total_water_tl(stateFlds, stateFlds);
+  oops::Log::trace() << "[eval_total_water()] ... done" << std::endl;
+}
+
+
 }  // namespace mo

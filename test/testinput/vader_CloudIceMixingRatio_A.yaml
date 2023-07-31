@@ -1,0 +1,10 @@
+vader: {}
+trajectory grid:
+  type : regular_gaussian
+  N : 12
+trajectory filename: testdata/gauss_state_F12.nc
+ingredients:
+  - m_ci
+  - m_t
+products: [mass_content_of_cloud_ice_in_atmosphere_layer]
+adjoint test tolerance: 1.e-13

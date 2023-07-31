@@ -1,0 +1,10 @@
+vader: {}
+trajectory grid:
+  type : regular_gaussian
+  N : 12
+trajectory filename: testdata/gauss_state_F12.nc
+ingredients:
+  - qsat
+  - relative_humidity_2m
+products: [specific_humidity_at_two_meters_above_surface]
+adjoint test tolerance: 1.e-13

@@ -23,7 +23,7 @@ namespace mo {
 /// \details Calculate the hydrostatic pressure (on levels)
 ///          from hydrostatic exner.
 void eval_air_pressure_levels_nl(atlas::FieldSet & stateFlds) {
-  oops::Log::trace() << "[evalAirPressureLevels()] starting ..." << std::endl;
+  oops::Log::trace() << "[eval_air_pressure_levels_nl()] starting ..." << std::endl;
 
   auto ds_elmo = make_view<const double, 2>(stateFlds["exner_levels_minus_one"]);
   auto ds_plmo = make_view<const double, 2>(stateFlds["air_pressure_levels_minus_one"]);
@@ -56,7 +56,7 @@ void eval_air_pressure_levels_nl(atlas::FieldSet & stateFlds) {
     ds_pl(jn, levels-1) = ds_pl(jn, levels-1) > 0.0 ? ds_pl(jn, levels-1) : constants::deps;
   }
 
-  oops::Log::trace() << "[eval_air_pressure_levels()] ... exit" << std::endl;
+  oops::Log::trace() << "[eval_air_pressure_levels_nl()] ... exit" << std::endl;
 }
 
 void eval_air_pressure_levels_tl(atlas::FieldSet & incFlds, const atlas::FieldSet & stateFlds) {
