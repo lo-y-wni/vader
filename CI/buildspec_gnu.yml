@@ -71,6 +71,9 @@ phases:
       # oops
       - ./clone.sh jcsda-internal/oops $CODEBUILD_GIT_BRANCH  /jcsda/vader-bundle oops ${GIT_BASE_BRANCH} develop
 
+      # gsw
+      - ./clone.sh jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH  /jcsda/vader-bundle gsw ${GIT_BASE_BRANCH} develop
+
       # vader
       - ./clone.sh jcsda-internal/vader $CODEBUILD_GIT_BRANCH  /jcsda/vader-bundle vader ${GIT_BASE_BRANCH} develop
 

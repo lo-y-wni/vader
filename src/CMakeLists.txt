@@ -116,6 +116,17 @@ mo/model2geovals_varchange.cc
 mo/svp_interface.F90
 )
 
+if( gsw_FOUND )
+  list( APPEND vader_src_files
+  vader/recipes/SeaWaterPotentialTemperature.h
+  vader/recipes/SeaWaterPotentialTemperature_A.cc
+  vader/recipes/SeaWaterTemperature.h
+  vader/recipes/SeaWaterTemperature_A.cc
+  OceanConversions/OceanConversions.interface.F90
+  OceanConversions/OceanConversions.interface.h
+  )
+endif( gsw_FOUND )
+
 include(GNUInstallDirs)
 ecbuild_add_library( TARGET ${PROJECT_NAME}
                      SOURCES ${${PROJECT_NAME}_src_files}
@@ -124,6 +135,11 @@ ecbuild_add_library( TARGET ${PROJECT_NAME}
                      LINKER_LANGUAGE CXX )
 
 target_link_libraries( ${PROJECT_NAME} PUBLIC ${oops_LIBRARIES} ) #TODO: Change to "oops::oops" once oops adds namespace support
+
+if( gsw_FOUND )
+  target_link_libraries( ${PROJECT_NAME} PUBLIC gsw ) 
+  target_compile_definitions( ${PROJECT_NAME} PUBLIC GSW_FOUND ) 
+endif( gsw_FOUND )
 
 #Configure include directory layout for build-tree to match install-tree
 set(BUILD_DIR_INCLUDE_PATH ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/include)

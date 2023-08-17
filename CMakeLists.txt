@@ -35,6 +35,14 @@ find_package( MPI REQUIRED COMPONENTS C Fortran )
 find_package( oops 1.7.0 REQUIRED )
 find_package( NetCDF REQUIRED COMPONENTS C Fortran )
 
+find_package( gsw QUIET )
+if( ${gsw_FOUND} )
+    message(STATUS "GSW FOUND; Including Marine Recipes gsw (${gsw_VERSION})")
+else( ${gsw_FOUND} )
+    message(STATUS "GSW NOT FOUND: Excluding Marine Recipes")
+endif( ${gsw_FOUND} )
+
+
 ## Sources
 add_subdirectory( src )
 add_subdirectory( test )

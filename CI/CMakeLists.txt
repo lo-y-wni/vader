@@ -33,6 +33,7 @@ include( /opt/view/share/jedicmake/Functions/git_functions.cmake )
 # ----------
 # Core JEDI repositories
 ecbuild_bundle( PROJECT oops  GIT "https://github.com/JCSDA-internal/oops.git"  )
+ecbuild_bundle( PROJECT gsw GIT "https://github.com/JCSDA-internal/GSW-Fortran.git" )
 ecbuild_bundle( PROJECT vader GIT "https://github.com/JCSDA-internal/vader.git" )
 
 # Build Doxygen documentation
