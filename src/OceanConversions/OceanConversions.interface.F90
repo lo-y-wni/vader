@@ -8,7 +8,7 @@
 module vader_oceanconversions_mod_c
 
   use iso_c_binding
-  use kinds
+  use gsw_mod_kinds, only : r8
 
   implicit none
 
@@ -34,12 +34,12 @@ real(c_float) function gsw_rho_t_exact_c(c_sal, c_temp, c_pressure) &
   use gsw_mod_toolbox, only: gsw_rho_t_exact
   implicit none
   real(c_float),  intent(in   ) :: c_sal, c_temp, c_pressure
-  real(kind_real) :: sal, temp, pressure
+  real(r8) :: sal, temp, pressure
 
   !! convert reals
-  sal = real(c_sal, kind_real)
-  temp = real(c_temp, kind_real)
-  pressure = real(c_pressure, kind_real)
+  sal = real(c_sal, r8)
+  temp = real(c_temp, r8)
+  pressure = real(c_pressure, r8)
 
   ! call GSW fortran function
   gsw_rho_t_exact_c = gsw_rho_t_exact(sal, temp, pressure)
@@ -65,11 +65,11 @@ real(c_float) function gsw_p_from_z_c(c_depth, c_lat) &
   use gsw_mod_toolbox, only: gsw_p_from_z
   implicit none
   real(c_float),  intent(in   ) :: c_depth, c_lat
-  real(kind_real) :: depth, lat, pressure, geo_strf_dyn_height, sea_surface_geopotential
+  real(r8) :: depth, lat, geo_strf_dyn_height, sea_surface_geopotential
 
   !! convert reals
-  depth = real(c_depth, kind_real)
-  lat = real(c_lat, kind_real)
+  depth = real(c_depth, r8)
+  lat = real(c_lat, r8)
   geo_strf_dyn_height = 0.0
   sea_surface_geopotential = 0.0
 
@@ -98,12 +98,12 @@ real(c_float) function gsw_pt_from_t_c(c_sal, c_temp, c_pressure) &
   use gsw_mod_toolbox, only: gsw_pt_from_t
   implicit none
   real(c_float),  intent(in   ) :: c_sal, c_temp, c_pressure
-  real(kind_real) :: sal, temp, pressure, ref_pressure
+  real(r8) :: sal, temp, pressure, ref_pressure
 
   !! convert reals
-  sal = real(c_sal, kind_real)
-  temp = real(c_temp, kind_real)
-  pressure = real(c_pressure, kind_real)
+  sal = real(c_sal, r8)
+  temp = real(c_temp, r8)
+  pressure = real(c_pressure, r8)
   ref_pressure = 0.0
 
   ! call GSW fortran function
@@ -130,12 +130,12 @@ real(c_float) function gsw_ct_from_t_c(c_sal, c_temp, c_pressure) &
   use gsw_mod_toolbox, only: gsw_CT_from_t
   implicit none
   real(c_float),  intent(in   ) :: c_sal, c_temp, c_pressure
-  real(kind_real) :: sal, temp, pressure
+  real(r8) :: sal, temp, pressure
 
   !! convert reals
-  sal = real(c_sal, kind_real)
-  temp = real(c_temp, kind_real)
-  pressure = real(c_pressure, kind_real)
+  sal = real(c_sal, r8)
+  temp = real(c_temp, r8)
+  pressure = real(c_pressure, r8)
 
   ! call GSW fortran function
   gsw_ct_from_t_c = gsw_CT_from_t(sal, temp, pressure)
@@ -162,13 +162,13 @@ real(c_float) function gsw_sa_from_sp_c(c_sal, c_pressure, c_longitude, c_latitu
   use gsw_mod_toolbox, only: gsw_SA_from_SP
   implicit none
   real(c_float),  intent(in   ) :: c_sal, c_pressure, c_longitude, c_latitude
-  real(kind_real) :: sal, pressure, longitude, latitude
+  real(r8) :: sal, pressure, longitude, latitude
 
   !! convert reals
-  sal = real(c_sal, kind_real)
-  pressure = real(c_pressure, kind_real)
-  longitude = real(c_longitude, kind_real)
-  latitude = real(c_latitude, kind_real)
+  sal = real(c_sal, r8)
+  pressure = real(c_pressure, r8)
+  longitude = real(c_longitude, r8)
+  latitude = real(c_latitude,r8)
 
   ! call GSW fortran function
   gsw_sa_from_sp_c = gsw_SA_from_SP(sal, pressure, longitude, latitude)
@@ -193,11 +193,11 @@ real(c_float) function gsw_ct_from_pt_c(c_sal, c_temp) &
   use gsw_mod_toolbox, only: gsw_ct_from_pt
   implicit none
   real(c_float),  intent(in) :: c_sal, c_temp
-  real(kind_real) :: sal, temp
+  real(r8) :: sal, temp
 
   !! convert reals
-  sal = real(c_sal, kind_real)
-  temp = real(c_temp, kind_real)
+  sal = real(c_sal, r8)
+  temp = real(c_temp, r8)
 
   ! call GSW fortran function
   gsw_ct_from_pt_c = gsw_ct_from_pt(sal, temp)
@@ -223,12 +223,12 @@ real(c_float) function gsw_t_from_ct_c(c_sal, c_temp, c_pressure) &
   use gsw_mod_toolbox, only: gsw_t_from_ct
   implicit none
   real(c_float),  intent(in) :: c_sal, c_temp, c_pressure
-  real(kind_real) :: sal, temp, pressure
+  real(r8) :: sal, temp, pressure
 
   !! convert reals
-  sal = real(c_sal, kind_real)
-  temp = real(c_temp, kind_real)
-  pressure = real(c_pressure, kind_real)
+  sal = real(c_sal, r8)
+  temp = real(c_temp, r8)
+  pressure = real(c_pressure, r8)
 
   ! call GSW fortran function
   gsw_t_from_ct_c = gsw_t_from_ct(sal, temp, pressure)
