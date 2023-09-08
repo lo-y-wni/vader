@@ -233,10 +233,6 @@ bool evalAirTemperature(atlas::FieldSet & fields)
   return true;
 }
 
-
-
-
-
 bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[evalSpecificHumidityFromRH_2m()] starting ..." << std::endl;

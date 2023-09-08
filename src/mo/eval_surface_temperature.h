@@ -10,6 +10,10 @@
 #include "atlas/field.h"
 
 namespace mo {
+/// \details This calculates the surface temperature from the atmospheric
+///          temperature at the lowest level
+void eval_surface_temperature_nl(atlas::FieldSet & stateFlds);
+
 /// \details This calculates the surface temperature increment from the atmospheric
 ///          temperature increment at the lowest level
 // TODO(Mayeul) Remove evalSurfaceTemperatureTL in model2geovals_linearvarchange.h/.cc

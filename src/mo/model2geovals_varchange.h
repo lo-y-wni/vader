@@ -129,7 +129,6 @@ bool evalMassRain(atlas::FieldSet & fields);
 ///
 bool evalAirTemperature(atlas::FieldSet & fields);
 
-
 /// \brief function to evaluate the 'specific humidity at two meters above surface':
 ///   q2m = rh * qsat
 /// where ...

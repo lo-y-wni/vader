@@ -19,10 +19,8 @@
 
 namespace vader {
 
-class WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_AParameters :
-                                            public RecipeParametersBase {
-  OOPS_CONCRETE_PARAMETERS(WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_AParameters,
-                           RecipeParametersBase)
+class TotalMixingRatio_AParameters : public RecipeParametersBase {
+  OOPS_CONCRETE_PARAMETERS(TotalMixingRatio_AParameters, RecipeParametersBase)
 
  public:
   oops::RequiredParameter<std::string> name{
@@ -31,21 +29,19 @@ class WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_AParameters :
 };
 
 // ------------------------------------------------------------------------------------------------
-/*! \brief WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A class defines a recipe for water
- *         vapor mixing ratio wrt moist air and condensed water at 2m
+/*! \brief TotalMixingRatio_A class defines a recipe for total mixing ratio
  *
- *  \details This instantiation of RecipeBase produces the water vapor mixing ratio wrt moist air
- *          and condensed water at 2m using the atmospheric specific humidity at the lowest level
+ *  \details This instantiation of RecipeBase produces total mixing ratio using
+ *           moist air and condensed water mixing ratio wrt dry air as inputs.
  */
-class WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A : public RecipeBase {
+class TotalMixingRatio_A : public RecipeBase {
  public:
     static const char Name[];
     static const std::vector<std::string> Ingredients;
 
-    typedef WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_AParameters Parameters_;
+    typedef TotalMixingRatio_AParameters Parameters_;
 
-    WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A(const Parameters_ &,
-                                                          const VaderConfigVars &);
+    TotalMixingRatio_A(const Parameters_ &, const VaderConfigVars &);
 
     // Recipe base class overrides
     std::string name() const override;

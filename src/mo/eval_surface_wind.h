@@ -11,14 +11,16 @@
 
 namespace mo {
 
+/// \details This calculates the wind at 10 m from the atmospheric
+///          wind at the lowest level
+void eval_surface_wind_nl(atlas::FieldSet & incFlds);
+
 /// \details This calculates the wind increment at 10 m from the atmospheric
 ///          wind increment at the lowest level
-// TODO(Mayeul) Remove evalSurfWindTL in model2geovals_linearvarchange.h/.cc
 void eval_surface_wind_tl(atlas::FieldSet & incFlds);
 
 /// \details This calculates the adjoint of the wind increment at the lowest level
 ///          from the adjoint of the atmospheric wind at 10 m
-// TODO(Mayeul) Remove evalSurfWindAD in model2geovals_linearvarchange.h/.cc
 void eval_surface_wind_ad(atlas::FieldSet & hatFlds);
 
 }  // namespace mo

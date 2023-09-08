@@ -18,6 +18,20 @@ using atlas::array::make_view;
 
 namespace mo {
 
+void eval_surface_wind_nl(atlas::FieldSet & stateFlds) {
+  oops::Log::trace() << "[eval_surface_wind_nl()] starting ..." << std::endl;
+  const auto uView = make_view<double, 2>(stateFlds["eastward_wind"]);
+  const auto vView = make_view<double, 2>(stateFlds["northward_wind"]);
+  auto u10mView = make_view<double, 2>(stateFlds["uwind_at_10m"]);
+  auto v10mView = make_view<double, 2>(stateFlds["vwind_at_10m"]);
+
+  atlas_omp_parallel_for(atlas::idx_t jn = 0; jn < u10mView.shape(0); ++jn) {
+    u10mView(jn, 0) = uView(jn, 0);
+    v10mView(jn, 0) = vView(jn, 0);
+  }
+  oops::Log::trace() << "[eval_surface_wind_nl()] ... done" << std::endl;
+}
+
 void eval_surface_wind_tl(atlas::FieldSet & incFlds) {
   oops::Log::trace() << "[eval_surface_wind_tl()] starting ..." << std::endl;
   const auto uIncView = make_view<double, 2>(incFlds["eastward_wind"]);

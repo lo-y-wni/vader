@@ -21,7 +21,8 @@ namespace vader
 const char WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A::Name[] =
         "WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A";
 const std::vector<std::string> WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A::
-        Ingredients = {"qsat", "relative_humidity_2m"};
+        Ingredients = {"specific_humidity"};
+        // CCPP name: water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water
 
 // Register the maker
 static RecipeMaker<WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A> makerTotalWater_A_(
@@ -54,14 +55,14 @@ std::vector<std::string> WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A::
 size_t WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A::productLevels(
                                             const atlas::FieldSet & afieldset) const
 {
-    return (afieldset["relative_humidity_2m"].levels());
+    return 1;
 }
 
 atlas::FunctionSpace WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A::productFunctionSpace(
                                             const atlas::FieldSet
                                             & afieldset) const
 {
-    return afieldset["relative_humidity_2m"].functionspace();
+    return afieldset["specific_humidity"].functionspace();
 }
 
 bool WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A::executeNL(atlas::FieldSet & afieldset)

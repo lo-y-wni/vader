@@ -1,5 +1,6 @@
 list( APPEND vader_testinput
 testinput/empty.yaml
+testinput/planvariable.yaml
 testinput/recipe_AirTemperature_A.yaml
 testinput/recipe_CloudIceMixingRatio_A.yaml
 testinput/recipe_CloudLiquidMixingRatio_A.yaml
@@ -7,6 +8,7 @@ testinput/recipe_HydrostaticExnerLevels_A.yaml
 testinput/recipe_RainMixingRatio_A.yaml
 testinput/recipe_WaterVaporMixingRatioWrtMoistAirAndCondensedWater_A.yaml
 testinput/recipe_WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A.yaml
+testinput/recipe_TotalMixingRatio_A.yaml
 testinput/recipe_TotalWater_A.yaml
 testinput/recipe_uwind_at_10m_A.yaml
 testinput/recipe_VirtualPotentialTemperature_A.yaml
@@ -18,14 +20,14 @@ testinput/vader_CloudLiquidMixingRatio_A.yaml
 testinput/vader_DryAirDensityLevelsMinusOne_A.yaml
 testinput/vader_HydrostaticExnerLevels_A.yaml
 testinput/vader_RainMixingRatio_A.yaml
-testinput/vader_WaterVaporMixingRatioWrtMoistAirAndCondensedWater_A.yaml
-testinput/vader_WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A.yaml
+testinput/vader_TotalMixingRatio_A.yaml
 testinput/vader_TotalWater_A.yaml
 testinput/vader_uwind_at_10m_A.yaml
 testinput/vader_VirtualPotentialTemperature_A.yaml
 testinput/vader_VirtualPotentialTemperature_B.yaml
 testinput/vader_vwind_at_10m_A.yaml
-testinput/planvariable.yaml
+testinput/vader_WaterVaporMixingRatioWrtMoistAirAndCondensedWater_A.yaml
+testinput/vader_WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A.yaml
 )
 
 list( APPEND vader_testdata
@@ -95,6 +97,11 @@ ecbuild_add_test( TARGET  test_vader_recipe_WaterVaporMixingRatioWrtMoistAirAndC
           ARGS    "testinput/recipe_WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A.yaml"
           LIBS    vader )
 
+ecbuild_add_test( TARGET  test_vader_recipe_TotalMixingRatio_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
+                  ARGS    "testinput/recipe_TotalMixingRatio_A.yaml"
+                  LIBS    vader )
+
 ecbuild_add_test( TARGET  test_vader_recipe_TotalWater_A
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
                   ARGS    "testinput/recipe_TotalWater_A.yaml"
@@ -160,6 +167,11 @@ ecbuild_add_test( TARGET  test_vader_vader_WaterVaporMixingRatioWrtMoistAirAndCo
           COMMAND ${CMAKE_BINARY_DIR}/bin/test_vader.x
           ARGS    "testinput/vader_WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A.yaml"
           LIBS    vader )
+
+ecbuild_add_test( TARGET  test_vader_vader_TotalMixingRatio_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_vader.x
+                  ARGS    "testinput/vader_TotalMixingRatio_A.yaml"
+                  LIBS    vader )
 
 ecbuild_add_test( TARGET  test_vader_vader_TotalWater_A
                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_vader.x

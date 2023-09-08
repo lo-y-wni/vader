@@ -61,32 +61,6 @@ void evalAirPressureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augSta
   }
 }
 
-void evalSurfWindTL(atlas::FieldSet & incFlds) {
-  const auto uIncView = make_view<double, 2>(incFlds["eastward_wind"]);
-  const auto vIncView = make_view<double, 2>(incFlds["northward_wind"]);
-  auto u10mIncView = make_view<double, 2>(incFlds["uwind_at_10m"]);
-  auto v10mIncView = make_view<double, 2>(incFlds["vwind_at_10m"]);
-
-  for (atlas::idx_t jn = 0; jn < u10mIncView.shape(0); ++jn) {
-      u10mIncView(jn, 0) = uIncView(jn, 0);
-      v10mIncView(jn, 0) = vIncView(jn, 0);
-  }
-}
-
-void evalSurfWindAD(atlas::FieldSet & hatFlds) {
-  auto uHatView = make_view<double, 2>(hatFlds["eastward_wind"]);
-  auto vHatView = make_view<double, 2>(hatFlds["northward_wind"]);
-  auto u10mHatView = make_view<double, 2>(hatFlds["uwind_at_10m"]);
-  auto v10mHatView = make_view<double, 2>(hatFlds["vwind_at_10m"]);
-
-  for (atlas::idx_t jn = 0; jn < u10mHatView.shape(0); ++jn) {
-      uHatView(jn, 0) += u10mHatView(jn, 0);
-      vHatView(jn, 0) += v10mHatView(jn, 0);
-      u10mHatView(jn, 0) = 0.0;
-      v10mHatView(jn, 0) = 0.0;
-  }
-}
-
 void evalRelativeHumidityTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStateFlds) {
   const auto qIncView = make_view<double, 2>(incFlds["specific_humidity"]);
   const auto temperIncView = make_view<double, 2>(incFlds["air_temperature"]);
@@ -143,8 +117,8 @@ void evalRelativeHumidity_2mAD(atlas::FieldSet & HatFlds) {
   auto rh2mHatView = make_view<double, 2>(HatFlds["relative_humidity_2m"]);
 
   for (atlas::idx_t jn = 0; jn < rh2mHatView.shape(0); ++jn) {
-    rh2mHatView(jn, 0) += rhHatView(jn, 0);
-    rhHatView(jn, 0) = 0.0;
+    rhHatView(jn, 0) += rh2mHatView(jn, 0);
+    rh2mHatView(jn, 0) = 0.0;
   }
 }
 
@@ -162,8 +136,8 @@ void evalSurfacePressureAD(atlas::FieldSet & HatFlds) {
   auto pstarHatView = make_view<double, 2>(HatFlds["surface_pressure"]);
 
   for (atlas::idx_t jn = 0; jn < pstarHatView.shape(0); ++jn) {
-    pstarHatView(jn, 0) += pHatView(jn, 0);
-    pHatView(jn, 0) = 0.0;
+    pHatView(jn, 0) += pstarHatView(jn, 0);
+    pstarHatView(jn, 0) = 0.0;
   }
 }
 
@@ -181,8 +155,8 @@ void evalSurfaceTemperatureAD(atlas::FieldSet & HatFlds) {
   auto surfTemperHatView = make_view<double, 2>(HatFlds["surface_temperature"]);
 
   for (atlas::idx_t jn = 0; jn < surfTemperHatView.shape(0); ++jn) {
-    surfTemperHatView(jn, 0) += temperHatView(jn, 0);
-    temperHatView(jn, 0) = 0.0;
+    temperHatView(jn, 0) += surfTemperHatView(jn, 0);
+    surfTemperHatView(jn, 0) = 0.0;
   }
 }
 

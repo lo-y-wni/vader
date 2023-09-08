@@ -23,14 +23,6 @@ void evalAirPressureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augSta
 ///          on pressure (half) levels.
 void evalAirPressureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStateFlds);
 
-/// \details This calculates the wind increment at 10 m from the atmospheric
-///          wind increment at the lowest level
-void evalSurfWindTL(atlas::FieldSet & incFlds);
-
-/// \details This calculates the adjoint of the wind increment at the lowest level from the adjoint
-///          of the atmospheric wind at 10 m
-void evalSurfWindAD(atlas::FieldSet & hatFlds);
-
 /// \details This calculates the relative humidity increment from the air
 ///          temperature and humidity increment as:
 ///          rh' ~ (q'/qs - (q/qs) dlnesdT T')*100

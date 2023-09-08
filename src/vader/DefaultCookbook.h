@@ -18,6 +18,7 @@
 #include "recipes/DryAirDensityLevelsMinusOne.h"
 #include "recipes/HydrostaticExnerLevels.h"
 #include "recipes/RainMixingRatio.h"
+#include "recipes/TotalMixingRatio.h"
 #include "recipes/TotalWater.h"
 #include "recipes/uwind_at_10m.h"
 #include "recipes/VirtualPotentialTemperature.h"
@@ -38,6 +39,7 @@ const cookbookConfigType Vader::defaultCookbookDefinition = {
         {"hydrostatic_exner_levels",  {HydrostaticExnerLevels_A::Name}},
         {"potential_temperature",  {AirPotentialTemperature_A::Name}},
         {"qrain",                  {RainMixingRatio_A::Name}},
+        {"m_t",                    {TotalMixingRatio_A::Name}},
         {"qt",                     {TotalWater_A::Name}},
         {"specific_humidity",      {WaterVaporMixingRatioWrtMoistAirAndCondensedWater_A::Name}},
         {"specific_humidity_at_two_meters_above_surface",

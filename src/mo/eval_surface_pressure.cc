@@ -35,8 +35,8 @@ void eval_surface_pressure_ad(atlas::FieldSet & HatFlds) {
   auto pstarHatView = make_view<double, 2>(HatFlds["surface_pressure"]);
 
   atlas_omp_parallel_for(atlas::idx_t jn = 0; jn < pstarHatView.shape(0); ++jn) {
-    pstarHatView(jn, 0) += pHatView(jn, 0);
-    pHatView(jn, 0) = 0.0;
+    pHatView(jn, 0) += pstarHatView(jn, 0);
+    pstarHatView(jn, 0) = 0.0;
   }
   oops::Log::trace() << "[eval_surface_pressure_ad()] ... done" << std::endl;
 }

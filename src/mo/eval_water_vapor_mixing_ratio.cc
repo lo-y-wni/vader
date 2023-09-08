@@ -85,16 +85,11 @@ bool eval_water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water_at_2m_nl(
           << "[eval_water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water_at_2m_nl()]"
           << " starting ..." << std::endl;
 
-  // TODO(Mayeul) remove percent if definition of relative_humidity changes.
-  constexpr double percent = 0.01;
-  const auto ds_qsat = make_view<const double, 2>(stateFlds["qsat"]);
-  const auto ds_rh = make_view<const double, 2>(stateFlds["relative_humidity_2m"]);
+  const auto ds_q = make_view<const double, 2>(stateFlds["specific_humidity"]);
   auto ds_q2m = make_view<double, 2>(stateFlds["specific_humidity_at_two_meters_above_surface"]);
 
   atlas_omp_parallel_for(atlas::idx_t jnode = 0; jnode < ds_q2m.shape(0); jnode++) {
-    for (atlas::idx_t jlev = 0; jlev < ds_q2m.shape(1); jlev++) {
-      ds_q2m(jnode, jlev) = percent * ds_rh(jnode, jlev) * ds_qsat(jnode, jlev);
-    }
+    ds_q2m(jnode, 0) = ds_q(jnode, 0);
   }
 
   oops::Log::trace()
@@ -112,17 +107,11 @@ void eval_water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water_at_2m_tl(
           << "[eval_water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water_at_2m_tl()]"
           << " starting ..." << std::endl;
 
-  // TODO(Mayeul) remove percent if definition of relative_humidity changes.
-  constexpr double percent = 0.01;
-  const auto qsat_inc = make_view<const double, 2>(incFlds["qsat"]);
-  const auto rh_inc = make_view<const double, 2>(incFlds["relative_humidity_2m"]);
   auto q2m_inc = make_view<double, 2>(incFlds["specific_humidity_at_two_meters_above_surface"]);
-  const auto qsat = make_view<const double, 2>(stateFlds["qsat"]);
-  const auto rh = make_view<const double, 2>(stateFlds["relative_humidity_2m"]);
+  auto q_inc = make_view<const double, 2>(incFlds["specific_humidity"]);
 
   atlas_omp_parallel_for(atlas::idx_t jnode = 0; jnode < q2m_inc.shape(0); jnode++) {
-    q2m_inc(jnode, 0) = percent * (rh_inc(jnode, 0) * qsat(jnode, 0)
-                                      + rh(jnode, 0) * qsat_inc(jnode, 0));
+    q2m_inc(jnode, 0) = q_inc(jnode, 0);
   }
 
   oops::Log::trace()
@@ -138,17 +127,11 @@ void eval_water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water_at_2m_ad(
           << "[eval_water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water_at_2m_ad()]"
           << " starting ..." << std::endl;
 
-  // TODO(Mayeul) remove percent if definition of relative_humidity changes.
-  constexpr double percent = 0.01;
-  auto qsat_hat = make_view<double, 2>(hatFlds["qsat"]);
-  auto rh_hat = make_view<double, 2>(hatFlds["relative_humidity_2m"]);
   auto q2m_hat = make_view<double, 2>(hatFlds["specific_humidity_at_two_meters_above_surface"]);
-  const auto qsat = make_view<const double, 2>(stateFlds["qsat"]);
-  const auto rh = make_view<const double, 2>(stateFlds["relative_humidity_2m"]);
+  auto q_hat = make_view<double, 2>(hatFlds["specific_humidity"]);
 
-  atlas_omp_parallel_for(atlas::idx_t jnode = 0; jnode < qsat.shape(0); jnode++) {
-    rh_hat(jnode, 0) += percent * qsat(jnode, 0) * q2m_hat(jnode, 0);
-    qsat_hat(jnode, 0) += percent * rh(jnode, 0) * q2m_hat(jnode, 0);
+  atlas_omp_parallel_for(atlas::idx_t jnode = 0; jnode < q_hat.shape(0); jnode++) {
+    q_hat(jnode, 0) += q2m_hat(jnode, 0);
     q2m_hat(jnode, 0) = 0.0;
   }
 

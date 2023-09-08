@@ -18,6 +18,17 @@ using atlas::array::make_view;
 
 namespace mo {
 
+void eval_surface_temperature_nl(atlas::FieldSet & stateFlds) {
+  oops::Log::trace() << "[eval_surface_temperature_nl()] starting ..." << std::endl;
+  const auto temperView = make_view<double, 2>(stateFlds["air_temperature"]);
+  auto surfTemperView = make_view<double, 2>(stateFlds["surface_temperature"]);
+
+  atlas_omp_parallel_for(atlas::idx_t jn = 0; jn < surfTemperView.shape(0); ++jn) {
+    surfTemperView(jn, 0) = temperView(jn, 0);
+  }
+  oops::Log::trace() << "[eval_surface_temperature_nl()] ... done" << std::endl;
+}
+
 void eval_surface_temperature_tl(atlas::FieldSet & incFlds) {
   oops::Log::trace() << "[eval_surface_temperature_tl()] starting ..." << std::endl;
   const auto temperIncView = make_view<double, 2>(incFlds["air_temperature"]);
@@ -35,8 +46,8 @@ void eval_surface_temperature_adj(atlas::FieldSet & HatFlds) {
   auto surfTemperHatView = make_view<double, 2>(HatFlds["surface_temperature"]);
 
   atlas_omp_parallel_for(atlas::idx_t jn = 0; jn < surfTemperHatView.shape(0); ++jn) {
-    surfTemperHatView(jn, 0) += temperHatView(jn, 0);
-    temperHatView(jn, 0) = 0.0;
+    temperHatView(jn, 0) += surfTemperHatView(jn, 0);
+    surfTemperHatView(jn, 0) = 0.0;
   }
   oops::Log::trace() << "[eval_surface_temperature_adj()] ... done" << std::endl;
 }
