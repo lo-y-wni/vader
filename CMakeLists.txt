@@ -10,7 +10,7 @@
 
 cmake_minimum_required( VERSION 3.12 )
 
-project( vader VERSION 1.4.0 LANGUAGES CXX Fortran )
+project( vader VERSION 1.5.0 LANGUAGES CXX Fortran )
 
 ## Ecbuild integration
 find_package( ecbuild QUIET )
