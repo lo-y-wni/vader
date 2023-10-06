@@ -87,7 +87,7 @@ class Vader  : public util::Printable {
                         const std::vector<RecipeParametersWrapper> & allRecpParamWraps =
                               std::vector<RecipeParametersWrapper>());
 
-    bool planVariable(const std::vector<std::string> &,
+    bool planVariable(std::vector<std::string> &,
                       oops::Variables &,
                       const std::string,
                       bool,
