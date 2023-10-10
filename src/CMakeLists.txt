@@ -138,11 +138,14 @@ ecbuild_add_library( TARGET ${PROJECT_NAME}
                      HEADER_DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
                      LINKER_LANGUAGE CXX )
 
+# Mark Boost as a system library to silence compiler warnings from Boost headers
+target_include_directories( ${PROJECT_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS} )
+
 target_link_libraries( ${PROJECT_NAME} PUBLIC ${oops_LIBRARIES} ) #TODO: Change to "oops::oops" once oops adds namespace support
 
 if( gsw_FOUND )
-  target_link_libraries( ${PROJECT_NAME} PUBLIC gsw ) 
-  target_compile_definitions( ${PROJECT_NAME} PUBLIC GSW_FOUND ) 
+  target_link_libraries( ${PROJECT_NAME} PUBLIC gsw )
+  target_compile_definitions( ${PROJECT_NAME} PUBLIC GSW_FOUND )
 endif( gsw_FOUND )
 
 #Configure include directory layout for build-tree to match install-tree
