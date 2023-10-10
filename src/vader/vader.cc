@@ -140,7 +140,8 @@ oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
                                  vaderPlanType plan) const {
     util::Timer timer(classname(), "changeVar");
     oops::Log::trace() << "entering Vader::changeVar " << std::endl;
-    oops::Log::debug() << "neededVars passed to Vader::changeVar: " << neededVars << std::endl;
+    oops::Log::info() << "Variables requested from Vader (non-linear): " << neededVars.variables()
+        << std::endl;
 
     // onlyIngredientVars are the variables that Vader should NOT later return in varsProduced
     // (i.e. variables both in afieldset AND neededVars will be returned in varsProduced)
@@ -149,7 +150,7 @@ oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
     plan.clear();
 
     auto ingredientNames = afieldset.field_names();
-    oops::Log::debug() << "Fields passed to Vader::changeVar: " << ingredientNames << std::endl;
+    oops::Log::info() << "Variables provided to Vader: " << ingredientNames << std::endl;
     // Loop through all the requested fields in neededVars
     // Since neededVars can be modified by planVariable and planVariable calls
     // itself recursively, we make a copy of the list here before we start.
@@ -173,8 +174,12 @@ oops::Variables Vader::changeVar(atlas::FieldSet & afieldset,
     }
     executePlanNL(afieldset, plan);
 
-    oops::Log::debug() << "neededVars remaining after Vader::changeVar: " << neededVars
-        << std::endl;
+    if (neededVars.variables().size()) {
+        oops::Log::info() << "Requested variables Vader could not produce: "
+            << neededVars.variables() << std::endl;
+    } else {
+        oops::Log::info() << "Vader produced all requested variables."  << std::endl;
+    }
 
     oops::Variables varsProduced(afieldset.field_names());
     varsProduced -= onlyIngredientVars;
@@ -197,7 +202,8 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
                       oops::Variables & neededVars) {
     util::Timer timer(classname(), "changeVar");
     oops::Log::trace() << "entering Vader::changeVarTraj " << std::endl;
-    oops::Log::debug() << "neededVars passed to Vader::changeVarTraj: " << neededVars << std::endl;
+    oops::Log::info() << "Variables requested from Vader (Trajectory): " << neededVars.variables()
+        << std::endl;
 
     // onlyIngredientVars are the variables that Vader should NOT later return in varsProduced
     // (i.e. variables both in afieldset AND neededVars will be returned in varsProduced)
@@ -205,6 +211,7 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
     onlyIngredientVars -= neededVars;
 
     auto ingredientNames = afieldset.field_names();
+    oops::Log::info() << "Variables provided to Vader: " << ingredientNames << std::endl;
     // Loop through all the requested fields in neededVars
     // Since neededVars can be modified by planVariable and planVariable calls
     // itself recursively, we make a copy of the list here before we start.
@@ -240,8 +247,12 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
         trajectory_.add(to_Field);
     }
 
-    oops::Log::debug() << "neededVars remaining after Vader::changeVarTraj: " << neededVars
-        << std::endl;
+    if (neededVars.variables().size()) {
+        oops::Log::info() << "Requested variables Vader could not produce: "
+            << neededVars.variables() << std::endl;
+    } else {
+        oops::Log::info() << "Vader produced all requested variables."  << std::endl;
+    }
     oops::Variables varsProduced(afieldset.field_names());
     varsProduced -= onlyIngredientVars;
     oops::Log::trace() << "leaving Vader::changeVarTraj" << std::endl;
@@ -481,8 +492,6 @@ void Vader::executePlanNL(atlas::FieldSet & afieldset,
                           const vaderPlanType & recipeExecutionPlan) const {
     oops::Log::trace() << "entering Vader::executePlanNL" <<  std::endl;
     for (auto varPlan : recipeExecutionPlan) {
-        oops::Log::debug() << "Attempting to calculate variable " << varPlan.first <<
-            " using recipe with name: " << varPlan.second->name() << std::endl;
         for (auto ingredient :  varPlan.second->ingredients()) {
             ASSERT(afieldset.has(ingredient));
         }
@@ -495,6 +504,8 @@ void Vader::executePlanNL(atlas::FieldSet & afieldset,
         }
         const bool recipeSuccess = varPlan.second->executeNL(afieldset);
         ASSERT(recipeSuccess);  // At least for now, we'll require the execution to be successful
+        oops::Log::info() << "Variable '" << varPlan.first <<
+            "' calculated using Vader recipe " << varPlan.second->name() << std::endl;
     }
     oops::Log::trace() << "leaving Vader::executePlanNL" <<  std::endl;
 }
@@ -515,8 +526,8 @@ void Vader::executePlanTL(atlas::FieldSet & afieldset,
     // We must get the recipes specified in the recipeExecutionPlan out of the cookbook,
     // where they live
     for (auto varPlan : recipeExecutionPlan) {
-        oops::Log::debug() << "Attempting to calculate variable " << varPlan.first <<
-            " using recipe with name: " << varPlan.second->name() << std::endl;
+        oops::Log::debug() << "Vader calculating variable '" << varPlan.first <<
+            "' using TL recipe with name: " << varPlan.second->name() << std::endl;
         // add product field to the fieldset if needed
         checkOrAddField(afieldset, varPlan.first,
                         varPlan.second->productFunctionSpace(afieldset),
@@ -553,7 +564,7 @@ void Vader::executePlanAD(atlas::FieldSet & afieldset,
     for (auto varPlanIt = recipeExecutionPlan.rbegin();
          varPlanIt != recipeExecutionPlan.rend();
          ++varPlanIt) {
-        oops::Log::debug()  << "Performing adjoint of recipe with name: " <<
+        oops::Log::debug()  << "Vader performing adjoint of recipe with name: " <<
             varPlanIt->second->name() << std::endl;
         ASSERT(afieldset.has(varPlanIt->first));
         // Check if ingredients need to be allocated
