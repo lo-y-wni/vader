@@ -133,21 +133,29 @@ bool evalSatSpecificHumidity(atlas::FieldSet & fields)
               atlas::util::Config("include_halo", true);
 
   double fsubw;
+  double svp_times_fsubw;
   auto evaluateQsat = [&] (atlas::idx_t i, atlas::idx_t j) {
-    // This formula for fsubw
+    // Compute the factor that converts from sat vapour pressure in a
+    // pure water system to sat vapour pressure in air, FSUBW. This formula
     // is taken from equation A4.7 of Adrian Gill's book: Atmosphere-Ocean
-    // Dynamics.  Note that his formula works in terms of pressure in MB and
+    // Dynamics. Note that his formula works in terms of pressure in mb and
     // temperature in Celsius, so conversion of units leads to the slightly
     // different equation used here.
     fsubw = 1.0 + 1.0E-8 * pbarView(i, j) * (4.5 +
             6.0e-4 * (tView(i, j) - constants::zerodegc) *
                      (tView(i, j) - constants::zerodegc));
 
+    // Multiply by FSUBW to convert to saturated vapour pressure in air
+    // (equation A4.6 of Adrian Gill's book)
+    svp_times_fsubw = fsubw * svpView(i, j);
+
+    // Now form the accurate expression for QS, which is a rearranged
+    // version of equation A4.3 of Gill's book.
     // Note that at very low pressures we apply a fix, to prevent a
     // singularity (Qsat tends to 1.0 kg/kg).
-    qsatView(i, j) = fsubw * constants::rd_over_rv * svpView(i, j) /
-          (std::max(pbarView(i, j), svpView(i, j)) -
-          (1.0 - constants::rd_over_rv) * svpView(i, j));
+    qsatView(i, j) = constants::rd_over_rv * svp_times_fsubw /
+          (std::max(pbarView(i, j), svp_times_fsubw) -
+          (1.0 - constants::rd_over_rv) * svp_times_fsubw);
   };
 
   auto fspace = fields["qsat"].functionspace();
