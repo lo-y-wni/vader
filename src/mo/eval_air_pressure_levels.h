@@ -12,8 +12,7 @@
 namespace mo {
 
 // TODO(Mayeul) Remove duplicate evalAirPressureLevels in common_varchange.cc/h
-/// \details Calculate the hydrostatic pressure (on levels)
-///          from hydrostatic exner.
+/// \details Vertical extrapolation of air pressure above model top
 void eval_air_pressure_levels_nl(atlas::FieldSet & stateFlds);
 
 void eval_air_pressure_levels_tl(atlas::FieldSet & incFlds, const atlas::FieldSet & stateFlds);

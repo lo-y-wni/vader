@@ -1,8 +1,7 @@
-vader: {}
+recipe:
+  recipe name: DryAirDensityLevelsMinusOne_B
 trajectory grid:
   type : regular_gaussian
   N : 12
 trajectory filename: testdata/gauss_state_F12.nc
-ingredients: [height_levels, virtual_potential_temperature, air_pressure_levels]
-products: [hydrostatic_exner_levels]
 adjoint test tolerance: 1.e-12

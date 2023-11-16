@@ -8,7 +8,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <vector>
 
 #include "atlas/array.h"
 #include "atlas/field/Field.h"
@@ -70,7 +69,7 @@ bool DryAirDensityLevelsMinusOne_A::executeNL(atlas::FieldSet & afieldset)
 {
     oops::Log::trace() << "entering DryAirDensityLevelsMinusOne_A::executeNL function"
       << std::endl;
-    mo::eval_dry_air_density_nl(afieldset);
+    mo::eval_dry_air_density_from_pressure_levels_minus_one_nl(afieldset);
     oops::Log::trace() << "leaving DryAirDensityLevelsMinusOne_A::executeNL function" << std::endl;
 
     return true;
@@ -81,7 +80,7 @@ bool DryAirDensityLevelsMinusOne_A::executeTL(atlas::FieldSet & afieldsetTL,
 {
     oops::Log::trace() << "entering DryAirDensityLevelsMinusOne_A::executeTL function"
         << std::endl;
-    mo::eval_dry_air_density_tl(afieldsetTL, afieldsetTraj);
+    mo::eval_dry_air_density_from_pressure_levels_minus_one_tl(afieldsetTL, afieldsetTraj);
     oops::Log::trace() << "leaving DryAirDensityLevelsMinusOne_A::executeTL function" << std::endl;
 
     return true;
@@ -92,7 +91,7 @@ bool DryAirDensityLevelsMinusOne_A::executeAD(atlas::FieldSet & afieldsetAD,
 {
     oops::Log::trace() << "entering DryAirDensityLevelsMinusOne::executeAD function"
         << std::endl;
-    mo::eval_dry_air_density_ad(afieldsetAD, afieldsetTraj);
+    mo::eval_dry_air_density_from_pressure_levels_minus_one_ad(afieldsetAD, afieldsetTraj);
     oops::Log::trace() << "leaving DryAirDensityLevelsMinusOne_A::executeAD function" << std::endl;
 
     return true;

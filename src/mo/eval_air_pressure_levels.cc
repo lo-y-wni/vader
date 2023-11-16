@@ -20,8 +20,7 @@ using atlas::idx_t;
 
 namespace mo {
 
-/// \details Calculate the hydrostatic pressure (on levels)
-///          from hydrostatic exner.
+/// \details Vertical extrapolation of air pressure above model top
 void eval_air_pressure_levels_nl(atlas::FieldSet & stateFlds) {
   oops::Log::trace() << "[eval_air_pressure_levels_nl()] starting ..." << std::endl;
 

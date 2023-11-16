@@ -24,7 +24,7 @@ namespace vader
 const char HydrostaticExnerLevels_A::Name[] = "HydrostaticExnerLevels_A";
 const std::vector<std::string> HydrostaticExnerLevels_A::
     Ingredients = {"height_levels", "virtual_potential_temperature",
-                   "air_pressure_levels_minus_one"};
+                   "air_pressure_levels"};
 
 // Register the maker
 static RecipeMaker<HydrostaticExnerLevels_A>
@@ -60,7 +60,7 @@ size_t HydrostaticExnerLevels_A::productLevels(const atlas::FieldSet & afieldset
 atlas::FunctionSpace HydrostaticExnerLevels_A::productFunctionSpace(const atlas::FieldSet
                                                                  & afieldset) const
 {
-    return afieldset["air_pressure_levels_minus_one"].functionspace();
+    return afieldset["air_pressure_levels"].functionspace();
 }
 
 bool HydrostaticExnerLevels_A::executeNL(atlas::FieldSet & afieldset)
