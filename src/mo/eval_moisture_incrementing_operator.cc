@@ -35,7 +35,7 @@ void eval_moisture_incrementing_operator_tl(atlas::FieldSet & incFlds,
   auto qcfIncView = make_view<double, 2>
                     (incFlds["mass_content_of_cloud_ice_in_atmosphere_layer"]);
   auto qIncView = make_view<double, 2>(incFlds["specific_humidity"]);
-  const atlas::idx_t numLevels = incFlds["qt"].levels();
+  const atlas::idx_t numLevels = incFlds["qt"].shape(1);
 
   double maxCldInc;
   for (atlas::idx_t jn = 0; jn < incFlds["qt"].shape(0); ++jn) {
@@ -70,7 +70,7 @@ void eval_moisture_incrementing_operator_ad(atlas::FieldSet & hatFlds,
                     (hatFlds["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
   auto qcfHatView = make_view<double, 2>
                     (hatFlds["mass_content_of_cloud_ice_in_atmosphere_layer"]);
-  const atlas::idx_t numLevels = hatFlds["qt"].levels();
+  const atlas::idx_t numLevels = hatFlds["qt"].shape(1);
 
   double qsatdlsvpdT;
   for (atlas::idx_t jn = 0; jn < hatFlds["qt"].shape(0); ++jn) {
@@ -104,7 +104,7 @@ void eval_total_water_tl(atlas::FieldSet & incFlds,
                       (incFlds["mass_content_of_cloud_ice_in_atmosphere_layer"]);
 
   auto qtIncView = make_view<double, 2>(incFlds["qt"]);
-  const atlas::idx_t numLevels = incFlds["qt"].levels();
+  const atlas::idx_t numLevels = incFlds["qt"].shape(1);
 
   for (atlas::idx_t jnode = 0; jnode < incFlds["qt"].shape(0); jnode++) {
     for (atlas::idx_t jlev = 0; jlev < numLevels; jlev++) {
@@ -126,7 +126,7 @@ void eval_total_water_ad(atlas::FieldSet & hatFlds,
   auto qcfIncView = make_view<double, 2>
                       (hatFlds["mass_content_of_cloud_ice_in_atmosphere_layer"]);
   auto qtIncView = make_view<double, 2>(hatFlds["qt"]);
-  const atlas::idx_t numLevels = hatFlds["qt"].levels();
+  const atlas::idx_t numLevels = hatFlds["qt"].shape(1);
 
   for (atlas::idx_t jnode = 0; jnode < hatFlds["qt"].shape(0); jnode++) {
     for (atlas::idx_t jlev = 0; jlev < numLevels; jlev++) {

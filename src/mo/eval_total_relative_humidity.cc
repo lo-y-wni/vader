@@ -30,7 +30,7 @@ bool eval_total_relative_humidity_nl(atlas::FieldSet & fields) {
   const auto qsatView = make_view<const double, 2>(fields["qsat"]);
   auto rhtView = make_view<double, 2>(fields["rht"]);
 
-  const atlas::idx_t n_levels(fields["rht"].levels());
+  const atlas::idx_t n_levels(fields["rht"].shape(1));
   atlas_omp_parallel_for(atlas::idx_t ih = 0; ih < rhtView.shape(0); ih++) {
     for (atlas::idx_t ilev = 0; ilev < n_levels; ilev++) {
       rhtView(ih, ilev) = (qView(ih, ilev) + qclView(ih, ilev) + qciView(ih, ilev)

@@ -59,7 +59,7 @@ std::vector<std::string> AirPressureToKappa_A::ingredients() const {
 // -------------------------------------------------------------------------------------------------
 
 size_t AirPressureToKappa_A::productLevels(const atlas::FieldSet & afieldset) const {
-    return afieldset.field("air_pressure_levels").levels() - 1;
+    return afieldset.field("air_pressure_levels").shape(1) - 1;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ bool AirPressureToKappa_A::executeNL(atlas::FieldSet & afieldset) {
 
     // Grid dimensions
     size_t h_size = airPressureLevelsF.shape(0);
-    int v_size = airPressureLevelsF.levels() - 1;
+    int v_size = airPressureLevelsF.shape(1) - 1;
 
     // Local variables
     double pk1, pk2;

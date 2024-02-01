@@ -58,7 +58,7 @@ std::vector<std::string> AirPotentialTemperature_B::ingredients() const {
 // -------------------------------------------------------------------------------------------------
 
 size_t AirPotentialTemperature_B::productLevels(const atlas::FieldSet & afieldset) const {
-    return afieldset.field("air_temperature").levels();
+    return afieldset.field("air_temperature").shape(1);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ bool AirPotentialTemperature_B::executeNL(atlas::FieldSet & afieldset)
 
     // Grid dimensions
     size_t h_size = air_temperature_field.shape(0);
-    int v_size = air_temperature_field.levels();
+    int v_size = air_temperature_field.shape(1);
 
     // Calculate the output variable
     for (int vv = 0; vv < v_size; ++vv) {

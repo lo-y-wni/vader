@@ -58,7 +58,7 @@ std::vector<std::string> AirPressureThickness_A::ingredients() const {
 // -------------------------------------------------------------------------------------------------
 
 size_t AirPressureThickness_A::productLevels(const atlas::FieldSet & afieldset) const {
-    return afieldset.field("air_pressure_levels").levels() - 1;
+    return afieldset.field("air_pressure_levels").shape(1) - 1;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ bool AirPressureThickness_A::executeNL(atlas::FieldSet & afieldset)
     const int gridSize = delp.shape(0);
 
     // Compute pressure thickness from pressure at the levels
-    for (int level = 0; level < delp.levels(); ++level) {
+    for (int level = 0; level < delp.shape(1); ++level) {
         for ( size_t jNode = 0; jNode < gridSize ; ++jNode ) {
             delp_view(jNode, level) = prsi_view(jNode, level+1) - prsi_view(jNode, level);
         }

@@ -25,7 +25,7 @@ void hexner2PThetav(atlas::FieldSet & fields) {
   const auto hexnerView = make_view<const double, 2>(fields["hydrostatic_exner_levels"]);
   auto pView = make_view<double, 2>(fields["air_pressure_levels_minus_one"]);
   auto vthetaView = make_view<double, 2>(fields["virtual_potential_temperature"]);
-  const idx_t numLevels = fields["hydrostatic_exner_levels"].levels();
+  const idx_t numLevels = fields["hydrostatic_exner_levels"].shape(1);
 
   for (idx_t jn = 0; jn < fields["hydrostatic_exner_levels"].shape(0); ++jn) {
     pView(jn, 0) = constants::p_zero * pow(hexnerView(jn, 0), (constants::cp / constants::rd));
@@ -48,7 +48,7 @@ void evalVirtualPotentialTemperature(atlas::FieldSet & fields) {
   auto evaluateVTheta = [&] (idx_t i, idx_t j) {
     vthetaView(i, j) = thetaView(i, j) * (1.0 + constants::c_virtual * qView(i, j)); };
 
-  auto conf = Config("levels", fields["virtual_potential_temperature"].levels()) |
+  auto conf = Config("levels", fields["virtual_potential_temperature"].shape(1)) |
               Config("include_halo", true);
 
   functions::parallelFor(fspace, evaluateVTheta, conf);
@@ -61,7 +61,7 @@ void evalHydrostaticExnerLevels(atlas::FieldSet & fields) {
   const auto vthetaView = make_view<const double, 2>(fields["virtual_potential_temperature"]);
   const auto pView = make_view<const double, 2>(fields["air_pressure_levels_minus_one"]);
   auto hexnerView = make_view<double, 2>(fields["hydrostatic_exner_levels"]);
-  const idx_t numLevels = fields["hydrostatic_exner_levels"].levels();
+  const idx_t numLevels = fields["hydrostatic_exner_levels"].shape(1);
 
   for (idx_t jn = 0; jn < fields["hydrostatic_exner_levels"].shape(0); ++jn) {
     hexnerView(jn, 0) = pow(pView(jn, 0) / constants::p_zero,
@@ -80,7 +80,7 @@ void evalHydrostaticExnerLevels(atlas::FieldSet & fields) {
 void evalHydrostaticPressureLevels(atlas::FieldSet & fields) {
   const auto hexnerView = make_view<double, 2>(fields["hydrostatic_exner_levels"]);
   auto hpView = make_view<double, 2>(fields["hydrostatic_pressure_levels"]);
-  const idx_t numLevels = fields["hydrostatic_pressure_levels"].levels();
+  const idx_t numLevels = fields["hydrostatic_pressure_levels"].shape(1);
 
   for (idx_t jn = 0; jn < fields["hydrostatic_pressure_levels"].shape(0); ++jn) {
     for (idx_t jl = 0; jl < numLevels; ++jl) {
@@ -99,7 +99,7 @@ void qqclqcf2qt(atlas::FieldSet & fields) {
   const auto qcfIncView = make_view<const double, 2>
                     (fields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
   auto qtIncView = make_view<double, 2>(fields["qt"]);
-  const idx_t numLevels = fields["specific_humidity"].levels();
+  const idx_t numLevels = fields["specific_humidity"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < fields["specific_humidity"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < numLevels; ++jl) {
@@ -120,7 +120,7 @@ void evalExnerPressureLevels(atlas::FieldSet & fields) {
   const auto hlView = make_view<const double, 2>(fields["height_levels"]);
   auto exnerView = make_view<double, 2>(fields["exner_pressure_levels"]);
 
-  idx_t levels(fields["exner_pressure_levels"].levels());
+  idx_t levels(fields["exner_pressure_levels"].shape(1));
   for (idx_t jn = 0; jn < fields["exner_pressure_levels"].shape(0); ++jn) {
     for (idx_t jl = 1; jl < levels - 1; ++jl) {
       exnerView(jn, jl) = exnerMinusOneView(jn, jl);
@@ -159,7 +159,7 @@ void evalMoistureControlDependencies(atlas::FieldSet & fields) {
   auto muRow2Column2View = make_view<double, 2>(fields["muRow2Column2"]);
   auto muRecipDeterminantView = make_view<double, 2>(fields["muRecipDeterminant"]);
 
-  const idx_t numLevels = fields["potential_temperature"].levels();
+  const idx_t numLevels = fields["potential_temperature"].shape(1);
 
   // the comments below are there to allow checking with the VAR code.
   for (atlas::idx_t jn = 0; jn < fields["potential_temperature"].shape(0); ++jn) {

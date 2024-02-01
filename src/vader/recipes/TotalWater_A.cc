@@ -52,7 +52,7 @@ std::vector<std::string> TotalWater_A::ingredients() const
 
 size_t TotalWater_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return (afieldset["specific_humidity"].levels());
+    return (afieldset["specific_humidity"].shape(1));
 }
 
 atlas::FunctionSpace TotalWater_A::productFunctionSpace(const atlas::FieldSet

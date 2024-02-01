@@ -87,7 +87,7 @@ void eval_sat_vapour_pressure_nl(const std::string & svp_file, atlas::FieldSet &
     if (fields.has(ef)) {
       auto svpView = make_view<double, 2>(fields[ef]);
 
-      auto conf = atlas::util::Config("levels", fields[ef].levels()) |
+      auto conf = atlas::util::Config("levels", fields[ef].shape(1)) |
                   atlas::util::Config("include_halo", true);
 
       // check this recipe to calculate svp is correct

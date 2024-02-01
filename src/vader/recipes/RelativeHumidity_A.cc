@@ -54,7 +54,7 @@ std::vector<std::string> RelativeHumidity_A::ingredients() const
 
 size_t RelativeHumidity_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field("air_temperature").levels();
+    return afieldset.field("air_temperature").shape(1);
 }
 
 atlas::FunctionSpace RelativeHumidity_A::productFunctionSpace

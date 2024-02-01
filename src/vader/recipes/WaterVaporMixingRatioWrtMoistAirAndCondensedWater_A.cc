@@ -54,7 +54,7 @@ std::vector<std::string> WaterVaporMixingRatioWrtMoistAirAndCondensedWater_A::in
 size_t WaterVaporMixingRatioWrtMoistAirAndCondensedWater_A::productLevels(
                                            const atlas::FieldSet & afieldset) const
 {
-    return (afieldset["m_t"].levels());
+    return (afieldset["m_t"].shape(1));
 }
 
 atlas::FunctionSpace WaterVaporMixingRatioWrtMoistAirAndCondensedWater_A::productFunctionSpace(

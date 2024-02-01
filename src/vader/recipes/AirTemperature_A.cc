@@ -54,7 +54,7 @@ std::vector<std::string> AirTemperature_A::ingredients() const
 
 size_t AirTemperature_A::productLevels(const atlas::FieldSet & fields) const
 {
-    return fields[APT].levels();
+    return fields[APT].shape(1);
 }
 
 atlas::FunctionSpace AirTemperature_A::productFunctionSpace(const atlas::FieldSet & fields) const

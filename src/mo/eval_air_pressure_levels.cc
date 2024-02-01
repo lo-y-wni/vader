@@ -30,7 +30,7 @@ void eval_air_pressure_levels_nl(atlas::FieldSet & stateFlds) {
   auto ds_hl = make_view<const double, 2>(stateFlds["height_levels"]);
   auto ds_pl = make_view<double, 2>(stateFlds["air_pressure_levels"]);
 
-  idx_t levels(stateFlds["air_pressure_levels"].levels());
+  idx_t levels(stateFlds["air_pressure_levels"].shape(1));
   for (idx_t jn = 0; jn < stateFlds["air_pressure_levels"].shape(0); ++jn) {
     for (idx_t jl = 0; jl < levels - 1; ++jl) {
       ds_pl(jn, jl) = ds_plmo(jn, jl);

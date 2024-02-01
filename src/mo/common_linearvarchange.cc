@@ -35,7 +35,7 @@ void evalVirtualPotentialTemperatureTL(atlas::FieldSet & incFlds,
         thetaIncView(i, j) * (1.0 + constants::c_virtual * qView(i, j));
   };
 
-  auto conf = Config("levels", incFlds["virtual_potential_temperature"].levels()) |
+  auto conf = Config("levels", incFlds["virtual_potential_temperature"].shape(1)) |
               Config("include_halo", true);
 
   functions::parallelFor(fspace, evaluateVThetaTL, conf);
@@ -59,7 +59,7 @@ void evalVirtualPotentialTemperatureAD(atlas::FieldSet & hatFlds,
     vthetaHatView(i, j) = 0;
   };
 
-  auto conf = Config("levels", hatFlds["virtual_potential_temperature"].levels()) |
+  auto conf = Config("levels", hatFlds["virtual_potential_temperature"].shape(1)) |
               Config("include_halo", true);
 
   functions::parallelFor(fspace, evaluateVThetaAD, conf);

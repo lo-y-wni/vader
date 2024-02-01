@@ -56,7 +56,7 @@ std::vector<std::string> DryAirDensityLevelsMinusOne_A::ingredients() const
 
 size_t DryAirDensityLevelsMinusOne_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return afieldset["air_pressure_levels_minus_one"].levels();
+    return afieldset["air_pressure_levels_minus_one"].shape(1);
 }
 
 atlas::FunctionSpace DryAirDensityLevelsMinusOne_A::productFunctionSpace(const atlas::FieldSet

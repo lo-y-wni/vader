@@ -54,7 +54,7 @@ bool evalTotalMassMoistAir(atlas::FieldSet & fields)
   auto evaluateMt = [&] (idx_t i, idx_t j) {
     ds_m_t(i, j) = 1 + ds_m_v(i, j) + ds_m_ci(i, j) + ds_m_cl(i, j) + ds_m_r(i, j); };
 
-  auto conf = Config("levels", fields["m_t"].levels()) |
+  auto conf = Config("levels", fields["m_t"].shape(1)) |
               Config("include_halo", true);
 
   functions::parallelFor(fspace, evaluateMt, conf);
@@ -79,7 +79,7 @@ bool evalRatioToMt(atlas::FieldSet & fields, const std::vector<std::string> & va
     ds_tfield(i, j) = ds_m_x(i, j) / ds_m_t(i, j);
   };
 
-  auto conf = Config("levels", fields[vars[2]].levels()) |
+  auto conf = Config("levels", fields[vars[2]].shape(1)) |
               Config("include_halo", true);
 
   functions::parallelFor(fspace, evaluateRatioToMt, conf);
@@ -117,7 +117,7 @@ bool evalTotalRelativeHumidity(atlas::FieldSet & fields)
   const auto qsatView = make_view<const double, 2>(fields["qsat"]);
   auto rhtView = make_view<double, 2>(fields["rht"]);
 
-  auto conf = Config("levels", fields["rht"].levels()) |
+  auto conf = Config("levels", fields["rht"].shape(1)) |
               Config("include_halo", true);
 
   auto evaluateRHT = [&] (idx_t i, idx_t j) {
@@ -193,7 +193,7 @@ bool evalAirTemperature(atlas::FieldSet & fields)
   auto evaluateAirTemp = [&] (idx_t i, idx_t j) {
     ds_atemp(i, j) = ds_theta(i, j) * ds_exner(i, j); };
 
-  auto conf = Config("levels", fields["air_temperature"].levels()) |
+  auto conf = Config("levels", fields["air_temperature"].shape(1)) |
               Config("include_halo", true);
 
   functions::parallelFor(fspace, evaluateAirTemp, conf);
@@ -217,7 +217,7 @@ bool evalSpecificHumidityFromRH_2m(atlas::FieldSet & fields)
     ds_q2m(i, j) = 0.01 * ds_rh(i, j) * ds_qsat(i, j); };
 
   auto conf = Config("levels",
-    fields["specific_humidity_at_two_meters_above_surface"].levels()) |
+    fields["specific_humidity_at_two_meters_above_surface"].shape(1)) |
               Config("include_halo", true);
 
   functions::parallelFor(fspace, evaluateSpecificHumidity_2m, conf);

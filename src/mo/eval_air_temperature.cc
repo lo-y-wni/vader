@@ -28,7 +28,7 @@ void eval_air_temperature_nl(atlas::FieldSet & stateFlds) {
   auto ds_atemp = make_view<double, 2>(stateFlds["air_temperature"]);
 
   auto fspace = stateFlds["air_temperature"].functionspace();
-  idx_t lvls(stateFlds["air_temperature"].levels());
+  idx_t lvls(stateFlds["air_temperature"].shape(1));
   for (atlas::idx_t jn = 0; jn < ds_atemp.shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < lvls; ++jl) {
       ds_atemp(jn, jl) = ds_theta(jn, jl) * ds_exner(jn, jl);
@@ -48,7 +48,7 @@ void eval_air_temperature_tl(atlas::FieldSet & incFlds, const atlas::FieldSet & 
   const auto thetaIncView = make_view<const double, 2>(incFlds["potential_temperature"]);
   auto tIncView = make_view<double, 2>(incFlds["air_temperature"]);
 
-  idx_t lvls(incFlds["air_temperature"].levels());
+  idx_t lvls(incFlds["air_temperature"].shape(1));
   idx_t lvlsm1 = lvls - 1;
   double exnerTopVal;
   double exnerTopIncVal;
@@ -98,7 +98,7 @@ void eval_air_temperature_ad(atlas::FieldSet & hatFlds, const atlas::FieldSet & 
   auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
   auto tHatView = make_view<double, 2>(hatFlds["air_temperature"]);
 
-  idx_t lvls(hatFlds["air_temperature"].levels());
+  idx_t lvls(hatFlds["air_temperature"].shape(1));
   idx_t lvlsm1 = lvls - 1;
   double exnerTopVal(0);
   double exnerTopHatVal(0);

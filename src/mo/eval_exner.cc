@@ -28,7 +28,7 @@ void eval_hydrostatic_exner_levels_tl(atlas::FieldSet & incFlds,
   const auto pIncView = make_view<const double, 2>(incFlds["hydrostatic_pressure_levels"]);
   auto exnerIncView = make_view<double, 2>(incFlds["hydrostatic_exner_levels"]);
 
-  atlas::idx_t levels = incFlds["hydrostatic_exner_levels"].levels();
+  atlas::idx_t levels = incFlds["hydrostatic_exner_levels"].shape(1);
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       exnerIncView(jn, jl) = pIncView(jn, jl) *
@@ -48,7 +48,7 @@ void eval_hydrostatic_exner_levels_ad(atlas::FieldSet & hatFlds,
   auto pHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
   auto exnerHatView = make_view<double, 2>(hatFlds["hydrostatic_exner_levels"]);
 
-  atlas::idx_t levels = hatFlds["hydrostatic_exner_levels"].levels();
+  atlas::idx_t levels = hatFlds["hydrostatic_exner_levels"].shape(1);
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       pHatView(jn, jl) += exnerHatView(jn, jl) *

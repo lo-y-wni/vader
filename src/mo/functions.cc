@@ -60,7 +60,7 @@ void getMIOFields(atlas::FieldSet & augStateFlds) {
 
   auto cleffView = make_view<double, 2>(augStateFlds["cleff"]);
   auto cfeffView = make_view<double, 2>(augStateFlds["cfeff"]);
-  const atlas::idx_t numLevels = augStateFlds["rht"].levels();
+  const atlas::idx_t numLevels = augStateFlds["rht"].shape(1);
 
   Eigen::MatrixXd mioCoeffCl = createMIOCoeff(constants::mioCoefficientsFilePath, "qcl_coef");
   Eigen::MatrixXd mioCoeffCf = createMIOCoeff(constants::mioCoefficientsFilePath, "qcf_coef");

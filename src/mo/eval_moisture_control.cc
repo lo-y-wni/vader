@@ -43,7 +43,7 @@ void eval_moisture_control_traj(atlas::FieldSet & fields) {
   auto muRecipDeterminantView = make_view<double, 2>(fields["muRecipDeterminant"]);
 
   // the comments below are there to allow checking with the VAR code.
-  const atlas::idx_t n_levels(fields["potential_temperature"].levels());
+  const atlas::idx_t n_levels(fields["potential_temperature"].shape(1));
   atlas_omp_parallel_for(idx_t ih = 0; ih < thetaView.shape(0); ++ih) {
     for (idx_t ilev = 0; ilev < n_levels; ++ilev) {
       muRow1Column1View(ih, ilev) = muAView(ih, ilev) / qsatView(ih, ilev);  // beta2 * muA
@@ -71,7 +71,7 @@ void eval_moisture_control_tl(atlas::FieldSet & incFlds,
   auto muIncView = make_view<double, 2>(incFlds["mu"]);
   auto thetavIncView = make_view<double, 2>(incFlds["virtual_potential_temperature"]);
 
-  const atlas::idx_t n_levels(incFlds["mu"].levels());
+  const atlas::idx_t n_levels(incFlds["mu"].shape(1));
   atlas_omp_parallel_for(idx_t ih = 0; ih < muIncView.shape(0); ++ih) {
     for (idx_t ilev = 0; ilev < n_levels; ++ilev) {
       muIncView(ih, ilev) = muRow1Column1View(ih, ilev) * qtIncView(ih, ilev)
@@ -93,7 +93,7 @@ void eval_moisture_control_ad(atlas::FieldSet & hatFlds,
   auto muHatView = make_view<double, 2>(hatFlds["mu"]);
   auto thetavHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
 
-  const atlas::idx_t n_levels(hatFlds["mu"].levels());
+  const atlas::idx_t n_levels(hatFlds["mu"].shape(1));
   atlas_omp_parallel_for(idx_t ih = 0; ih < muHatView.shape(0); ++ih) {
     for (idx_t ilev = 0; ilev < n_levels; ++ilev) {
       thetaHatView(ih, ilev) += muRow2Column2View(ih, ilev) * thetavHatView(ih, ilev);
@@ -119,7 +119,7 @@ void eval_moisture_control_inv_tl(atlas::FieldSet & incFlds,
   auto qtIncView = make_view<double, 2>(incFlds["qt"]);
   auto thetaIncView = make_view<double, 2>(incFlds["potential_temperature"]);
 
-  const atlas::idx_t n_levels(incFlds["mu"].levels());
+  const atlas::idx_t n_levels(incFlds["mu"].shape(1));
   atlas_omp_parallel_for(idx_t ih = 0; ih < muIncView.shape(0); ++ih) {
     for (idx_t ilev = 0; ilev < n_levels; ++ilev) {
       // VAR equivalent in Var_UpPFtheta_qT.f90 for thetaIncView
@@ -151,7 +151,7 @@ void eval_moisture_control_inv_ad(atlas::FieldSet & hatFlds,
   auto thetavHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
   auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
 
-  const atlas::idx_t n_levels(hatFlds["mu"].levels());
+  const atlas::idx_t n_levels(hatFlds["mu"].shape(1));
   atlas_omp_parallel_for(idx_t ih = 0; ih < muHatView.shape(0); ++ih) {
     for (idx_t ilev = 0; ilev < n_levels; ++ilev) {
       thetavHatView(ih, ilev) += muRecipDeterView(ih, ilev) *

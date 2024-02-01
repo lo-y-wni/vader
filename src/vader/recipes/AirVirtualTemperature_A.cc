@@ -51,7 +51,7 @@ std::vector<std::string> AirVirtualTemperature_A::ingredients() const
 
 size_t AirVirtualTemperature_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field("air_temperature").levels();
+    return afieldset.field("air_temperature").shape(1);
 }
 
 atlas::FunctionSpace AirVirtualTemperature_A::productFunctionSpace
@@ -79,7 +79,7 @@ bool AirVirtualTemperature_A::executeNL(atlas::FieldSet & afieldset)
 
     size_t grid_size = temperature.shape(0);
 
-    int nlevels = temperature.levels();
+    int nlevels = temperature.shape(1);
     for (int level = 0; level < nlevels; ++level) {
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         virtual_temperature_view(jnode, level) =
@@ -115,7 +115,7 @@ bool AirVirtualTemperature_A::executeTL(atlas::FieldSet & afieldsetTL,
 
     size_t grid_size = tl_specific_humidity.shape(0);
 
-    int nlevels = tl_temperature.levels();
+    int nlevels = tl_temperature.shape(1);
     for (int level = 0; level < nlevels; ++level) {
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         tl_virtual_temperature_view(jnode, level) =
@@ -153,7 +153,7 @@ bool AirVirtualTemperature_A::executeAD(atlas::FieldSet & afieldsetAD,
 
     size_t grid_size = ad_specific_humidity.shape(0);
 
-    int nlevels = ad_temperature.levels();
+    int nlevels = ad_temperature.shape(1);
     for (int level = 0; level < nlevels; ++level) {
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         ad_temperature_view(jnode, level) += ad_virtual_temperature_view(jnode, level) *

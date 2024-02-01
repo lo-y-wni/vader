@@ -49,7 +49,7 @@ std::vector<std::string> CloudIceMixingRatio_A::ingredients() const
 
 size_t CloudIceMixingRatio_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return (afieldset["m_t"].levels());
+    return (afieldset["m_t"].shape(1));
 }
 
 atlas::FunctionSpace CloudIceMixingRatio_A::productFunctionSpace(const atlas::FieldSet

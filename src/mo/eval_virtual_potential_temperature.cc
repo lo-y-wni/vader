@@ -26,7 +26,7 @@ void eval_virtual_potential_temperature_nl(atlas::FieldSet & fields) {
   const auto thetaView = make_view<const double, 2>(fields["potential_temperature"]);
   auto vThetaView = make_view<double, 2>(fields["virtual_potential_temperature"]);
 
-  const atlas::idx_t n_levels = fields["virtual_potential_temperature"].levels();
+  const atlas::idx_t n_levels = fields["virtual_potential_temperature"].shape(1);
   atlas_omp_parallel_for(atlas::idx_t ih = 0; ih < vThetaView.shape(0); ih++) {
     for (atlas::idx_t ilev = 0; ilev < n_levels; ilev++) {
       vThetaView(ih, ilev) = thetaView(ih, ilev)
@@ -46,7 +46,7 @@ void eval_virtual_potential_temperature_tl(atlas::FieldSet & incFlds,
   const auto thetaIncView = make_view<const double, 2>(incFlds["potential_temperature"]);
   auto vThetaIncView = make_view<double, 2>(incFlds["virtual_potential_temperature"]);
 
-  const atlas::idx_t n_levels = incFlds["virtual_potential_temperature"].levels();
+  const atlas::idx_t n_levels = incFlds["virtual_potential_temperature"].shape(1);
   atlas_omp_parallel_for(atlas::idx_t ih = 0; ih < vThetaIncView.shape(0); ih++) {
     for (atlas::idx_t ilev = 0; ilev < n_levels; ilev++) {
       vThetaIncView(ih, ilev) = thetaView(ih, ilev) * constants::c_virtual * qIncView(ih, ilev) +
@@ -66,7 +66,7 @@ void eval_virtual_potential_temperature_ad(atlas::FieldSet & hatFlds,
   auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
   auto vThetaHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
 
-  const atlas::idx_t n_levels = hatFlds["virtual_potential_temperature"].levels();
+  const atlas::idx_t n_levels = hatFlds["virtual_potential_temperature"].shape(1);
   atlas_omp_parallel_for(atlas::idx_t ih = 0; ih < vThetaHatView.shape(0); ih++) {
     for (atlas::idx_t ilev = 0; ilev < n_levels; ilev++) {
       qHatView(ih, ilev) += thetaView(ih, ilev) * constants::c_virtual * vThetaHatView(ih, ilev);

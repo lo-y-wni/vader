@@ -53,7 +53,7 @@ std::vector<std::string> VirtualPotentialTemperature_A::ingredients() const
 
 size_t VirtualPotentialTemperature_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return (afieldset["height_levels"].levels() -1);
+    return (afieldset["height_levels"].shape(1) -1);
 }
 
 atlas::FunctionSpace VirtualPotentialTemperature_A::productFunctionSpace(const atlas::FieldSet

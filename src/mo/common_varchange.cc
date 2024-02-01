@@ -82,7 +82,7 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
   }
 
   if (fields["svp"].shape(0) != fields["air_temperature"].shape(0)
-      || fields["svp"].levels() != fields["air_temperature"].levels()) {
+      || fields["svp"].shape(1) != fields["air_temperature"].shape(1)) {
     // svp field not compatible with air temperature field, cannot continue.
     return false;
   }
@@ -98,7 +98,7 @@ bool evalSatVaporPressure(atlas::FieldSet & fields)
     if (fields.has(ef)) {
       auto svpView = make_view<double, 2>(fields[ef]);
 
-      auto conf = atlas::util::Config("levels", fields[ef].levels()) |
+      auto conf = atlas::util::Config("levels", fields[ef].shape(1)) |
                   atlas::util::Config("include_halo", true);
 
       // check this recipe to calculate svp is correct
@@ -129,7 +129,7 @@ bool evalSatSpecificHumidity(atlas::FieldSet & fields)
   const auto tView = make_view<const double, 2>(fields["air_temperature"]);
   auto qsatView = make_view<double, 2>(fields["qsat"]);
 
-  auto conf = atlas::util::Config("levels", fields["qsat"].levels()) |
+  auto conf = atlas::util::Config("levels", fields["qsat"].shape(1)) |
               atlas::util::Config("include_halo", true);
 
   double fsubw;
@@ -177,7 +177,7 @@ bool evalAirPressureLevels(atlas::FieldSet & fields)
   const auto ds_hl = make_view<const double, 2>(fields["height_levels"]);
   auto ds_pl = make_view<double, 2>(fields["air_pressure_levels"]);
 
-  idx_t levels(fields["air_pressure_levels"].levels());
+  idx_t levels(fields["air_pressure_levels"].shape(1));
   for (idx_t jn = 0; jn < fields["air_pressure_levels"].shape(0); ++jn) {
     for (idx_t jl = 0; jl < levels - 1; ++jl) {
       ds_pl(jn, jl) = ds_plmo(jn, jl);

@@ -56,7 +56,7 @@ std::vector<std::string> SeaWaterTemperature_A::ingredients() const
 
 size_t SeaWaterTemperature_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field("sea_water_salinity").levels();
+    return afieldset.field("sea_water_salinity").shape(1);
 }
 
 atlas::FunctionSpace SeaWaterTemperature_A::productFunctionSpace
@@ -88,7 +88,7 @@ bool SeaWaterTemperature_A::executeNL(atlas::FieldSet & afieldset)
 
     // Grid dimensions
     size_t grid_size = salinity.shape(0);
-    int nlevels = potential_temperature.levels();
+    int nlevels = potential_temperature.shape(1);
 
     // Local variables
     double pressure, absolute_salinity, conservative_temperature;

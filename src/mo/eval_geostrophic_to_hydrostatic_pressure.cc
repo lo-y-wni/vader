@@ -31,7 +31,7 @@ void eval_hydrostatic_pressure_levels_tl(atlas::FieldSet & incFlds,
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
   auto hPIncView = make_view<double, 2>(incFlds["hydrostatic_pressure_levels"]);
 
-  const atlas::idx_t levels = incFlds["geostrophic_pressure_levels_minus_one"].levels();
+  const atlas::idx_t levels = incFlds["geostrophic_pressure_levels_minus_one"].shape(1);
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       hPIncView(jn, jl) = uPIncView(jn, jl);
@@ -89,7 +89,7 @@ void eval_hydrostatic_pressure_levels_ad(atlas::FieldSet & hatFlds,
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
   auto hPHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
 
-  const atlas::idx_t levels = hatFlds["geostrophic_pressure_levels_minus_one"].levels();
+  const atlas::idx_t levels = hatFlds["geostrophic_pressure_levels_minus_one"].shape(1);
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
     hPHatView(jn, levels - 1) +=
      hPHatView(jn, levels) *
@@ -145,7 +145,7 @@ void eval_hydrostatic_pressure_levels_tl_inv(atlas::FieldSet & incFlds,
   const auto hPIncView = make_view<const double, 2>(incFlds["hydrostatic_pressure_levels"]);
   auto uPIncView = make_view<double, 2>(incFlds["unbalanced_pressure_levels_minus_one"]);
 
-  const atlas::idx_t levels = incFlds["unbalanced_pressure_levels_minus_one"].levels();
+  const atlas::idx_t levels = incFlds["unbalanced_pressure_levels_minus_one"].shape(1);
   for (atlas::idx_t jn = 0; jn < uPIncView.shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       uPIncView(jn, jl) = hPIncView(jn, jl);

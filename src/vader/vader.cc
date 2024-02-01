@@ -240,7 +240,7 @@ oops::Variables Vader::changeVarTraj(atlas::FieldSet & afieldset,
         // Make a deep copy of each field and put it in trajectory_
         atlas::Field to_Field = from_Field.functionspace().createField<double>(
                     atlas::option::name(from_Field.name()) |
-                    atlas::option::levels(from_Field.levels()));
+                    atlas::option::levels(from_Field.shape(1)));
         auto from_view = atlas::array::make_view<double, 2>(from_Field);
         auto to_view = atlas::array::make_view<double, 2>(to_Field);
         to_view.assign(from_view);
@@ -455,7 +455,7 @@ void checkOrAddField(atlas::FieldSet & afieldset, const std::string & fieldname,
     if (afieldset.has(fieldname))
     {
         // Verify the number of levels in the Field is enough for the recipe
-        ASSERT(afieldset.field(fieldname).levels() >= nlevels);
+        ASSERT(afieldset.field(fieldname).shape(1) >= nlevels);
     } else {
         // Create the field and put it in the FieldSet
         atlas::Field newField = fs.createField<double>(
@@ -572,7 +572,7 @@ void Vader::executePlanAD(atlas::FieldSet & afieldset,
             // add ingredient field to the fieldset and zero out if needed
             checkOrAddField(afieldset, ingredient,
                      trajectory_.field(ingredient).functionspace(),
-                     trajectory_.field(ingredient).levels(), true);
+                     trajectory_.field(ingredient).shape(1), true);
         }
         if (varPlanIt->second->requiresSetup()) {
             varPlanIt->second->setup(afieldset);

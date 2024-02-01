@@ -29,7 +29,7 @@ void evalAirPressureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augSta
 
   double alpha_jl(0.0);
 
-  atlas::idx_t lvls(incFlds["air_pressure"].levels());
+  atlas::idx_t lvls(incFlds["air_pressure"].shape(1));
   for (atlas::idx_t jn = 0; jn < pbarIncView.shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < lvls; ++jl) {
       alpha_jl = (hView(jn, jl) - hlView(jn, jl)) / (hlView(jn, jl+1) - hlView(jn, jl));
@@ -50,7 +50,7 @@ void evalAirPressureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augSta
 
   double alpha_jl(0.0);
 
-  atlas::idx_t lvls(hatFlds["air_pressure"].levels());
+  atlas::idx_t lvls(hatFlds["air_pressure"].shape(1));
   for (atlas::idx_t jn = 0; jn < pHatView.shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < lvls; ++jl) {
       alpha_jl = (hView(jn, jl) - hlView(jn, jl)) / (hlView(jn, jl+1) - hlView(jn, jl));

@@ -94,7 +94,7 @@ bool SurfaceAirPressure_A::executeNL(atlas::FieldSet & afieldset) {
 
     // Get the grid size
     const int gridSize = delp.shape(0);
-    const int nLevel = delp.levels();
+    const int nLevel = delp.shape(1);
 
     // Set pressure at the surface to surface pressure
     for ( size_t jNode = 0; jNode < gridSize ; ++jNode ) {
@@ -102,7 +102,7 @@ bool SurfaceAirPressure_A::executeNL(atlas::FieldSet & afieldset) {
     }
 
     // Compute pressure from pressure thickness starting at the surface
-    for (int level = 0; level < delp.levels(); ++level) {
+    for (int level = 0; level < delp.shape(1); ++level) {
         for ( size_t jNode = 0; jNode < gridSize ; ++jNode ) {
             ps_view(jNode, 0) = ps_view(jNode, 0) + delp_view(jNode, level);
         }

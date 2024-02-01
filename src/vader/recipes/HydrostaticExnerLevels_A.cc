@@ -54,7 +54,7 @@ std::vector<std::string> HydrostaticExnerLevels_A::ingredients() const
 
 size_t HydrostaticExnerLevels_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return (afieldset["height_levels"].levels());
+    return (afieldset["height_levels"].shape(1));
 }
 
 atlas::FunctionSpace HydrostaticExnerLevels_A::productFunctionSpace(const atlas::FieldSet

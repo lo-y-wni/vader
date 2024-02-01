@@ -51,7 +51,7 @@ std::vector<std::string> AirTemperature_B::ingredients() const
 
 size_t AirTemperature_B::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field("virtual_temperature").levels();
+    return afieldset.field("virtual_temperature").shape(1);
 }
 
 atlas::FunctionSpace AirTemperature_B::productFunctionSpace(const atlas::FieldSet & afieldset) const
@@ -76,7 +76,7 @@ bool AirTemperature_B::executeNL(atlas::FieldSet & afieldset)
 
     size_t grid_size = virtual_temperature.shape(0);
 
-    int nlevels = virtual_temperature.levels();
+    int nlevels = virtual_temperature.shape(1);
     for (int level = 0; level < nlevels; ++level) {
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         temperature_view(jnode, level) =

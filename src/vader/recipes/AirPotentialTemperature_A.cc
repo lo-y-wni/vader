@@ -54,7 +54,7 @@ std::vector<std::string> AirPotentialTemperature_A::ingredients() const
 
 size_t AirPotentialTemperature_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return afieldset.field("air_temperature").levels();
+    return afieldset.field("air_temperature").shape(1);
 }
 
 atlas::FunctionSpace AirPotentialTemperature_A::productFunctionSpace
@@ -94,7 +94,7 @@ bool AirPotentialTemperature_A::executeNL(atlas::FieldSet & afieldset)
 
     size_t grid_size = surface_pressure.size();
 
-    int nlevels = temperature.levels();
+    int nlevels = temperature.shape(1);
     for (int level = 0; level < nlevels; ++level) {
       for ( size_t jnode = 0; jnode < grid_size ; ++jnode ) {
         potential_temperature_view(jnode, level) =

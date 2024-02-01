@@ -60,7 +60,7 @@ std::vector<std::string> AirPressureAtInterface_B::ingredients() const {
 // -------------------------------------------------------------------------------------------------
 
 size_t AirPressureAtInterface_B::productLevels(const atlas::FieldSet & afieldset) const {
-    return afieldset.field("air_pressure_thickness").levels()+1;
+    return afieldset.field("air_pressure_thickness").shape(1)+1;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ bool AirPressureAtInterface_B::executeNL(atlas::FieldSet & afieldset) {
 
     // Get the grid size
     const int gridSize = delp.shape(0);
-    const int nLevel = prsi.levels() - 1;  // Reduce by 1 since index begins at 0
+    const int nLevel = prsi.shape(1) - 1;  // Reduce by 1 since index begins at 0
 
     // Set pressure at the surface to surface pressure
     for ( size_t jNode = 0; jNode < gridSize ; ++jNode ) {
@@ -106,7 +106,7 @@ bool AirPressureAtInterface_B::executeNL(atlas::FieldSet & afieldset) {
     }
 
     // Compute pressure from pressure thickness starting at the surface
-    for (int level = 1; level < prsi.levels(); ++level) {
+    for (int level = 1; level < prsi.shape(1); ++level) {
         for ( size_t jNode = 0; jNode < gridSize ; ++jNode ) {
             prsi_view(jNode, level) = prsi_view(jNode, level - 1) + delp_view(jNode, level - 1);
         }

@@ -53,7 +53,7 @@ std::vector<std::string> TotalMixingRatio_A::ingredients() const
 
 size_t TotalMixingRatio_A::productLevels(const atlas::FieldSet & afieldset) const
 {
-    return (afieldset["m_v"].levels());
+    return (afieldset["m_v"].shape(1));
 }
 
 atlas::FunctionSpace TotalMixingRatio_A::productFunctionSpace(const atlas::FieldSet

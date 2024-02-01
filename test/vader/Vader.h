@@ -113,7 +113,7 @@ void testVaderAdjoint() {
   // zeroed out, so the copy is needed.
   atlas::FieldSet dxout, dy;
   for (const auto & productVar : productVars.variables()) {
-    addRandomField(dxout, productVar, fs, traj.field(productVar).levels());
+    addRandomField(dxout, productVar, fs, traj.field(productVar).shape(1));
     atlas::Field field(productVar, dxout.field(productVar).datatype(),
                   dxout.field(productVar).shape());
     auto from_view = atlas::array::make_view<double, 2>(dxout.field(productVar));

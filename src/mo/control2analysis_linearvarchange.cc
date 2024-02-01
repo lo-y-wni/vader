@@ -30,7 +30,7 @@ void thetavP2HexnerTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augStat
   const auto thetavIncView = make_view<const double, 2>(incFlds["virtual_potential_temperature"]);
   const auto pIncView = make_view<const double, 2>(incFlds["air_pressure_levels_minus_one"]);
   auto hexnerIncView = make_view<double, 2>(incFlds["hydrostatic_exner_levels"]);
-  const atlas::idx_t numLevels = incFlds["hydrostatic_exner_levels"].levels();
+  const atlas::idx_t numLevels = incFlds["hydrostatic_exner_levels"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
     hexnerIncView(jn, 0) = constants::rd_over_cp *
@@ -56,7 +56,7 @@ void thetavP2HexnerAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augStat
   auto hexnerHatView = make_view<double, 2>(hatFlds["hydrostatic_exner_levels"]);
 
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
-    for (atlas::idx_t jl = hatFlds["hydrostatic_exner_levels"].levels() - 1; jl > 0; --jl) {
+    for (atlas::idx_t jl = hatFlds["hydrostatic_exner_levels"].shape(1) - 1; jl > 0; --jl) {
       thetavHatView(jn, jl-1) = thetavHatView(jn, jl-1) +
         ((constants::grav * hexnerHatView(jn, jl) *
         (hlView(jn, jl) - hlView(jn, jl-1))) /
@@ -79,7 +79,7 @@ void hexner2ThetavTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augState
   const auto hexnerIncView = make_view<const double, 2>(incFlds["hydrostatic_exner_levels"]);
   auto thetavIncView = make_view<double, 2>(incFlds["virtual_potential_temperature"]);
 
-  atlas::idx_t levels = incFlds["virtual_potential_temperature"].levels();
+  atlas::idx_t levels = incFlds["virtual_potential_temperature"].shape(1);
   for (atlas::idx_t jn = 0; jn < incFlds["virtual_potential_temperature"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       thetavIncView(jn, jl) =
@@ -96,7 +96,7 @@ void hexner2ThetavAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState
   auto thetavHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
   auto hexnerHatView = make_view<double, 2>(hatFlds["hydrostatic_exner_levels"]);
 
-  atlas::idx_t levelsm1 = hatFlds["virtual_potential_temperature"].levels()-1;
+  atlas::idx_t levelsm1 = hatFlds["virtual_potential_temperature"].shape(1)-1;
   for (atlas::idx_t jn = 0; jn < hatFlds["virtual_potential_temperature"].shape(0); ++jn) {
     for (atlas::idx_t jl = levelsm1; jl > -1; --jl) {
       hexnerHatView(jn, jl+1) += thetavHatView(jn, jl) *
@@ -121,7 +121,7 @@ void evalAirTemperatureTL(atlas::FieldSet & incFlds, const atlas::FieldSet & aug
   const auto thetaIncView = make_view<const double, 2>(incFlds["potential_temperature"]);
   auto tIncView = make_view<double, 2>(incFlds["air_temperature"]);
 
-  atlas::idx_t lvls(incFlds["air_temperature"].levels());
+  atlas::idx_t lvls(incFlds["air_temperature"].shape(1));
   atlas::idx_t lvlsm1 = lvls - 1;
   double exnerTopVal;
   double exnerTopIncVal;
@@ -171,7 +171,7 @@ void evalAirTemperatureAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & aug
   auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
   auto tHatView = make_view<double, 2>(hatFlds["air_temperature"]);
 
-  atlas::idx_t lvls(hatFlds["air_temperature"].levels());
+  atlas::idx_t lvls(hatFlds["air_temperature"].shape(1));
   atlas::idx_t lvlsm1 = lvls - 1;
   double exnerTopVal(0);
   double exnerTopHatVal(0);
@@ -235,7 +235,7 @@ void qqclqcf2qtAD(atlas::FieldSet & hatFields, const atlas::FieldSet &) {
   auto qcfHatView = make_view<double, 2>
                     (hatFields["mass_content_of_cloud_ice_in_atmosphere_layer"]);
   auto qtHatView = make_view<double, 2>(hatFields["qt"]);
-  const atlas::idx_t numLevels = hatFields["qt"].levels();
+  const atlas::idx_t numLevels = hatFields["qt"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < hatFields["qt"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < numLevels; ++jl) {
@@ -261,7 +261,7 @@ void qtTemperature2qqclqcfTL(atlas::FieldSet & incFlds,
   auto qcfIncView = make_view<double, 2>
                     (incFlds["mass_content_of_cloud_ice_in_atmosphere_layer"]);
   auto qIncView = make_view<double, 2>(incFlds["specific_humidity"]);
-  const atlas::idx_t numLevels = incFlds["qt"].levels();
+  const atlas::idx_t numLevels = incFlds["qt"].shape(1);
 
   double maxCldInc;
   for (atlas::idx_t jn = 0; jn < incFlds["qt"].shape(0); ++jn) {
@@ -289,7 +289,7 @@ void qtTemperature2qqclqcfAD(atlas::FieldSet & hatFlds,
                     (hatFlds["mass_content_of_cloud_liquid_water_in_atmosphere_layer"]);
   auto qcfHatView = make_view<double, 2>
                     (hatFlds["mass_content_of_cloud_ice_in_atmosphere_layer"]);
-  const atlas::idx_t numLevels = hatFlds["qt"].levels();
+  const atlas::idx_t numLevels = hatFlds["qt"].shape(1);
 
   double qsatdlsvpdT;
   for (atlas::idx_t jn = 0; jn < hatFlds["qt"].shape(0); ++jn) {
@@ -320,7 +320,7 @@ void evalHydrostaticPressureTL(atlas::FieldSet & incFlds,
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
   // First index of interpWeightView is horizontal index, the second is bin index here
 
-  atlas::idx_t levels = incFlds["geostrophic_pressure_levels_minus_one"].levels();
+  atlas::idx_t levels = incFlds["geostrophic_pressure_levels_minus_one"].shape(1);
   auto hPIncView = make_view<double, 2>(incFlds["hydrostatic_pressure_levels"]);
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
@@ -372,7 +372,7 @@ void evalHydrostaticPressureAD(atlas::FieldSet & hatFlds,
   const auto pView = make_view<const double, 2>(augStateFlds["air_pressure_levels"]);
   auto hPHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
 
-  atlas::idx_t levels = hatFlds["geostrophic_pressure_levels_minus_one"].levels();
+  atlas::idx_t levels = hatFlds["geostrophic_pressure_levels_minus_one"].shape(1);
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_pressure_levels"].shape(0); ++jn) {
     hPHatView(jn, levels - 1) +=
      hPHatView(jn, levels) *
@@ -426,7 +426,7 @@ void evalHydrostaticExnerTL(atlas::FieldSet & incFlds,
   const auto pIncView = make_view<const double, 2>(incFlds["hydrostatic_pressure_levels"]);
   auto exnerIncView = make_view<double, 2>(incFlds["hydrostatic_exner_levels"]);
 
-  atlas::idx_t levels = incFlds["hydrostatic_exner_levels"].levels();
+  atlas::idx_t levels = incFlds["hydrostatic_exner_levels"].shape(1);
   for (atlas::idx_t jn = 0; jn < incFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       exnerIncView(jn, jl) = pIncView(jn, jl) *
@@ -444,7 +444,7 @@ void evalHydrostaticExnerAD(atlas::FieldSet & hatFlds,
   auto pHatView = make_view<double, 2>(hatFlds["hydrostatic_pressure_levels"]);
   auto exnerHatView = make_view<double, 2>(hatFlds["hydrostatic_exner_levels"]);
 
-  atlas::idx_t levels = hatFlds["hydrostatic_exner_levels"].levels();
+  atlas::idx_t levels = hatFlds["hydrostatic_exner_levels"].shape(1);
   for (atlas::idx_t jn = 0; jn < hatFlds["hydrostatic_exner_levels"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < levels; ++jl) {
       pHatView(jn, jl) += exnerHatView(jn, jl) *
@@ -470,7 +470,7 @@ void evalMuThetavTL(atlas::FieldSet & incFlds,  const atlas::FieldSet & augState
   const auto qtIncView = make_view<const double, 2>(incFlds["qt"]);
   auto muIncView = make_view<double, 2>(incFlds["mu"]);
   auto thetavIncView = make_view<double, 2>(incFlds["virtual_potential_temperature"]);
-  const atlas::idx_t numLevels = incFlds["mu"].levels();
+  const atlas::idx_t numLevels = incFlds["mu"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < incFlds["mu"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < numLevels; ++jl) {
@@ -492,7 +492,7 @@ void evalMuThetavAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState)
   auto qtHatView = make_view<double, 2>(hatFlds["qt"]);
   auto muHatView = make_view<double, 2>(hatFlds["mu"]);
   auto thetavHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
-  const atlas::idx_t numLevels = hatFlds["mu"].levels();
+  const atlas::idx_t numLevels = hatFlds["mu"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < hatFlds["mu"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < numLevels; ++jl) {
@@ -518,7 +518,7 @@ void evalQtThetaTL(atlas::FieldSet & incFlds, const atlas::FieldSet & augState) 
   const auto thetavIncView = make_view<const double, 2>(incFlds["virtual_potential_temperature"]);
   auto qtIncView = make_view<double, 2>(incFlds["qt"]);
   auto thetaIncView = make_view<double, 2>(incFlds["potential_temperature"]);
-  const atlas::idx_t numLevels = incFlds["mu"].levels();
+  const atlas::idx_t numLevels = incFlds["mu"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < incFlds["mu"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < numLevels; ++jl) {
@@ -550,7 +550,7 @@ void evalQtThetaAD(atlas::FieldSet & hatFlds, const atlas::FieldSet & augState) 
   auto muHatView = make_view<double, 2>(hatFlds["mu"]);
   auto thetavHatView = make_view<double, 2>(hatFlds["virtual_potential_temperature"]);
   auto thetaHatView = make_view<double, 2>(hatFlds["potential_temperature"]);
-  const atlas::idx_t numLevels = hatFlds["mu"].levels();
+  const atlas::idx_t numLevels = hatFlds["mu"].shape(1);
 
   for (atlas::idx_t jn = 0; jn < hatFlds["mu"].shape(0); ++jn) {
     for (atlas::idx_t jl = 0; jl < numLevels; ++jl) {

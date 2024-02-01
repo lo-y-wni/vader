@@ -30,7 +30,7 @@ void eval_dry_air_density_from_pressure_levels_minus_one_nl(atlas::FieldSet & st
   const auto vptView = make_view<const double, 2>(stateFlds["virtual_potential_temperature"]);
   const auto pView = make_view<const double, 2>(stateFlds["air_pressure_levels_minus_one"]);
   auto rhoView = make_view<double, 2>(stateFlds["dry_air_density_levels_minus_one"]);
-  const idx_t numLevels = stateFlds["dry_air_density_levels_minus_one"].levels();
+  const idx_t numLevels = stateFlds["dry_air_density_levels_minus_one"].shape(1);
 
   double h_minus_hm1;
   double h_minus_hl;
@@ -70,7 +70,7 @@ void eval_dry_air_density_from_pressure_levels_minus_one_tl(atlas::FieldSet & in
   auto pIncView = make_view<const double, 2>(incFlds["air_pressure_levels_minus_one"]);
   auto vptIncView = make_view<const double, 2>(incFlds["virtual_potential_temperature"]);
   auto rhoIncView = make_view<double, 2>(incFlds["dry_air_density_levels_minus_one"]);
-  const idx_t numLevels = incFlds["dry_air_density_levels_minus_one"].levels();
+  const idx_t numLevels = incFlds["dry_air_density_levels_minus_one"].shape(1);
 
   double h_minus_hl;
   double hl_minus_hm1;
@@ -119,7 +119,7 @@ void eval_dry_air_density_from_pressure_levels_minus_one_ad(atlas::FieldSet & ha
       vptView(jn, 0);
     rhoHatView(jn, 0) = 0.0;
 
-    for (idx_t jl = hatFlds["dry_air_density_levels_minus_one"].levels()-1; jl >= 1; --jl) {
+    for (idx_t jl = hatFlds["dry_air_density_levels_minus_one"].shape(1)-1; jl >= 1; --jl) {
       h_minus_hl = hView(jn, jl) - hlView(jn, jl);
       hl_minus_hm1 = hlView(jn, jl) - hView(jn, jl-1);
       pHatView(jn, jl) += rhoView(jn, jl) * rhoHatView(jn, jl) * (1.0 - constants::rd_over_cp) /
@@ -149,7 +149,7 @@ void eval_dry_air_density_from_pressure_levels_nl(atlas::FieldSet & stateFlds) {
   const auto vptView = make_view<const double, 2>(stateFlds["virtual_potential_temperature"]);
   const auto pView = make_view<const double, 2>(stateFlds["air_pressure_levels"]);
   auto rhoView = make_view<double, 2>(stateFlds["dry_air_density_levels_minus_one"]);
-  const idx_t numLevels = stateFlds["dry_air_density_levels_minus_one"].levels();
+  const idx_t numLevels = stateFlds["dry_air_density_levels_minus_one"].shape(1);
 
   double h_minus_hm1;
   double h_minus_hl;
@@ -189,7 +189,7 @@ void eval_dry_air_density_from_pressure_levels_tl(atlas::FieldSet & incFlds,
   auto pIncView = make_view<const double, 2>(incFlds["air_pressure_levels"]);
   auto vptIncView = make_view<const double, 2>(incFlds["virtual_potential_temperature"]);
   auto rhoIncView = make_view<double, 2>(incFlds["dry_air_density_levels_minus_one"]);
-  const idx_t numLevels = incFlds["dry_air_density_levels_minus_one"].levels();
+  const idx_t numLevels = incFlds["dry_air_density_levels_minus_one"].shape(1);
 
   double h_minus_hl;
   double hl_minus_hm1;
@@ -238,7 +238,7 @@ void eval_dry_air_density_from_pressure_levels_ad(atlas::FieldSet & hatFlds,
       vptView(jn, 0);
     rhoHatView(jn, 0) = 0.0;
 
-    for (idx_t jl = hatFlds["dry_air_density_levels_minus_one"].levels()-1; jl >= 1; --jl) {
+    for (idx_t jl = hatFlds["dry_air_density_levels_minus_one"].shape(1)-1; jl >= 1; --jl) {
       h_minus_hl = hView(jn, jl) - hlView(jn, jl);
       hl_minus_hm1 = hlView(jn, jl) - hView(jn, jl-1);
       pHatView(jn, jl) += rhoView(jn, jl) * rhoHatView(jn, jl) * (1.0 - constants::rd_over_cp) /
