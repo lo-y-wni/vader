@@ -37,7 +37,7 @@ namespace constants {
   static constexpr std::double_t TolMonotonicity = 1.0;
   static constexpr std::double_t effectiveRNegative = 5.0;
 
-  // tolerance for avoiding division by zero in getMIOFields
+  // tolerance for avoiding division by zero in eval_mio_fields_nl
   static constexpr std::double_t tol = 1.0e-5;
 
   static constexpr double p_zero = 1.0e5;
