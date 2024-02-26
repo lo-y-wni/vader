@@ -25,6 +25,7 @@
 #include "eckit/config/LocalConfiguration.h"
 
 #include "oops/runs/Test.h"
+#include "oops/util/FieldSetOperations.h"
 #include "oops/util/Logger.h"
 #include "test/TestEnvironment.h"
 
@@ -45,15 +46,78 @@ class RecipeTestParameters : public oops::Parameters {
         "trajectory grid", "trajectory grid description", this};
   oops::RequiredParameter<std::string> filename{"trajectory filename",
         "filename of existing netcdf file with trajectory ingredients", this};
-  oops::RequiredParameter<double> tolerance{"adjoint test tolerance",
-        "adjoint test tolerance", this};
+  oops::Parameter<bool> runNLTest{"run nonlinear test", false, this};
+  oops::Parameter<double> nlTolerance{"nonlinear test tolerance",
+        "nonlinear test tolerance", 1e-12, this};
+  oops::Parameter<bool> runADTest{"run adjoint test", true, this};
+  oops::Parameter<double> adTolerance{"adjoint test tolerance",
+        "adjoint test tolerance", 1e-12, this};
 };
+
+// -----------------------------------------------------------------------------
+/// \brief Tests nonlinear recipe: computes norm of the difference between the
+/// computed field and the field read from the file and compares to zero.
+void testRecipeNonlinear() {
+  RecipeTestParameters params;
+  params.validateAndDeserialize(::test::TestEnvironment::config());
+
+  if (!params.runNLTest) return;
+
+  // create recipe
+  const auto & recipeParams = params.recipe.value().recipeParams.value();
+  RecipeBase* recipe = RecipeFactory::create(recipeParams.name, recipeParams,
+                                             eckit::LocalConfiguration());
+  const std::vector<std::string> ingredientVars = recipe->ingredients();
+  const std::string productVar = recipe->product();
+  oops::Log::info() << "Testing non-linear vader recipe: " << recipe->name()
+                    << std::endl;
+  oops::Log::info() << " Ingredients: " << ingredientVars << std::endl;
+  oops::Log::info() << " Product: " << productVar << std::endl;
+
+  // set up grid and functionspace based on description in the yaml
+  const atlas::StructuredGrid grid(params.grid.value());
+  const atlas::functionspace::StructuredColumns fs(grid);
+
+  // Open NetCDF file and read all the ingredients
+  atlas::FieldSet vader_computed;
+  atlas::FieldSet reference;
+  int ncid, retval;
+  const std::string & filename = params.filename;
+  oops::Log::info() << "Reading ingredients from file: " << filename << std::endl;
+  if ((retval = nc_open(filename.c_str(), NC_NOWRITE, &ncid))) ERR(retval);
+  std::vector<size_t> ingredientLevels(ingredientVars.size(), 0);
+  for (size_t jvar = 0; jvar < ingredientVars.size(); ++jvar) {
+    addFieldFromFile(vader_computed, ingredientVars[jvar], fs, grid,
+                     ingredientLevels[jvar], ncid);
+  }
+  oops::Log::info() << "Reading reference product from file: " << filename << std::endl;
+  size_t productLevels = 0;
+  addFieldFromFile(reference, productVar, fs, grid, productLevels, ncid);
+
+  // allocate field for the product (usually done in vader, but here the recipes are
+  // tested outside of vader infrastructure)
+  productLevels = recipe->productLevels(vader_computed);
+  addZeroField(vader_computed, productVar, fs, productLevels);
+  // run NL recipe
+  recipe->executeNL(vader_computed);
+
+  // compute norm of the difference between the reference and the computed products
+  util::subtractFieldSets(vader_computed, reference);
+  const double norm = util::normField(vader_computed[productVar], oops::mpi::world());
+  oops::Log::info() << "Norm of the difference between the reference and the computed field: "
+                    << norm << std::endl;
+  const double tol = params.nlTolerance;
+  EXPECT(oops::is_close_absolute(norm, 0.0, tol));
+}
+
 
 // -----------------------------------------------------------------------------
 /// \brief Tests adjoint of the recipe.
 void testRecipeAdjoint() {
   RecipeTestParameters params;
   params.validateAndDeserialize(::test::TestEnvironment::config());
+
+  if (!params.runADTest) return;
 
   // create recipe
   const auto & recipeParams = params.recipe.value().recipeParams.value();
@@ -131,7 +195,7 @@ void testRecipeAdjoint() {
                     << (zz1-zz2)/zz1 << std::endl;
   oops::Log::info() << "<dx,KTdy>-<Kdx,dy>/<Kdx,dy>="
                     << (zz1-zz2)/zz2 << std::endl;
-  const double tol = params.tolerance;
+  const double tol = params.adTolerance;
   EXPECT(oops::is_close(zz1, zz2, tol));
 }
 
@@ -146,7 +210,8 @@ class Recipe : public oops::Test {
 
   void register_tests() const override {
     std::vector<eckit::testing::Test>& ts = eckit::testing::specification();
-
+    ts.emplace_back(CASE("vader/Recipe/testRecipeNonlinear")
+      { testRecipeNonlinear(); });
     ts.emplace_back(CASE("vader/Recipe/testRecipeAdjoint")
       { testRecipeAdjoint(); });
   }

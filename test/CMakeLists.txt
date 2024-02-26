@@ -1,6 +1,7 @@
 list( APPEND vader_testinput
 testinput/empty.yaml
 testinput/planvariable.yaml
+testinput/recipe_AirPressureExtendedUpByOne_A.yaml
 testinput/recipe_AirTemperature_A.yaml
 testinput/recipe_CloudIceMixingRatio_A.yaml
 testinput/recipe_CloudLiquidMixingRatio_A.yaml
@@ -66,6 +67,11 @@ ecbuild_add_executable( TARGET  test_vader.x
                        )
 
 # Test recipes
+ecbuild_add_test( TARGET  test_vader_recipe_AirPressureExtendedUpByOne_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
+                  ARGS    "testinput/recipe_AirPressureExtendedUpByOne_A.yaml"
+                  LIBS    vader )
+
 ecbuild_add_test( TARGET  test_vader_recipe_AirTemperature_A
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
                   ARGS    "testinput/recipe_AirTemperature_A.yaml"

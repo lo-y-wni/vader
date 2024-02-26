@@ -1,0 +1,9 @@
+recipe:
+  recipe name: AirPressureExtendedUpByOne_A
+trajectory grid:
+  type : regular_gaussian
+  N : 12
+trajectory filename: testdata/gauss_state_F12.nc
+run nonlinear test: true
+run adjoint test: false
+nonlinear test tolerance: 0.004

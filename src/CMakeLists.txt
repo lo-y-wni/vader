@@ -17,6 +17,8 @@ vader/recipes/AirPressureAtInterface_A.cc
 vader/recipes/AirPressureAtInterface_B.cc
 vader/recipes/AirPressureAtInterface.h
 vader/recipes/AirPressure.h
+vader/recipes/AirPressureExtendedUpByOne_A.cc
+vader/recipes/AirPressureExtendedUpByOne.h
 vader/recipes/AirPressureThickness_A.cc
 vader/recipes/AirPressureThickness.h
 vader/recipes/AirPressureToKappa_A.cc
