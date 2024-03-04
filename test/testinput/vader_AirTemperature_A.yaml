@@ -2,7 +2,10 @@ vader: {}
 trajectory grid:
   type : regular_gaussian
   N : 12
-trajectory filename: testdata/AirTemperature_A.nc
-ingredients: [air_potential_temperature, dimensionless_exner_function]
+trajectory filename: testdata/gauss_state_F12.nc
+# CCPP Names for (hopefully near) future:
+# ingredients: [air_potential_temperature_at_interface, dimensionless_exner_function_at_interface]
+# products: [air_temperature_at_interface]
+ingredients: [potential_temperature, exner]
 products: [air_temperature]
 adjoint test tolerance: 1.e-12
