@@ -235,6 +235,11 @@ ecbuild_add_test( TARGET  test_vader_planvariable
                   ARGS    "testinput/planvariable.yaml"
                   LIBS    vader )
 
+ecbuild_add_test( TARGET  test_vader_mo_lookuptables
+                  SOURCES vader/mo/TestCheckLookupTables.cc
+                  ARGS    "testinput/empty.yaml"
+                  LIBS    vader )
+
 # Test print (Prints default Vader cookbook, in yaml form, to log)
 ecbuild_add_test( TARGET  test_vader_print_cookbook
                   SOURCES vader/TestPrintVader.cc

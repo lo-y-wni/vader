@@ -74,6 +74,8 @@ mo/control2analysis_linearvarchange.h
 mo/control2analysis_linearvarchange.cc
 mo/control2analysis_varchange.h
 mo/control2analysis_varchange.cc
+mo/dlsvp_lookup.h
+mo/dlsvpW_lookup.h
 mo/eval_air_pressure.h
 mo/eval_air_pressure.cc
 mo/eval_air_pressure_levels.h
@@ -120,11 +122,14 @@ mo/eval_virtual_potential_temperature.h
 mo/eval_virtual_potential_temperature.cc
 mo/eval_water_vapor_mixing_ratio.h
 mo/eval_water_vapor_mixing_ratio.cc
+mo/lookups.h
 mo/model2geovals_linearvarchange.h
 mo/model2geovals_linearvarchange.cc
 mo/model2geovals_varchange.h
 mo/model2geovals_varchange.cc
 mo/svp_interface.F90
+mo/svp_lookup.h
+mo/svpW_lookup.h
 )
 
 if( gsw_FOUND )

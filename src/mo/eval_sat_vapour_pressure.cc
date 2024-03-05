@@ -1,5 +1,5 @@
 /*
- * (C) Crown Copyright 2023 Met Office
+ * (C) Crown Copyright 2023-2024 Met Office
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -25,6 +25,7 @@
 #include "mo/constants.h"
 #include "mo/eval_sat_vapour_pressure.h"
 #include "mo/functions.h"
+#include "mo/lookups.h"
 
 #include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
@@ -76,10 +77,6 @@ void eval_sat_vapour_pressure_nl(const std::string & svp_file, atlas::FieldSet &
   std::size_t indx;  // index
 
   const auto tView  = make_view<const double, 2>(fields["air_temperature"]);
-  const std::vector<std::string> vars{"svp", "dlsvp", "svpW", "dlsvpW"};
-  oops::Variables lookUpVars(vars);
-  auto lookUpData = functions::getLookUps(svp_file, lookUpVars,
-                               constants::svpLookUpLength);
 
   const std::vector<std::string> fnames {"svp", "dlsvpdT"};
   int ival = 0;  // set ival = 2 to get svp wrt water
@@ -91,12 +88,12 @@ void eval_sat_vapour_pressure_nl(const std::string & svp_file, atlas::FieldSet &
                   atlas::util::Config("include_halo", true);
 
       // check this recipe to calculate svp is correct
-      const std::vector<double> Lookup = lookUpData[ival];
+      const auto& lookup = lookups::allSvpLookupTable[ival];
       ++ival;
       auto evaluateSVP = [&] (atlas::idx_t i, atlas::idx_t j) {
       indx = index(normalisedT(tView(i, j)));
       w = weight(normalisedT(tView(i, j)));
-      svpView(i, j) = interp(w, Lookup.at(indx), Lookup.at(indx+1)); };
+      svpView(i, j) = interp(w, lookup.at(indx), lookup.at(indx+1)); };
 
       auto fspace = fields[ef].functionspace();
 

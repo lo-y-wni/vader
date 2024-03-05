@@ -23,35 +23,6 @@ using atlas::array::make_view;
 namespace mo {
 namespace functions {
 
-std::vector<double> getLookUp(const std::string & sVPFilePath,
-                              const std::string & shortName,
-                              const std::size_t lookupSize) {
-  std::vector<double> values(lookupSize, 0);
-
-  umGetLookUp_f90(static_cast<int>(sVPFilePath.size()),
-                  sVPFilePath.c_str(),
-                  static_cast<int>(shortName.size()),
-                  shortName.c_str(),
-                  static_cast<int>(lookupSize),
-                  values[0]);
-
-  return std::vector<double>(values.begin(), values.end());
-}
-
-
-std::vector<std::vector<double>> getLookUps(const std::string & sVPFilePath,
-                                            const oops::Variables & vars,
-                                            const std::size_t lookupSize) {
-  std::vector<std::vector<double>> values(vars.size(), std::vector<double>(lookupSize));
-
-  for (std::size_t i = 0; i < values.size(); ++i) {
-    values[i] = getLookUp(sVPFilePath, vars[i], lookupSize);
-  }
-
-  return values;
-}
-
-
 Eigen::MatrixXd createMIOCoeff(const std::string mioFileName,
                                const std::string s) {
   oops::Log::trace() << "[createMIOCoeff] starting ..." << std::endl;
