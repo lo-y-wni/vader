@@ -11,6 +11,7 @@ testinput/recipe_HydrostaticExnerLevels_A.yaml
 testinput/recipe_RainMixingRatio_A.yaml
 testinput/recipe_RelativeHumidity_A.yaml
 testinput/recipe_TotalMixingRatio_A.yaml
+testinput/recipe_TotalRelativeHumidity_A.yaml
 testinput/recipe_TotalWater_A.yaml
 testinput/recipe_uwind_at_10m_A.yaml
 testinput/recipe_VirtualPotentialTemperature_A.yaml
@@ -115,6 +116,11 @@ ecbuild_add_test( TARGET  test_vader_recipe_RelativeHumidity_A
 ecbuild_add_test( TARGET  test_vader_recipe_TotalMixingRatio_A
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
                   ARGS    "testinput/recipe_TotalMixingRatio_A.yaml"
+                  LIBS    vader )
+
+ecbuild_add_test( TARGET  test_vader_recipe_TotalRelativeHumidity_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
+                  ARGS    "testinput/recipe_TotalRelativeHumidity_A.yaml"
                   LIBS    vader )
 
 ecbuild_add_test( TARGET  test_vader_recipe_TotalWater_A

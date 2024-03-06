@@ -49,6 +49,8 @@ vader/recipes/TestRecipes.cc
 vader/recipes/TestRecipes.h
 vader/recipes/TotalMixingRatio.h
 vader/recipes/TotalMixingRatio_A.cc
+vader/recipes/TotalRelativeHumidity.h
+vader/recipes/TotalRelativeHumidity_A.cc
 vader/recipes/TotalWater.h
 vader/recipes/TotalWater_A.cc
 vader/recipes/uwind_at_10m_A.cc
