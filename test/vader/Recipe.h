@@ -23,6 +23,7 @@
 #include "atlas/meshgenerator.h"
 
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/mpi/Comm.h"
 
 #include "oops/runs/Test.h"
 #include "oops/util/FieldSetOperations.h"
@@ -46,7 +47,7 @@ class RecipeTestParameters : public oops::Parameters {
         "trajectory grid", "trajectory grid description", this};
   oops::RequiredParameter<std::string> filename{"trajectory filename",
         "filename of existing netcdf file with trajectory ingredients", this};
-  oops::Parameter<bool> runNLTest{"run nonlinear test", false, this};
+  oops::Parameter<bool> runNLTest{"run nonlinear test", true, this};
   oops::Parameter<double> nlTolerance{"nonlinear test tolerance",
         "nonlinear test tolerance", 1e-12, this};
   oops::Parameter<bool> runADTest{"run adjoint test", true, this};
@@ -101,13 +102,41 @@ void testRecipeNonlinear() {
   // run NL recipe
   recipe->executeNL(vader_computed);
 
+  // Debug prints
+  const auto & field = vader_computed[productVar];
+  const auto & refField = reference[productVar];
+  const auto fieldView = atlas::array::make_view<const double, 2>(field);
+  const auto refFieldView = atlas::array::make_view<const double, 2>(refField);
+  oops::Log::debug() << "Comparing fields " << productVar << std::endl;
+  oops::Log::debug() << "Level N : field norm ; reference norm ; difference norm"
+                     << std::endl;
+  const auto & comm = eckit::mpi::comm();
+  for (size_t jlev = 0 ; jlev < field.shape(1); jlev++) {
+    oops::Log::debug() << "Level " << jlev + 1 << " : ";
+    double norm = 0;
+    double refNorm = 0;
+    double diffNorm = 0;
+    for (size_t jnode = 0; jnode < field.shape(0); jnode++) {
+      norm += std::pow(fieldView(jnode, jlev), 2);
+      refNorm += std::pow(refFieldView(jnode, jlev), 2);
+      diffNorm += std::pow(fieldView(jnode, jlev) - refFieldView(jnode, jlev), 2);
+    }
+    comm.allReduceInPlace(norm, eckit::mpi::sum());
+    comm.allReduceInPlace(refNorm, eckit::mpi::sum());
+    comm.allReduceInPlace(diffNorm, eckit::mpi::sum());
+    oops::Log::debug() << std::sqrt(norm) << " ; "
+                       << std::sqrt(refNorm) << " ; "
+                       << std::sqrt(diffNorm) << std::endl;
+  }
+
   // compute norm of the difference between the reference and the computed products
   util::subtractFieldSets(vader_computed, reference);
   const double norm = util::normField(vader_computed[productVar], oops::mpi::world());
+  const double refNorm = util::normField(reference[productVar], oops::mpi::world());
   oops::Log::info() << "Norm of the difference between the reference and the computed field: "
                     << norm << std::endl;
   const double tol = params.nlTolerance;
-  EXPECT(oops::is_close_absolute(norm, 0.0, tol));
+  EXPECT(oops::is_close_absolute(norm / refNorm, 0.0, tol));
 }
 
 
