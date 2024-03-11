@@ -129,7 +129,7 @@ mo/model2geovals_linearvarchange.h
 mo/model2geovals_linearvarchange.cc
 mo/model2geovals_varchange.h
 mo/model2geovals_varchange.cc
-mo/svp_interface.F90
+mo/mio_interface.F90
 mo/svp_lookup.h
 mo/svpW_lookup.h
 )

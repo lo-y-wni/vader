@@ -28,7 +28,7 @@ using atlas::idx_t;
 
 namespace mo {
 
-void eval_sat_vapour_pressure_nl(const std::string & svp_file, atlas::FieldSet & fields)
+void eval_sat_vapour_pressure_nl(atlas::FieldSet & fields)
 {
   oops::Log::trace() << "[eval_sat_vapour_pressure_nl()] starting ..." << std::endl;
 

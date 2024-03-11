@@ -15,11 +15,10 @@
 
 namespace mo {
 
-// TODO(Mayeul) Remove duplicate evalSatVaporPressure in common_varchange.cc/h
 /// \brief function to evaluate saturation water pressure (svp) [Pa]
 /// the Atlas field in the argument must contain an inizialised air temperature field
 /// and to have a defined svp field which is then calculated and returned as output
 ///
-void eval_sat_vapour_pressure_nl(const std::string & svp_file, atlas::FieldSet & fields);
+void eval_sat_vapour_pressure_nl(atlas::FieldSet & fields);
 
 }  // namespace mo
