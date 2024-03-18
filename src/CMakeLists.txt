@@ -37,6 +37,7 @@ vader/recipes/LnAirPressureAtInterface.h
 vader/recipes/DryAirDensityLevelsMinusOne.h
 vader/recipes/DryAirDensityLevelsMinusOne_A.cc
 vader/recipes/DryAirDensityLevelsMinusOne_B.cc
+vader/recipes/DryAirDensityLevelsMinusOne_C.cc
 vader/recipes/HydrostaticExnerLevels.h
 vader/recipes/HydrostaticExnerLevels_A.cc
 vader/recipes/RainMixingRatio.h
