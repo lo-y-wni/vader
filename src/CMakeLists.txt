@@ -44,6 +44,10 @@ vader/recipes/RainMixingRatio.h
 vader/recipes/RainMixingRatio_A.cc
 vader/recipes/RelativeHumidity.h
 vader/recipes/RelativeHumidity_A.cc
+vader/recipes/SaturationSpecificHumidity.h
+vader/recipes/SaturationSpecificHumidity_A.cc
+vader/recipes/SaturationVaporPressure.h
+vader/recipes/SaturationVaporPressure_A.cc
 vader/recipes/SurfaceAirPressure.h
 vader/recipes/SurfaceAirPressure_A.cc
 vader/recipes/TestRecipes.cc

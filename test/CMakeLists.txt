@@ -11,6 +11,8 @@ testinput/recipe_DryAirDensityLevelsMinusOne_C.yaml
 testinput/recipe_HydrostaticExnerLevels_A.yaml
 testinput/recipe_RainMixingRatio_A.yaml
 testinput/recipe_RelativeHumidity_A.yaml
+testinput/recipe_SaturationSpecificHumidity_A.yaml
+testinput/recipe_SaturationVaporPressure_A.yaml
 testinput/recipe_TotalMixingRatio_A.yaml
 testinput/recipe_TotalRelativeHumidity_A.yaml
 testinput/recipe_TotalWater_A.yaml
@@ -119,6 +121,16 @@ ecbuild_add_test( TARGET  test_vader_recipe_RainMixingRatio_A
 ecbuild_add_test( TARGET  test_vader_recipe_RelativeHumidity_A
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
                   ARGS    "testinput/recipe_RelativeHumidity_A.yaml"
+                  LIBS    vader )
+
+ecbuild_add_test( TARGET  test_vader_recipe_SaturationSpecificHumidity_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
+                  ARGS    "testinput/recipe_SaturationSpecificHumidity_A.yaml"
+                  LIBS    vader )
+
+ecbuild_add_test( TARGET  test_vader_recipe_SaturationVaporPressure_A
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_recipe.x
+                  ARGS    "testinput/recipe_SaturationVaporPressure_A.yaml"
                   LIBS    vader )
 
 ecbuild_add_test( TARGET  test_vader_recipe_TotalMixingRatio_A
