@@ -71,14 +71,10 @@ vader/recipes/WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m.h
 vader/recipes/WaterVaporMixingRatioWrtMoistAirAndCondensedWater2m_A.cc
 mo/common_varchange.h
 mo/common_varchange.cc
-mo/common_linearvarchange.h
-mo/common_linearvarchange.cc
 mo/constants.h
 mo/functions.h
 mo/functions.cc
 mo/model2geovals_linearvarchange.h
-mo/control2analysis_linearvarchange.h
-mo/control2analysis_linearvarchange.cc
 mo/control2analysis_varchange.h
 mo/control2analysis_varchange.cc
 mo/dlsvp_lookup.h
