@@ -84,7 +84,6 @@ mo/common_varchange.cc
 mo/constants.h
 mo/functions.h
 mo/functions.cc
-mo/model2geovals_linearvarchange.h
 mo/control2analysis_varchange.h
 mo/control2analysis_varchange.cc
 mo/dlsvp_lookup.h
@@ -138,8 +137,6 @@ mo/eval_virtual_potential_temperature.cc
 mo/eval_water_vapor_mixing_ratio.h
 mo/eval_water_vapor_mixing_ratio.cc
 mo/lookups.h
-mo/model2geovals_linearvarchange.h
-mo/model2geovals_linearvarchange.cc
 mo/model2geovals_varchange.h
 mo/model2geovals_varchange.cc
 mo/mio_interface.F90
