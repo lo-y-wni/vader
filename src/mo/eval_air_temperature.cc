@@ -44,8 +44,8 @@ void eval_air_temperature_nl(atlas::FieldSet & stateFlds) {
 
 void eval_air_temperature_tl(atlas::FieldSet & incFlds, const atlas::FieldSet & stateFlds) {
   oops::Log::trace() << "[eval_air_temperature_tl()] starting ..." << std::endl;
-  const auto hlView = make_view<const double, 2>(stateFlds["height_levels"]);
-  const auto hView = make_view<const double, 2>(stateFlds["height"]);
+  const auto hlView = make_view<const double, 2>(stateFlds["height_above_mean_sea_level_levels"]);
+  const auto hView = make_view<const double, 2>(stateFlds["height_above_mean_sea_level"]);
   const auto exnerLevelsView = make_view<const double, 2>(stateFlds["exner_levels_minus_one"]);
   const auto thetaView = make_view<const double, 2>(stateFlds["potential_temperature"]);
   const auto exnerLevelsIncView = make_view<const double, 2>(incFlds["exner_levels_minus_one"]);
@@ -97,8 +97,8 @@ void eval_air_temperature_tl(atlas::FieldSet & incFlds, const atlas::FieldSet & 
 
 void eval_air_temperature_ad(atlas::FieldSet & hatFlds, const atlas::FieldSet & stateFlds) {
   oops::Log::trace() << "[eval_air_temperature_ad()] starting ..." << std::endl;
-  const auto hlView = make_view<const double, 2>(stateFlds["height_levels"]);
-  const auto hView = make_view<const double, 2>(stateFlds["height"]);
+  const auto hlView = make_view<const double, 2>(stateFlds["height_above_mean_sea_level_levels"]);
+  const auto hView = make_view<const double, 2>(stateFlds["height_above_mean_sea_level"]);
   const auto exnerLevelsView = make_view<const double, 2>(stateFlds["exner_levels_minus_one"]);
   const auto thetaView = make_view<const double, 2>(stateFlds["potential_temperature"]);
   auto exnerLevelsHatView = make_view<double, 2>(hatFlds["exner_levels_minus_one"]);

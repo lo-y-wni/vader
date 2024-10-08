@@ -23,7 +23,7 @@ namespace vader
 // Static attribute initialization
 const char AirPotentialTemperature_A::Name[] = "AirPotentialTemperature_A";
 const oops::Variables AirPotentialTemperature_A::Ingredients{
-      std::vector<std::string>{"air_temperature", "surface_pressure"}};
+      std::vector<std::string>{"air_temperature", "air_pressure_at_surface"}};
 
 // Register the maker
 static RecipeMaker<AirPotentialTemperature_A> makerTempToPTemp_(AirPotentialTemperature_A::Name);
@@ -73,7 +73,7 @@ bool AirPotentialTemperature_A::executeNL(atlas::FieldSet & afieldset)
     const double kappa = configVariables_.getDouble("kappa");  // Need better name
 
     atlas::Field temperature = afieldset.field("air_temperature");
-    atlas::Field surface_pressure = afieldset.field("surface_pressure");
+    atlas::Field surface_pressure = afieldset.field("air_pressure_at_surface");
     atlas::Field potential_temperature = afieldset.field("potential_temperature");
     std::string t_units, ps_units;
 
