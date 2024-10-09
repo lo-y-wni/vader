@@ -43,8 +43,7 @@ std::string AirPotentialTemperature_A::name() const
 
 oops::Variable AirPotentialTemperature_A::product() const
 {
-    // TODO(vahl): update this to air_potential_temperature (models will also need to adapt)
-    return oops::Variable("potential_temperature");
+    return oops::Variable("air_potential_temperature");
 }
 
 oops::Variables AirPotentialTemperature_A::ingredients() const
@@ -74,7 +73,7 @@ bool AirPotentialTemperature_A::executeNL(atlas::FieldSet & afieldset)
 
     atlas::Field temperature = afieldset.field("air_temperature");
     atlas::Field surface_pressure = afieldset.field("air_pressure_at_surface");
-    atlas::Field potential_temperature = afieldset.field("potential_temperature");
+    atlas::Field potential_temperature = afieldset.field("air_potential_temperature");
     std::string t_units, ps_units;
 
     temperature.metadata().get("units", t_units);

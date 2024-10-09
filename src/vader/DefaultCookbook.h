@@ -48,7 +48,7 @@ const cookbookConfigType Vader::defaultCookbookDefinition = {
                                       AirDensityLevelsMinusOne_B::Name}},
         {oops::Variable{"hydrostatic_exner_levels"},
                                      {HydrostaticExnerLevels_A::Name}},
-        {oops::Variable{"potential_temperature"},
+        {oops::Variable{"air_potential_temperature"},
                                      {AirPotentialTemperature_A::Name}},
         {oops::Variable{"qrain"},    {RainMixingRatio_A::Name}},
         {oops::Variable{"total_water_mixing_ratio_wrt_dry_air"},
